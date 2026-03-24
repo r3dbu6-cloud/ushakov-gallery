@@ -801,8 +801,39 @@ document.getElementById('search-input').addEventListener('input', e => {
 // ─── FORM ───────────────────────────────────────────────────────
 document.getElementById('contact-form')?.addEventListener('submit', async e => {
   e.preventDefault();
-  document.getElementById('contact-form').style.display = 'none';
-  document.getElementById('form-success').classList.add('show');
+  const form = e.target;
+  const btn = form.querySelector('.btn-submit');
+  const inputs = form.querySelectorAll('input,select,textarea');
+  const name = form.querySelector('input[placeholder="Ваше имя"]').value.trim();
+  const contact = form.querySelector('input[placeholder="+7 или email"]').value.trim();
+  const sel = document.getElementById('painting-select');
+  const painting_id = sel.value ? parseInt(sel.value) : null;
+  const painting_title = sel.value ? sel.options[sel.selectedIndex].text.split(' — ')[0] : null;
+  const message = form.querySelector('textarea').value.trim();
+
+  btn.disabled = true;
+  btn.textContent = 'Отправляем…';
+  inputs.forEach(i => i.disabled = true);
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/send-order`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY },
+      body: JSON.stringify({ name, contact, painting_id, painting_title, message })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Ошибка отправки');
+    form.style.display = 'none';
+    document.getElementById('form-success').classList.add('show');
+  } catch(err) {
+    btn.disabled = false;
+    btn.textContent = 'Отправить заявку';
+    inputs.forEach(i => i.disabled = false);
+    btn.style.background = '#a8522a';
+    btn.textContent = 'Ошибка — попробуйте ещё раз';
+    setTimeout(() => { btn.style.background = ''; btn.textContent = 'Отправить заявку'; }, 3000);
+    console.error('Form error:', err);
+  }
 });
 
 // ─── INIT ────────────────────────────────────────────────────────

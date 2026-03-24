@@ -167,7 +167,28 @@
   .picker-drop-zone p { font-size:13px; color:var(--sepia); }
   .picker-upload-input { display:none; }
 
-  /* ── SKELETON ── */
+  /* ── TABS ── */
+  .admin-tabs { display:flex; gap:0; border-bottom:2px solid rgba(139,111,71,.2); margin-bottom:32px; }
+  .admin-tab { background:transparent; border:none; padding:12px 28px; font-size:12px; font-family:'Jost',sans-serif; letter-spacing:.14em; text-transform:uppercase; color:var(--sepia); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; transition:all .2s; }
+  .admin-tab.active { color:var(--ink); border-bottom-color:var(--gold); }
+  .admin-tab-badge { background:var(--rust); color:#fff; border-radius:10px; padding:1px 7px; font-size:10px; margin-left:6px; }
+
+  /* ── ORDERS ── */
+  .orders-table { width:100%; border-collapse:collapse; }
+  .orders-table th { text-align:left; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--sepia); padding:10px 14px; border-bottom:2px solid rgba(139,111,71,.2); font-weight:400; }
+  .orders-table td { padding:12px 14px; border-bottom:1px solid rgba(139,111,71,.1); font-size:13px; vertical-align:top; }
+  .orders-table tr:hover td { background:rgba(201,168,76,.04); }
+  .order-status { display:inline-block; padding:3px 10px; font-size:10px; letter-spacing:.1em; text-transform:uppercase; border-radius:2px; }
+  .status-new { background:#fef3cd; color:#856404; }
+  .status-in_progress { background:#cfe2ff; color:#084298; }
+  .status-done { background:#d1e7dd; color:#0f5132; }
+  .status-cancelled { background:#f8d7da; color:#842029; }
+  .order-status-select { font-size:11px; font-family:'Jost',sans-serif; border:1px solid rgba(139,111,71,.3); background:transparent; padding:3px 8px; color:var(--ink); cursor:pointer; outline:none; }
+  .order-painting { font-size:12px; color:var(--sepia); margin-top:3px; }
+  .order-message { font-size:12px; color:var(--sepia); font-style:italic; margin-top:3px; max-width:260px; }
+  .order-date { font-size:11px; color:var(--sepia); white-space:nowrap; }
+  .orders-empty { text-align:center; padding:60px; color:var(--sepia); }
+  .orders-empty p { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:300; }
   .skeleton { background:linear-gradient(90deg,#e0d8cc 25%,#d0c8b8 50%,#e0d8cc 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; }
   @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
@@ -206,6 +227,13 @@
 
 <!-- CATALOG -->
 <section id="catalog">
+  <div class="admin-tabs">
+    <button class="admin-tab active" id="tab-catalog" onclick="switchTab('catalog')">Каталог</button>
+    <button class="admin-tab" id="tab-orders" onclick="switchTab('orders')">Заявки <span class="admin-tab-badge" id="orders-badge" style="display:none">0</span></button>
+  </div>
+
+  <!-- CATALOG TAB -->
+  <div id="tab-content-catalog">
   <div class="section-header">
     <div class="section-title">Каталог работ</div>
     <div class="section-count" id="count-label">Загрузка…</div>
@@ -244,6 +272,17 @@
   </div>
 
   <div class="catalog-grid" id="catalog-grid"></div>
+  </div><!-- end tab-content-catalog -->
+
+  <!-- ORDERS TAB -->
+  <div id="tab-content-orders" style="display:none">
+    <div class="section-header">
+      <div class="section-title">Заявки</div>
+      <button onclick="loadOrders()" style="background:transparent;border:1px solid rgba(139,111,71,.4);color:var(--sepia);padding:6px 16px;font-size:11px;font-family:'Jost',sans-serif;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;">↻ Обновить</button>
+    </div>
+    <div id="orders-container"><div class="orders-empty"><p>Загрузка…</p></div></div>
+  </div>
+
 </section>
 
 <!-- Photo Picker Modal -->
@@ -605,6 +644,87 @@ document.getElementById('search-input').addEventListener('input', e => {
   renderGrid();
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closePhotoPicker(); });
+
+// ─── TABS ────────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.getElementById('tab-content-catalog').style.display = tab === 'catalog' ? '' : 'none';
+  document.getElementById('tab-content-orders').style.display = tab === 'orders' ? '' : 'none';
+  document.getElementById('tab-catalog').classList.toggle('active', tab === 'catalog');
+  document.getElementById('tab-orders').classList.toggle('active', tab === 'orders');
+  if (tab === 'orders') loadOrders();
+}
+
+// ─── ORDERS ──────────────────────────────────────────────────────
+const STATUS_LABELS = { new: 'Новая', in_progress: 'В работе', done: 'Выполнено', cancelled: 'Отменено' };
+const STATUS_CSS = { new: 'status-new', in_progress: 'status-in_progress', done: 'status-done', cancelled: 'status-cancelled' };
+
+async function loadOrders() {
+  const container = document.getElementById('orders-container');
+  container.innerHTML = '<div class="orders-empty"><p>Загрузка…</p></div>';
+  try {
+    const orders = await sbSelect('orders', 'order=created_at.desc');
+    // Update badge
+    const newCount = orders.filter(o => o.status === 'new').length;
+    const badge = document.getElementById('orders-badge');
+    badge.textContent = newCount;
+    badge.style.display = newCount > 0 ? 'inline' : 'none';
+
+    if (!orders.length) {
+      container.innerHTML = '<div class="orders-empty"><p>Заявок пока нет</p></div>';
+      return;
+    }
+    container.innerHTML = `
+      <table class="orders-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Дата</th>
+            <th>Имя</th>
+            <th>Контакт</th>
+            <th>Работа / Сообщение</th>
+            <th>Статус</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${orders.map(o => `
+            <tr>
+              <td style="color:var(--sepia);font-size:12px">${o.id}</td>
+              <td class="order-date">${new Date(o.created_at).toLocaleString('ru-RU', {day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})}</td>
+              <td><strong>${o.name}</strong></td>
+              <td><a href="mailto:${o.contact}" style="color:var(--sepia)">${o.contact}</a></td>
+              <td>
+                ${o.painting_title ? `<div>${o.painting_title}</div>` : ''}
+                ${o.message ? `<div class="order-message">${o.message}</div>` : ''}
+              </td>
+              <td>
+                <select class="order-status-select" onchange="updateOrderStatus(${o.id}, this.value)">
+                  ${['new','in_progress','done','cancelled'].map(s =>
+                    `<option value="${s}" ${o.status===s?'selected':''}>${STATUS_LABELS[s]}</option>`
+                  ).join('')}
+                </select>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>`;
+  } catch(e) {
+    container.innerHTML = `<div class="orders-empty"><p>Ошибка загрузки: ${e.message}</p></div>`;
+  }
+}
+
+async function updateOrderStatus(id, status) {
+  try {
+    await sbUpdate('orders', id, { status });
+    // Refresh badge
+    const orders = await sbSelect('orders', 'order=created_at.desc');
+    const newCount = orders.filter(o => o.status === 'new').length;
+    const badge = document.getElementById('orders-badge');
+    badge.textContent = newCount;
+    badge.style.display = newCount > 0 ? 'inline' : 'none';
+  } catch(e) {
+    console.error('Status update error:', e);
+  }
+}
 
 // ─── INIT ────────────────────────────────────────────────────────
 if (checkAuth()) loadPaintings();
