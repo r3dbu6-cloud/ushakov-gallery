@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Админка — Галерея Ушакова</title>
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css?family=cormorant-garamond:300,400,500,600,700i|jost:300,400,500" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1410; --paper: #f5f0e8; --sepia: #8b6f47;
+    --gold: #c9a84c; --rust: #a8522a; --mist: #e8e0d0;
+    --shadow: rgba(26,20,16,0.12);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--paper); color:var(--ink); font-family:'Jost',sans-serif; font-weight:300; overflow-x:hidden; }
+  a,button { cursor:pointer; }
+
+  /* ── LOGIN SCREEN ── */
+  .login-screen {
+    position:fixed; inset:0; z-index:9999;
+    background:var(--ink);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .login-screen.hidden { display:none; }
+  .login-box {
+    background:var(--paper); padding:52px 48px;
+    width:min(420px, 90vw); text-align:center;
+  }
+  .login-box h1 { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:300; margin-bottom:6px; }
+  .login-box p { font-size:12px; color:var(--sepia); letter-spacing:.1em; text-transform:uppercase; margin-bottom:32px; }
+  .login-box input {
+    width:100%; background:transparent; border:1px solid rgba(139,111,71,.5);
+    padding:13px 16px; font-size:14px; font-family:'Jost',sans-serif;
+    color:var(--ink); outline:none; transition:border-color .2s; margin-bottom:12px;
+    text-align:center; letter-spacing:.2em;
+  }
+  .login-box input:focus { border-color:var(--sepia); }
+  .login-box input::placeholder { letter-spacing:.05em; color:var(--sepia); opacity:.5; }
+  .login-btn {
+    width:100%; background:var(--ink); color:var(--paper); border:none;
+    padding:14px; font-size:12px; font-family:'Jost',sans-serif;
+    letter-spacing:.18em; text-transform:uppercase; cursor:pointer; transition:background .2s;
+  }
+  .login-btn:hover { background:var(--rust); }
+  .login-error { color:var(--rust); font-size:12px; margin-top:12px; min-height:18px; }
+
+  /* ── ADMIN HEADER ── */
+  header {
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    padding:0 48px; display:flex; align-items:center; justify-content:space-between;
+    height:72px; background:var(--ink); border-bottom:1px solid rgba(201,168,76,.3);
+  }
+  .logo { font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:400; letter-spacing:.04em; color:var(--paper); text-decoration:none; line-height:1.1; }
+  .logo span { display:block; font-size:10px; font-family:'Jost',sans-serif; letter-spacing:.18em; text-transform:uppercase; color:var(--gold); font-weight:400; }
+  .header-right { display:flex; gap:20px; align-items:center; }
+  .admin-badge { background:var(--gold); color:var(--ink); padding:4px 12px; font-size:10px; font-family:'Jost',sans-serif; letter-spacing:.16em; text-transform:uppercase; font-weight:500; }
+  .btn-site-link { font-size:11px; color:rgba(245,240,232,.6); letter-spacing:.1em; text-transform:uppercase; text-decoration:none; transition:color .2s; }
+  .btn-site-link:hover { color:var(--paper); }
+  .btn-logout { background:transparent; border:1px solid rgba(245,240,232,.25); color:rgba(245,240,232,.6); padding:6px 14px; font-size:11px; font-family:'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; transition:all .2s; }
+  .btn-logout:hover { border-color:var(--paper); color:var(--paper); }
+
+  /* ── CATALOG SECTION ── */
+  #catalog { padding:80px 48px; margin-top:72px; }
+  .section-header { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:28px; padding-bottom:18px; border-bottom:1px solid rgba(139,111,71,.2); }
+  .section-title { font-family:'Cormorant Garamond',serif; font-size:32px; font-weight:300; }
+  .section-count { font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--sepia); }
+
+  /* ── FILTERS ── */
+  .filters { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px; align-items:center; }
+  .filter-label { font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--sepia); margin-right:6px; }
+  .filter-btn { background:transparent; border:1px solid rgba(139,111,71,.4); color:var(--sepia); padding:6px 16px; font-size:12px; font-family:'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; transition:all .2s; }
+  .filter-btn:hover,.filter-btn.active { background:var(--ink); border-color:var(--ink); color:var(--paper); }
+  .filter-btn.filter-hidden-btn { border-color:rgba(127,140,141,.5); color:#7f8c8d; }
+  .filter-btn.filter-hidden-btn.active { background:#7f8c8d; border-color:#7f8c8d; color:var(--paper); }
+  .search-bar { margin-left:auto; position:relative; }
+  .search-bar input { background:transparent; border:1px solid rgba(139,111,71,.4); padding:7px 36px 7px 14px; font-size:13px; font-family:'Jost',sans-serif; color:var(--ink); width:220px; outline:none; transition:border-color .2s; }
+  .search-bar input:focus { border-color:var(--sepia); }
+  .sort-row { display:flex; gap:12px; align-items:center; margin-bottom:28px; }
+  .sort-label { font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--sepia); }
+  .sort-btn { background:transparent; border:none; font-size:12px; font-family:'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; color:var(--sepia); cursor:pointer; padding:4px 8px; border-bottom:1px solid transparent; transition:all .2s; }
+  .sort-btn.active { color:var(--ink); border-bottom-color:var(--ink); }
+
+  /* ── STATS BAR ── */
+  .stats-bar { display:flex; gap:28px; margin-bottom:28px; padding:14px 20px; background:var(--mist); border-left:3px solid var(--gold); }
+  .stat-item { font-size:12px; color:var(--sepia); letter-spacing:.06em; }
+  .stat-item strong { color:var(--ink); font-weight:500; }
+  .stat-item.warn strong { color:var(--rust); }
+
+  /* ── GRID ── */
+  .catalog-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:2px; }
+  .card { position:relative; background:var(--mist); overflow:hidden; transition:transform .3s; animation:fadeIn .4s ease both; }
+  .card:hover { transform:translateY(-3px); z-index:2; box-shadow:0 16px 48px var(--shadow); }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+  .card-image { aspect-ratio:3/4; position:relative; overflow:hidden; background:#d8cfc0; }
+  .card-image img { width:100%; height:100%; object-fit:cover; transition:transform .5s; display:block; }
+  .card:hover .card-image img { transform:scale(1.03); }
+  .card-placeholder { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; background:linear-gradient(135deg,#e0d8cc,#bcb09f); }
+  .card-placeholder svg { width:36px; height:36px; stroke:rgba(139,111,71,.3); fill:none; stroke-width:1; }
+  .card-placeholder span { font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:rgba(139,111,71,.4); }
+  .card-size-badge { position:absolute; top:8px; left:8px; background:rgba(26,20,16,.65); color:var(--paper); font-size:10px; padding:2px 7px; }
+  .card-technique-badge { position:absolute; top:8px; right:8px; background:rgba(201,168,76,.9); color:var(--ink); font-size:10px; text-transform:uppercase; padding:2px 8px; }
+  /* Admin overlay buttons */
+  .card-photo-btn { position:absolute; bottom:8px; right:8px; background:var(--ink); border:none; padding:5px 10px; font-size:10px; font-family:'Jost',sans-serif; letter-spacing:.08em; text-transform:uppercase; cursor:pointer; color:var(--paper); transition:background .2s; z-index:5; }
+  .card-photo-btn:hover { background:var(--rust); }
+  .card-body { padding:12px 14px 0; }
+  .card-title { font-family:'Cormorant Garamond',serif; font-size:16px; font-weight:500; line-height:1.3; margin-bottom:3px; }
+  .card-year { font-size:11px; color:var(--sepia); }
+  .card-material { font-size:11px; color:var(--sepia); opacity:.8; margin:4px 0 8px; }
+  .card-price-row { display:flex; align-items:center; justify-content:space-between; border-top:1px solid rgba(139,111,71,.15); padding:8px 0 10px; }
+  .card-price { font-family:'Cormorant Garamond',serif; font-size:17px; font-weight:600; }
+  .card-price .currency { font-size:11px; font-weight:400; color:var(--sepia); }
+  .card-restore-btn { background:transparent; border:1px solid var(--sepia); color:var(--sepia); padding:4px 10px; font-size:10px; font-family:'Jost',sans-serif; letter-spacing:.08em; text-transform:uppercase; cursor:pointer; transition:all .2s; }
+  .card-restore-btn:hover { background:var(--sepia); color:var(--paper); }
+
+  /* ── FLAGS ── */
+  .card-flags { padding:8px 12px 10px; background:#fff8f0; border-top:1px solid rgba(139,111,71,.12); display:flex; flex-direction:column; gap:0; }
+  .flag-row { display:flex; align-items:center; gap:7px; padding:3px 0; }
+  .flag-row input[type=checkbox] { width:13px; height:13px; accent-color:var(--rust); cursor:pointer; flex-shrink:0; }
+  .flag-row span { font-size:11px; font-family:'Jost',sans-serif; color:var(--sepia); cursor:pointer; user-select:none; }
+  .flag-row.flag-image span { color:#c0392b; }
+  .flag-row.flag-desc span { color:#e67e22; }
+  .flag-row.flag-hide span { color:#7f8c8d; }
+  .flag-row input:checked ~ span { font-weight:500; }
+  .flag-saving { font-size:10px; color:var(--sepia); opacity:.6; padding:2px 0 4px; display:none; font-style:italic; }
+  .flag-saving.show { display:block; }
+
+  /* ── CARD VISUAL FLAGS ── */
+  .card.has-flag-image { outline:2px solid rgba(192,57,43,.5); }
+  .card.has-flag-desc { outline:2px solid rgba(230,126,34,.5); }
+  .card.has-flag-hidden { opacity:.45; }
+
+  /* ── NO RESULTS ── */
+  .no-results { text-align:center; padding:80px; color:var(--sepia); grid-column:1/-1; }
+  .no-results p { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:300; }
+
+  /* ── PHOTO PICKER MODAL ── */
+  .photo-picker-backdrop { position:fixed; inset:0; z-index:400; background:rgba(26,20,16,.85); display:flex; align-items:center; justify-content:center; padding:24px; opacity:0; pointer-events:none; transition:opacity .25s; }
+  .photo-picker-backdrop.open { opacity:1; pointer-events:all; }
+  .photo-picker { background:var(--paper); width:min(900px,95vw); max-height:85vh; display:flex; flex-direction:column; position:relative; transform:translateY(20px); transition:transform .25s; }
+  .photo-picker-backdrop.open .photo-picker { transform:translateY(0); }
+  .photo-picker-header { padding:22px 28px 16px; border-bottom:1px solid rgba(139,111,71,.2); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+  .photo-picker-header h3 { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:300; }
+  .photo-picker-header p { font-size:12px; color:var(--sepia); margin-top:3px; }
+  .photo-picker-close { background:none; border:none; cursor:pointer; font-size:20px; color:var(--sepia); width:32px; height:32px; display:flex; align-items:center; justify-content:center; }
+  .photo-picker-close:hover { color:var(--ink); }
+  .photo-picker-actions { padding:14px 28px; border-bottom:1px solid rgba(139,111,71,.12); display:flex; gap:12px; align-items:center; flex-shrink:0; flex-wrap:wrap; }
+  .btn-upload-new { background:var(--ink); color:var(--paper); border:none; padding:9px 20px; font-size:11px; font-family:'Jost',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; }
+  .btn-upload-new:hover { background:var(--rust); }
+  .photo-picker-search { background:transparent; border:1px solid rgba(139,111,71,.4); padding:8px 14px; font-size:12px; font-family:'Jost',sans-serif; color:var(--ink); outline:none; width:200px; }
+  .photo-picker-grid { flex:1; overflow-y:auto; padding:16px 28px 24px; display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:10px; }
+  .photo-item { cursor:pointer; border:2px solid transparent; transition:border-color .15s; }
+  .photo-item:hover { border-color:var(--gold); }
+  .photo-item.selected { border-color:var(--ink); }
+  .photo-item img { width:100%; aspect-ratio:3/4; object-fit:cover; display:block; }
+  .photo-item-label { font-size:10px; color:var(--sepia); padding:4px 4px 2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .photo-picker-footer { padding:14px 28px; border-top:1px solid rgba(139,111,71,.2); display:flex; gap:10px; justify-content:flex-end; flex-shrink:0; }
+  .btn-picker-apply { background:var(--ink); color:var(--paper); border:none; padding:11px 24px; font-size:12px; font-family:'Jost',sans-serif; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; }
+  .btn-picker-apply:hover { background:var(--rust); }
+  .btn-picker-apply:disabled { opacity:.4; cursor:not-allowed; }
+  .btn-picker-cancel { background:transparent; border:1px solid rgba(139,111,71,.4); color:var(--sepia); padding:11px 20px; font-size:12px; font-family:'Jost',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; }
+  .photo-picker-upload-area { display:none; padding:16px 28px; border-bottom:1px solid rgba(139,111,71,.12); }
+  .photo-picker-upload-area.show { display:block; }
+  .picker-drop-zone { border:2px dashed rgba(139,111,71,.4); padding:28px; text-align:center; transition:all .2s; }
+  .picker-drop-zone.dragover { border-color:var(--gold); background:rgba(201,168,76,.06); }
+  .picker-drop-zone p { font-size:13px; color:var(--sepia); }
+  .picker-upload-input { display:none; }
+
+  /* ── SKELETON ── */
+  .skeleton { background:linear-gradient(90deg,#e0d8cc 25%,#d0c8b8 50%,#e0d8cc 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; }
+  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+  @media(max-width:900px){
+    header{padding:0 20px;}
+    #catalog{padding:50px 20px;}
+    .stats-bar{flex-wrap:wrap;gap:14px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="login-screen">
+  <div class="login-box">
+    <h1>Галерея Ушакова</h1>
+    <p>Панель администратора</p>
+    <input type="password" id="password-input" placeholder="Введите пароль" autocomplete="current-password">
+    <button class="login-btn" id="login-btn">Войти</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<!-- ADMIN HEADER -->
+<header>
+  <a href="/" class="logo">
+    Святослав Ушаков
+    <span>Панель администратора</span>
+  </a>
+  <div class="header-right">
+    <span class="admin-badge">Админ</span>
+    <a href="/" class="btn-site-link" target="_blank">← На сайт</a>
+    <button class="btn-logout" id="btn-logout">Выйти</button>
+  </div>
+</header>
+
+<!-- CATALOG -->
+<section id="catalog">
+  <div class="section-header">
+    <div class="section-title">Каталог работ</div>
+    <div class="section-count" id="count-label">Загрузка…</div>
+  </div>
+
+  <!-- Stats bar -->
+  <div class="stats-bar" id="stats-bar" style="display:none">
+    <div class="stat-item">Всего: <strong id="st-total">—</strong></div>
+    <div class="stat-item warn">Без фото: <strong id="st-nophoto">—</strong></div>
+    <div class="stat-item warn">Флаг фото: <strong id="st-flagimg">—</strong></div>
+    <div class="stat-item warn">Флаг описание: <strong id="st-flagdesc">—</strong></div>
+    <div class="stat-item">Скрыто: <strong id="st-hidden">—</strong></div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <span class="filter-label">Техника:</span>
+    <button class="filter-btn active" data-filter="all">Все</button>
+    <button class="filter-btn" data-filter="графика">Графика</button>
+    <button class="filter-btn" data-filter="живопись">Живопись</button>
+    <button class="filter-btn" data-filter="акварель">Акварель</button>
+    <button class="filter-btn" data-filter="принт">Принт</button>
+    <button class="filter-btn" data-filter="коллаж">Коллаж</button>
+    <button class="filter-btn filter-hidden-btn" data-filter="hidden">🚫 Убрано с сайта</button>
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="Поиск по названию…">
+    </div>
+  </div>
+  <div class="sort-row">
+    <span class="sort-label">Сортировка:</span>
+    <button class="sort-btn active" data-sort="default">По умолчанию</button>
+    <button class="sort-btn" data-sort="price-asc">Цена ↑</button>
+    <button class="sort-btn" data-sort="price-desc">Цена ↓</button>
+    <button class="sort-btn" data-sort="year-desc">Новее</button>
+    <button class="sort-btn" data-sort="year-asc">Старее</button>
+  </div>
+
+  <div class="catalog-grid" id="catalog-grid"></div>
+</section>
+
+<!-- Photo Picker Modal -->
+<div class="photo-picker-backdrop" id="photo-picker-backdrop">
+  <div class="photo-picker">
+    <div class="photo-picker-header">
+      <div>
+        <h3 id="photo-picker-title">Выбрать фото</h3>
+        <p id="photo-picker-subtitle">Выберите изображение из каталога или загрузите новое</p>
+      </div>
+      <button class="photo-picker-close" id="photo-picker-close">✕</button>
+    </div>
+    <div class="photo-picker-actions">
+      <button class="btn-upload-new" id="btn-toggle-upload-area">↑ Загрузить новое фото</button>
+      <input type="text" class="photo-picker-search" id="photo-picker-search" placeholder="Поиск по названию…">
+    </div>
+    <div class="photo-picker-upload-area" id="photo-picker-upload-area">
+      <div class="picker-drop-zone" id="picker-drop-zone">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 10px;display:block;color:#8b6f47"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <p>Перетащите файл сюда или <button id="picker-choose-btn" style="padding:0;border:none;background:none;color:var(--sepia);text-decoration:underline;cursor:pointer;font-size:13px;">выберите файл</button></p>
+        <input type="file" class="picker-upload-input" id="picker-upload-input" accept="image/*">
+      </div>
+    </div>
+    <div class="photo-picker-grid" id="photo-picker-grid"></div>
+    <div class="photo-picker-footer">
+      <button class="btn-picker-cancel" id="btn-picker-cancel">Отмена</button>
+      <button class="btn-picker-apply" id="btn-picker-apply" disabled>Применить</button>
+    </div>
+  </div>
+</div>
+
+<script data-cfasync="false">
+// ─── CONFIG ─────────────────────────────────────────────────────
+const SUPABASE_URL = 'https://ojofrcgezoxoybltthqu.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qb2ZyY2dlem94b3libHR0aHF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwNTI0NjAsImV4cCI6MjA4NzYyODQ2MH0.Gpk4SQJ1mggZLcuIbJ3mzwuT0_XHsIHy_Df1rnQSgyc';
+const BUCKET = 'paintings-images';
+// !! CHANGE THIS PASSWORD before deploying !!
+const ADMIN_PASSWORD = 'ushakov2024';
+const SESSION_KEY = 'ushakov_admin_auth';
+const SB_HEADERS = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json' };
+
+// ─── AUTH ────────────────────────────────────────────────────────
+function checkAuth() {
+  return sessionStorage.getItem(SESSION_KEY) === 'true';
+}
+function login(pwd) {
+  if (pwd === ADMIN_PASSWORD) {
+    sessionStorage.setItem(SESSION_KEY, 'true');
+    document.getElementById('login-screen').classList.add('hidden');
+    loadPaintings();
+    return true;
+  }
+  return false;
+}
+function logout() {
+  sessionStorage.removeItem(SESSION_KEY);
+  location.reload();
+}
+
+// Init auth
+if (checkAuth()) {
+  document.getElementById('login-screen').classList.add('hidden');
+} else {
+  // Focus password input
+  setTimeout(() => document.getElementById('password-input').focus(), 100);
+}
+
+document.getElementById('login-btn').addEventListener('click', () => {
+  const pwd = document.getElementById('password-input').value;
+  if (!login(pwd)) {
+    document.getElementById('login-error').textContent = 'Неверный пароль';
+    document.getElementById('password-input').value = '';
+    document.getElementById('password-input').focus();
+  }
+});
+document.getElementById('password-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('login-btn').click();
+});
+document.getElementById('btn-logout').addEventListener('click', logout);
+
+// ─── SUPABASE HELPERS ────────────────────────────────────────────
+async function sbSelect(table, query = '') {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${query}`, { headers: SB_HEADERS });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+async function sbUpdate(table, id, data) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
+    method: 'PATCH', headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' }, body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error(await res.text());
+}
+async function sbStorageUpload(path, file) {
+  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`, {
+    method: 'POST',
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': file.type, 'x-upsert': 'true' },
+    body: file
+  });
+  if (!res.ok) throw new Error(await res.text());
+}
+
+// ─── STATE ───────────────────────────────────────────────────────
+let allPaintings = [];
+let currentFilter = 'all';
+let currentSort = 'default';
+let currentSearch = '';
+
+// ─── UTILS ───────────────────────────────────────────────────────
+const fmt = n => n.toLocaleString('ru-RU');
+const techLabel = t => ({графика:'Графика',живопись:'Живопись',акварель:'Акварель',принт:'Принт',коллаж:'Коллаж'})[t] || t;
+const imgUrl = path => path ? (path.startsWith('http') ? path : `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${path}`) : null;
+
+// ─── LOAD DATA ───────────────────────────────────────────────────
+async function loadPaintings() {
+  document.getElementById('count-label').textContent = 'Загрузка…';
+  try {
+    const data = await sbSelect('paintings', 'order=id&select=*');
+    allPaintings = data || [];
+    updateStats();
+    renderGrid();
+  } catch(e) {
+    document.getElementById('count-label').textContent = 'Ошибка: ' + e.message;
+  }
+}
+
+function updateStats() {
+  const total = allPaintings.length;
+  const nophoto = allPaintings.filter(p => !p.image_url).length;
+  const flagImg = allPaintings.filter(p => p.flag_image_broken).length;
+  const flagDesc = allPaintings.filter(p => p.flag_description_error).length;
+  const hidden = allPaintings.filter(p => p.flag_hidden).length;
+  document.getElementById('st-total').textContent = total;
+  document.getElementById('st-nophoto').textContent = nophoto;
+  document.getElementById('st-flagimg').textContent = flagImg;
+  document.getElementById('st-flagdesc').textContent = flagDesc;
+  document.getElementById('st-hidden').textContent = hidden;
+  document.getElementById('stats-bar').style.display = 'flex';
+}
+
+// ─── GRID ────────────────────────────────────────────────────────
+function getFiltered() {
+  let d = [...allPaintings];
+  if (currentFilter === 'hidden') return d.filter(p => p.flag_hidden);
+  if (currentFilter !== 'all') d = d.filter(p => p.technique === currentFilter);
+  if (currentSearch) { const q = currentSearch.toLowerCase(); d = d.filter(p => p.title.toLowerCase().includes(q) || (p.material||'').toLowerCase().includes(q)); }
+  if (currentSort === 'price-asc') d.sort((a,b) => a.price - b.price);
+  else if (currentSort === 'price-desc') d.sort((a,b) => b.price - a.price);
+  else if (currentSort === 'year-desc') d.sort((a,b) => b.year - a.year);
+  else if (currentSort === 'year-asc') d.sort((a,b) => a.year - b.year);
+  return d;
+}
+
+function renderGrid() {
+  const grid = document.getElementById('catalog-grid');
+  const data = getFiltered();
+  const isHiddenTab = currentFilter === 'hidden';
+  document.getElementById('count-label').textContent = `${data.length} работ`;
+
+  if (!data.length) {
+    grid.innerHTML = `<div class="no-results"><p>${isHiddenTab ? 'Нет скрытых работ' : 'Работы не найдены'}</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = data.map((p, i) => {
+    const url = p.image_url ? imgUrl(p.image_url) : null;
+    const imgHtml = url
+      ? `<img src="${url}" alt="${p.title}" loading="lazy">`
+      : `<div class="card-placeholder"><svg viewBox="0 0 100 100"><rect x="8" y="8" width="84" height="84" rx="2"/><path d="M8 72 L28 48 L48 62 L70 36 L92 56"/><circle cx="28" cy="28" r="9"/></svg><span>Нет фото</span></div>`;
+    const flagClasses = [p.flag_image_broken?'has-flag-image':'', p.flag_description_error?'has-flag-desc':'', p.flag_hidden?'has-flag-hidden':''].filter(Boolean).join(' ');
+    const priceRow = isHiddenTab
+      ? `<div class="card-price-row"><button class="card-restore-btn" onclick="event.stopPropagation();restorePainting(${p.id})">↩ Вернуть на сайт</button></div>`
+      : `<div class="card-price-row"><div class="card-price">${fmt(p.price)}<span class="currency">₽</span></div></div>`;
+
+    return `<div class="card ${flagClasses}" style="animation-delay:${Math.min(i*.03,.4)}s" data-id="${p.id}">
+      <div class="card-image">
+        ${imgHtml}
+        <div class="card-size-badge">${p.width_cm}×${p.height_cm} см</div>
+        <div class="card-technique-badge">${techLabel(p.technique)}</div>
+        <button class="card-photo-btn" onclick="event.stopPropagation();openPhotoPicker(${p.id})">📷 Фото</button>
+      </div>
+      <div class="card-body">
+        <div class="card-title">${p.title}</div>
+        <div class="card-year">${p.year}</div>
+        <div class="card-material">${p.material || ''}</div>
+        ${priceRow}
+      </div>
+      <div class="card-flags" onclick="event.stopPropagation()">
+        <label class="flag-row flag-image">
+          <input type="checkbox" ${p.flag_image_broken?'checked':''} onchange="saveFlag(${p.id},'flag_image_broken',this.checked)">
+          <span>🖼 Изображение не показывается</span>
+        </label>
+        <label class="flag-row flag-desc">
+          <input type="checkbox" ${p.flag_description_error?'checked':''} onchange="saveFlag(${p.id},'flag_description_error',this.checked)">
+          <span>✏️ Ошибка в описании</span>
+        </label>
+        <label class="flag-row flag-hide">
+          <input type="checkbox" ${p.flag_hidden?'checked':''} onchange="saveFlag(${p.id},'flag_hidden',this.checked)">
+          <span>🚫 Убрать с сайта</span>
+        </label>
+        <div class="flag-saving" id="flag-saving-${p.id}">Сохраняется…</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  grid.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('click', e => {
+      if (e.target.closest('.card-flags,.card-photo-btn,.card-restore-btn')) return;
+      // Could open detail view in future
+    });
+  });
+}
+
+// ─── SAVE FLAG ────────────────────────────────────────────────────
+async function saveFlag(id, field, value) {
+  const p = allPaintings.find(x => x.id === id);
+  if (p) p[field] = value;
+  const card = document.querySelector(`.card[data-id="${id}"]`);
+  if (card) {
+    if (field === 'flag_image_broken') card.classList.toggle('has-flag-image', value);
+    if (field === 'flag_description_error') card.classList.toggle('has-flag-desc', value);
+    if (field === 'flag_hidden') card.classList.toggle('has-flag-hidden', value);
+  }
+  const savingEl = document.getElementById(`flag-saving-${id}`);
+  if (savingEl) savingEl.classList.add('show');
+  try {
+    await sbUpdate('paintings', id, { [field]: value });
+    updateStats();
+  } catch(e) {
+    console.error(e);
+    if (p) p[field] = !value;
+  } finally {
+    if (savingEl) setTimeout(() => savingEl.classList.remove('show'), 800);
+  }
+}
+
+async function restorePainting(id) {
+  await saveFlag(id, 'flag_hidden', false);
+  renderGrid();
+}
+
+// ─── PHOTO PICKER ────────────────────────────────────────────────
+let photoPickerTargetId = null;
+let photoPickerSelectedUrl = null;
+
+function openPhotoPicker(id) {
+  photoPickerTargetId = id;
+  photoPickerSelectedUrl = null;
+  const p = allPaintings.find(x => x.id === id);
+  document.getElementById('photo-picker-title').textContent = p ? `Фото: ${p.title}` : 'Выбрать фото';
+  document.getElementById('photo-picker-subtitle').textContent = 'Выберите изображение из каталога или загрузите новое';
+  document.getElementById('btn-picker-apply').disabled = true;
+  document.getElementById('photo-picker-upload-area').classList.remove('show');
+  document.getElementById('photo-picker-search').value = '';
+  renderPickerGrid('');
+  document.getElementById('photo-picker-backdrop').classList.add('open');
+}
+
+function closePhotoPicker() {
+  document.getElementById('photo-picker-backdrop').classList.remove('open');
+  photoPickerTargetId = null;
+  photoPickerSelectedUrl = null;
+}
+
+function renderPickerGrid(search) {
+  const grid = document.getElementById('photo-picker-grid');
+  const q = search.toLowerCase();
+  const paintings = allPaintings.filter(p => p.image_url && (!q || p.title.toLowerCase().includes(q)));
+  if (!paintings.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--sepia)">Нет изображений${q ? ' по запросу' : ''}</div>`;
+    return;
+  }
+  grid.innerHTML = paintings.map(p => {
+    const url = imgUrl(p.image_url);
+    return `<div class="photo-item ${photoPickerSelectedUrl === p.image_url?'selected':''}" onclick="selectPickerPhoto('${p.image_url}',this)" title="${p.title}">
+      <img src="${url}" alt="${p.title}" loading="lazy">
+      <div class="photo-item-label">${p.title}</div>
+    </div>`;
+  }).join('');
+}
+
+function selectPickerPhoto(imageUrl, el) {
+  photoPickerSelectedUrl = imageUrl;
+  document.querySelectorAll('.photo-item').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('btn-picker-apply').disabled = false;
+}
+
+document.getElementById('photo-picker-search').addEventListener('input', e => renderPickerGrid(e.target.value));
+document.getElementById('btn-toggle-upload-area').addEventListener('click', () => document.getElementById('photo-picker-upload-area').classList.toggle('show'));
+document.getElementById('photo-picker-close').addEventListener('click', closePhotoPicker);
+document.getElementById('btn-picker-cancel').addEventListener('click', closePhotoPicker);
+document.getElementById('photo-picker-backdrop').addEventListener('click', e => { if (e.target === document.getElementById('photo-picker-backdrop')) closePhotoPicker(); });
+
+document.getElementById('btn-picker-apply').addEventListener('click', async () => {
+  if (!photoPickerTargetId || !photoPickerSelectedUrl) return;
+  const btn = document.getElementById('btn-picker-apply');
+  btn.disabled = true; btn.textContent = 'Сохранение…';
+  try {
+    await sbUpdate('paintings', photoPickerTargetId, { image_url: photoPickerSelectedUrl });
+    const p = allPaintings.find(x => x.id === photoPickerTargetId);
+    if (p) p.image_url = photoPickerSelectedUrl;
+    // Update card image
+    const cardImg = document.querySelector(`.card[data-id="${photoPickerTargetId}"] .card-image`);
+    if (cardImg) {
+      const ph = cardImg.querySelector('.card-placeholder');
+      if (ph) ph.remove();
+      let img = cardImg.querySelector('img');
+      if (!img) { img = document.createElement('img'); img.style.cssText='width:100%;height:100%;object-fit:cover;'; cardImg.prepend(img); }
+      img.src = imgUrl(photoPickerSelectedUrl);
+    }
+    closePhotoPicker();
+  } catch(e) {
+    btn.textContent = 'Ошибка';
+    setTimeout(() => { btn.disabled = false; btn.textContent = 'Применить'; }, 1500);
+  }
+});
+
+document.getElementById('picker-choose-btn').addEventListener('click', () => document.getElementById('picker-upload-input').click());
+document.getElementById('picker-upload-input').addEventListener('change', e => { if (e.target.files[0]) handlePickerUpload(e.target.files[0]); });
+const pickerDz = document.getElementById('picker-drop-zone');
+pickerDz.addEventListener('dragover', e => { e.preventDefault(); pickerDz.classList.add('dragover'); });
+pickerDz.addEventListener('dragleave', () => pickerDz.classList.remove('dragover'));
+pickerDz.addEventListener('drop', e => { e.preventDefault(); pickerDz.classList.remove('dragover'); if (e.dataTransfer.files[0]) handlePickerUpload(e.dataTransfer.files[0]); });
+
+async function handlePickerUpload(file) {
+  if (!photoPickerTargetId) return;
+  const subtitle = document.getElementById('photo-picker-subtitle');
+  subtitle.textContent = 'Загрузка…';
+  const ext = file.name.split('.').pop().toLowerCase();
+  const path = `painting_${photoPickerTargetId}_${Date.now()}.${ext}`;
+  try {
+    await sbStorageUpload(path, file);
+    await sbUpdate('paintings', photoPickerTargetId, { image_url: path });
+    const p = allPaintings.find(x => x.id === photoPickerTargetId);
+    if (p) p.image_url = path;
+    subtitle.textContent = '✓ Загружено';
+    document.getElementById('photo-picker-upload-area').classList.remove('show');
+    renderPickerGrid(document.getElementById('photo-picker-search').value);
+  } catch(e) {
+    subtitle.textContent = 'Ошибка: ' + e.message;
+  }
+}
+
+// ─── FILTERS & SORT ──────────────────────────────────────────────
+document.querySelectorAll('.filter-btn').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter = btn.dataset.filter;
+  renderGrid();
+}));
+document.querySelectorAll('.sort-btn').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentSort = btn.dataset.sort;
+  renderGrid();
+}));
+document.getElementById('search-input').addEventListener('input', e => {
+  currentSearch = e.target.value.trim();
+  renderGrid();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePhotoPicker(); });
+
+// ─── INIT ────────────────────────────────────────────────────────
+if (checkAuth()) loadPaintings();
+</script>
+</body>
+</html>

@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Святослав Ушаков — Художник</title>
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css?family=cormorant-garamond:300,400,500,600,700i|jost:300,400,500" rel="stylesheet">
+
+<style>
+  :root {
+    --ink: #1a1410;
+    --paper: #f5f0e8;
+    --sepia: #8b6f47;
+    --gold: #c9a84c;
+    --rust: #a8522a;
+    --mist: #e8e0d0;
+    --shadow: rgba(26,20,16,0.12);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--paper); color:var(--ink); font-family:'Jost',sans-serif; font-weight:300; overflow-x:hidden; }
+  a,button,.card { cursor:pointer; }
+
+  /* ── HEADER ── */
+  header {
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    padding:0 48px; display:flex; align-items:center; justify-content:space-between;
+    height:72px; background:var(--paper); border-bottom:1px solid rgba(139,111,71,.2);
+  }
+  .logo { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:400; letter-spacing:.04em; color:var(--ink); text-decoration:none; line-height:1.1; }
+  .logo span { display:block; font-size:11px; font-family:'Jost',sans-serif; letter-spacing:.18em; text-transform:uppercase; color:var(--sepia); font-weight:400; }
+  nav { display:flex; gap:32px; align-items:center; }
+  nav a { font-family:'Jost',sans-serif; font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--sepia); text-decoration:none; transition:color .2s; }
+  nav a:hover { color:var(--ink); }
+  .btn-nav-cta { background:var(--ink) !important; color:var(--paper) !important; padding:10px 22px; font-size:11px !important; }
+  .btn-nav-cta:hover { background:var(--sepia) !important; }
+  .admin-link { font-size:10px !important; opacity:.5; }
+  .admin-link:hover { opacity:1; }
+
+  /* ── HERO ── */
+  .hero { margin-top:72px; padding:90px 48px 70px; display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:end; border-bottom:1px solid rgba(139,111,71,.2); }
+  .hero-text h1 { font-family:'Cormorant Garamond',serif; font-size:clamp(48px,7vw,90px); font-weight:300; line-height:.9; letter-spacing:-.02em; }
+  .hero-text h1 em { font-style:italic; color:var(--sepia); }
+  .hero-text p { margin-top:28px; font-size:15px; line-height:1.8; color:var(--sepia); max-width:420px; }
+  .hero-cta { margin-top:36px; display:flex; gap:14px; align-items:center; }
+  .btn-primary { display:inline-block; background:var(--ink); color:var(--paper); padding:14px 30px; font-size:12px; letter-spacing:.16em; text-transform:uppercase; text-decoration:none; transition:background .2s; }
+  .btn-primary:hover { background:var(--rust); }
+  .btn-outline { display:inline-block; border:1px solid var(--sepia); color:var(--sepia); padding:14px 30px; font-size:12px; letter-spacing:.16em; text-transform:uppercase; text-decoration:none; transition:all .2s; }
+  .btn-outline:hover { border-color:var(--ink); color:var(--ink); }
+  .hero-stats { display:flex; flex-direction:column; gap:36px; padding-bottom:8px; }
+  .stat { border-left:2px solid var(--gold); padding-left:20px; }
+  .stat-num { font-family:'Cormorant Garamond',serif; font-size:46px; font-weight:300; line-height:1; color:var(--ink); }
+  .stat-label { font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--sepia); margin-top:4px; }
+
+  /* ── CATALOG ── */
+  #catalog { padding:80px 48px; }
+  .section-header { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:44px; padding-bottom:18px; border-bottom:1px solid rgba(139,111,71,.2); }
+  .section-title { font-family:'Cormorant Garamond',serif; font-size:38px; font-weight:300; color:var(--ink); }
+  .section-count { font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--sepia); }
+
+  /* ── FILTERS ── */
+  .filters { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:36px; align-items:center; }
+  .filter-label { font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--sepia); margin-right:6px; }
+  .filter-btn { background:transparent; border:1px solid rgba(139,111,71,.4); color:var(--sepia); padding:6px 16px; font-size:12px; font-family:'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; transition:all .2s; }
+  .filter-btn:hover,.filter-btn.active { background:var(--ink); border-color:var(--ink); color:var(--paper); }
+  .search-bar { margin-left:auto; position:relative; }
+  .search-bar input { background:transparent; border:1px solid rgba(139,111,71,.4); padding:7px 36px 7px 14px; font-size:13px; font-family:'Jost',sans-serif; color:var(--ink); width:220px; outline:none; transition:border-color .2s; }
+  .search-bar input::placeholder { color:var(--sepia); opacity:.6; }
+  .search-bar input:focus { border-color:var(--sepia); }
+  .search-bar svg { position:absolute; right:10px; top:50%; transform:translateY(-50%); width:15px; height:15px; stroke:var(--sepia); fill:none; pointer-events:none; }
+  .sort-row { display:flex; gap:12px; align-items:center; margin-bottom:28px; }
+  .sort-label { font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--sepia); }
+  .sort-btn { background:transparent; border:none; font-size:12px; font-family:'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; color:var(--sepia); cursor:pointer; padding:4px 8px; border-bottom:1px solid transparent; transition:all .2s; }
+  .sort-btn.active { color:var(--ink); border-bottom-color:var(--ink); }
+
+  /* ── GRID ── */
+  .catalog-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:2px; }
+  .card { position:relative; background:var(--mist); overflow:hidden; transition:transform .3s; animation:fadeIn .4s ease both; }
+  .card:hover { transform:translateY(-4px); z-index:2; box-shadow:0 20px 60px var(--shadow); }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+  .card-image { aspect-ratio:3/4; position:relative; overflow:hidden; background:#d8cfc0; }
+  .card-image img { width:100%; height:100%; object-fit:cover; transition:transform .5s; display:block; }
+  .card:hover .card-image img { transform:scale(1.04); }
+  .card-placeholder { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; background:linear-gradient(135deg,#e0d8cc,#bcb09f); }
+  .card-placeholder svg { width:44px; height:44px; stroke:rgba(139,111,71,.35); fill:none; stroke-width:1; }
+  .card-placeholder span { font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:rgba(139,111,71,.5); }
+  .card-size-badge { position:absolute; top:10px; left:10px; background:rgba(26,20,16,.6); color:var(--paper); font-size:10px; letter-spacing:.08em; padding:3px 8px; backdrop-filter:blur(4px); }
+  .card-technique-badge { position:absolute; top:10px; right:10px; background:rgba(201,168,76,.9); color:var(--ink); font-size:10px; letter-spacing:.1em; text-transform:uppercase; padding:3px 9px; }
+  .card-overlay { position:absolute; inset:0; background:rgba(26,20,16,0); display:flex; align-items:flex-end; padding:18px; transition:background .3s; }
+  .card:hover .card-overlay { background:rgba(26,20,16,.5); }
+  .card-overlay-actions { display:flex; gap:8px; opacity:0; transform:translateY(8px); transition:all .3s; }
+  .card:hover .card-overlay-actions { opacity:1; transform:translateY(0); }
+  .overlay-btn { background:var(--paper); color:var(--ink); border:none; padding:7px 14px; font-size:11px; font-family:'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; transition:background .2s; }
+  .overlay-btn:hover { background:var(--gold); }
+  .overlay-btn.primary { background:var(--ink); color:var(--paper); }
+  .overlay-btn.primary:hover { background:var(--rust); }
+
+  /* Upload zone on card */
+  .card-upload-zone { position:absolute; inset:0; background:rgba(201,168,76,.15); border:2px dashed var(--gold); display:none; align-items:center; justify-content:center; flex-direction:column; gap:8px; transition:all .2s; }
+  .card-upload-zone.active { display:flex; }
+  .card-upload-zone.dragover { background:rgba(201,168,76,.3); }
+  .card-upload-zone span { font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink); }
+  .card-upload-zone svg { width:32px; height:32px; stroke:var(--gold); fill:none; }
+  .card-upload-input { display:none; }
+
+  .card-body { padding:14px 16px 18px; }
+  .card-title { font-family:'Cormorant Garamond',serif; font-size:17px; font-weight:500; line-height:1.3; color:var(--ink); margin-bottom:5px; }
+  .card-year { font-size:11px; color:var(--sepia); letter-spacing:.08em; }
+  .card-material { font-size:11px; color:var(--sepia); opacity:.8; line-height:1.4; margin:5px 0 10px; }
+  .card-price-row { display:flex; align-items:center; justify-content:space-between; border-top:1px solid rgba(139,111,71,.15); padding-top:10px; }
+  .card-price { font-family:'Cormorant Garamond',serif; font-size:19px; font-weight:600; color:var(--ink); }
+  .card-price .currency { font-size:12px; font-weight:400; color:var(--sepia); margin-left:2px; }
+  .card-buy-btn { background:transparent; border:1px solid var(--ink); color:var(--ink); padding:5px 12px; font-size:11px; font-family:'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; transition:all .2s; }
+  .card-buy-btn:hover { background:var(--ink); color:var(--paper); }
+
+  /* Upload button on card (admin mode) */
+  .card-upload-btn { display:none; position:absolute; bottom:56px; right:10px; background:rgba(201,168,76,.9); border:none; padding:5px 10px; font-size:10px; font-family:'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; color:var(--ink); transition:background .2s; }
+  .admin-mode .card-upload-btn { display:block; }
+  .card-upload-btn:hover { background:var(--gold); }
+
+  .no-results { text-align:center; padding:80px; color:var(--sepia); grid-column:1/-1; }
+  .no-results p { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:300; }
+
+  /* ── ADMIN FLAGS (visible only in admin-mode) ── */
+  .card-flags { display:none; padding:8px 12px 10px; background:#fff8f0; border-top:1px solid rgba(139,111,71,.12); flex-direction:column; gap:0; }
+  .admin-mode .card-flags { display:flex; }
+  .flag-row { display:flex; align-items:center; gap:7px; padding:3px 0; }
+  .flag-row input[type=checkbox] { width:13px; height:13px; accent-color:var(--rust); cursor:pointer; flex-shrink:0; }
+  .flag-row span { font-size:11px; font-family:'Jost',sans-serif; color:var(--sepia); cursor:pointer; letter-spacing:.04em; user-select:none; }
+  .flag-row.flag-image span { color:#c0392b; }
+  .flag-row.flag-desc span { color:#e67e22; }
+  .flag-row.flag-hide span { color:#7f8c8d; }
+  .flag-row input:checked ~ span { font-weight:500; }
+  .card.has-flag-image { outline:2px solid rgba(192,57,43,.4); }
+  .card.has-flag-desc { outline:2px solid rgba(230,126,34,.4); }
+  .card.has-flag-hidden { opacity:.4; }
+  .flag-saving { font-size:10px; color:var(--sepia); opacity:.6; padding:2px 0 4px 20px; display:none; font-family:'Jost',sans-serif; font-style:italic; }
+  .flag-saving.show { display:block; }
+
+  /* ── ADMIN PHOTO BUTTON ── */
+  .card-photo-btn { display:none; position:absolute; bottom:10px; right:10px; background:var(--ink); border:none; padding:5px 10px; font-size:10px; font-family:'Jost',sans-serif; letter-spacing:.08em; text-transform:uppercase; cursor:pointer; color:var(--paper); transition:background .2s; z-index:5; }
+  .admin-mode .card-photo-btn { display:block; }
+  .card-photo-btn:hover { background:var(--rust); }
+
+  /* ── HIDDEN tab (admin only) ── */
+  .filter-btn-hidden { display:none; }
+  .admin-mode .filter-btn-hidden { display:block; }
+
+  /* Loading skeleton */
+  .skeleton { background:linear-gradient(90deg,#e0d8cc 25%,#d0c8b8 50%,#e0d8cc 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; }
+  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+  .card-skeleton { aspect-ratio:3/4; }
+
+  /* ── MODAL ── */
+  .modal-backdrop { position:fixed; inset:0; z-index:200; background:rgba(26,20,16,.75); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; padding:24px; opacity:0; pointer-events:none; transition:opacity .3s; }
+  .modal-backdrop.open { opacity:1; pointer-events:all; }
+  .modal { background:var(--paper); max-width:820px; width:100%; max-height:90vh; overflow-y:auto; display:grid; grid-template-columns:1fr 1fr; transform:translateY(24px); transition:transform .3s; position:relative; }
+  .modal-backdrop.open .modal { transform:translateY(0); }
+  .modal-img-wrap { aspect-ratio:3/4; overflow:hidden; position:relative; }
+  .modal-img-wrap img { width:100%; height:100%; object-fit:cover; }
+  .modal-img-placeholder { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; background:linear-gradient(135deg,#e0d8cc,#cfc7b8); }
+  .modal-img-placeholder svg { width:56px; height:56px; stroke:rgba(139,111,71,.3); fill:none; stroke-width:.8; }
+  .modal-img-placeholder span { font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:rgba(139,111,71,.4); }
+  .modal-info { padding:36px; display:flex; flex-direction:column; }
+  .modal-technique { font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--gold); margin-bottom:10px; }
+  .modal-title { font-family:'Cormorant Garamond',serif; font-size:30px; font-weight:300; line-height:1.2; color:var(--ink); margin-bottom:18px; }
+  .modal-details { display:flex; flex-direction:column; gap:9px; margin-bottom:20px; }
+  .modal-detail { display:flex; gap:12px; font-size:13px; }
+  .modal-detail-label { color:var(--sepia); min-width:76px; font-size:11px; letter-spacing:.08em; text-transform:uppercase; padding-top:1px; }
+  .modal-price { font-family:'Cormorant Garamond',serif; font-size:38px; font-weight:300; color:var(--ink); margin:auto 0 20px; }
+  .modal-price .currency { font-size:20px; color:var(--sepia); margin-left:4px; }
+  .modal-actions { display:flex; flex-direction:column; gap:9px; }
+  .btn-buy-modal { background:var(--ink); color:var(--paper); border:none; padding:15px 28px; font-size:12px; font-family:'Jost',sans-serif; letter-spacing:.15em; text-transform:uppercase; cursor:pointer; transition:background .2s; }
+  .btn-buy-modal:hover { background:var(--rust); }
+  .btn-inquire { background:transparent; border:1px solid rgba(139,111,71,.5); color:var(--sepia); padding:13px 28px; font-size:12px; font-family:'Jost',sans-serif; letter-spacing:.15em; text-transform:uppercase; cursor:pointer; transition:all .2s; }
+  .btn-inquire:hover { border-color:var(--ink); color:var(--ink); }
+  .modal-close { position:absolute; top:14px; right:14px; background:none; border:none; cursor:pointer; width:34px; height:34px; display:flex; align-items:center; justify-content:center; color:var(--sepia); transition:color .2s; }
+  .modal-close:hover { color:var(--ink); }
+
+  /* ── UPLOAD MODAL ── */
+  .upload-modal-backdrop { position:fixed; inset:0; z-index:300; background:rgba(26,20,16,.8); display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .2s; }
+  .upload-modal-backdrop.open { opacity:1; pointer-events:all; }
+  .upload-modal { background:var(--paper); width:480px; padding:40px; position:relative; transform:translateY(20px); transition:transform .2s; }
+  .upload-modal-backdrop.open .upload-modal { transform:translateY(0); }
+  .upload-modal h3 { font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:300; margin-bottom:6px; }
+  .upload-modal .painting-name { font-size:13px; color:var(--sepia); margin-bottom:28px; }
+  .drop-zone { border:2px dashed rgba(139,111,71,.5); padding:40px 20px; text-align:center; transition:all .2s; margin-bottom:16px; }
+  .drop-zone.dragover { border-color:var(--gold); background:rgba(201,168,76,.08); }
+  .drop-zone p { font-size:13px; color:var(--sepia); line-height:1.6; }
+  .drop-zone strong { font-size:12px; letter-spacing:.12em; text-transform:uppercase; display:block; margin-bottom:8px; color:var(--ink); }
+  .drop-zone svg { width:36px; height:36px; stroke:var(--sepia); fill:none; margin:0 auto 12px; display:block; }
+  .upload-file-input { display:none; }
+  .btn-choose-file { display:inline-block; margin-top:12px; background:transparent; border:1px solid var(--sepia); color:var(--sepia); padding:9px 22px; font-size:12px; font-family:'Jost',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; transition:all .2s; }
+  .btn-choose-file:hover { border-color:var(--ink); color:var(--ink); }
+  .upload-preview { display:none; margin-bottom:16px; }
+  .upload-preview img { width:100%; max-height:220px; object-fit:contain; border:1px solid var(--mist); }
+  .upload-preview-name { font-size:12px; color:var(--sepia); margin-top:8px; }
+  .upload-progress { display:none; margin-bottom:16px; }
+  .upload-progress-bar { height:2px; background:var(--mist); overflow:hidden; }
+  .upload-progress-fill { height:100%; background:var(--gold); width:0; transition:width .3s; }
+  .upload-progress-text { font-size:11px; color:var(--sepia); margin-top:6px; letter-spacing:.08em; }
+  .upload-actions { display:flex; gap:10px; }
+  .btn-upload-confirm { flex:1; background:var(--ink); color:var(--paper); border:none; padding:14px; font-size:12px; font-family:'Jost',sans-serif; letter-spacing:.15em; text-transform:uppercase; cursor:pointer; transition:background .2s; }
+  .btn-upload-confirm:hover { background:var(--rust); }
+  .btn-upload-confirm:disabled { background:var(--sepia); cursor:not-allowed; opacity:.5; }
+  .btn-upload-cancel { background:transparent; border:1px solid rgba(139,111,71,.4); color:var(--sepia); padding:14px 20px; font-size:12px; font-family:'Jost',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; transition:all .2s; }
+  .btn-upload-cancel:hover { border-color:var(--ink); color:var(--ink); }
+  .upload-error { color:var(--rust); font-size:12px; margin-bottom:12px; display:none; }
+  .upload-success-msg { display:none; text-align:center; padding:20px 0; }
+  .upload-success-msg p { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:300; color:var(--ink); }
+  .upload-success-msg small { font-size:12px; color:var(--sepia); }
+
+  /* ── ADMIN BANNER ── */
+  .admin-banner { display:none; background:var(--ink); color:var(--paper); padding:10px 48px; font-size:12px; letter-spacing:.1em; text-transform:uppercase; align-items:center; justify-content:space-between; margin-top:72px; }
+  .admin-banner.show { display:flex; }
+  .admin-banner span { color:var(--gold); }
+  .btn-exit-admin { background:transparent; border:1px solid rgba(245,240,232,.3); color:rgba(245,240,232,.7); padding:5px 14px; font-size:11px; font-family:'Jost',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; transition:all .2s; }
+  .btn-exit-admin:hover { border-color:var(--paper); color:var(--paper); }
+
+  /* ── PHOTO PICKER MODAL ── */
+  .photo-picker-backdrop { position:fixed; inset:0; z-index:400; background:rgba(26,20,16,.85); display:flex; align-items:center; justify-content:center; padding:24px; opacity:0; pointer-events:none; transition:opacity .25s; }
+  .photo-picker-backdrop.open { opacity:1; pointer-events:all; }
+  .photo-picker { background:var(--paper); width:min(900px,95vw); max-height:85vh; display:flex; flex-direction:column; position:relative; transform:translateY(20px); transition:transform .25s; }
+  .photo-picker-backdrop.open .photo-picker { transform:translateY(0); }
+  .photo-picker-header { padding:22px 28px 16px; border-bottom:1px solid rgba(139,111,71,.2); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+  .photo-picker-header h3 { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:300; }
+  .photo-picker-header p { font-size:12px; color:var(--sepia); margin-top:3px; }
+  .photo-picker-close { background:none; border:none; cursor:pointer; font-size:20px; color:var(--sepia); width:32px; height:32px; display:flex; align-items:center; justify-content:center; }
+  .photo-picker-close:hover { color:var(--ink); }
+  .photo-picker-actions { padding:14px 28px; border-bottom:1px solid rgba(139,111,71,.12); display:flex; gap:12px; align-items:center; flex-shrink:0; flex-wrap:wrap; }
+  .btn-upload-new { background:var(--ink); color:var(--paper); border:none; padding:9px 20px; font-size:11px; font-family:'Jost',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; transition:background .2s; }
+  .btn-upload-new:hover { background:var(--rust); }
+  .photo-picker-search { background:transparent; border:1px solid rgba(139,111,71,.4); padding:8px 14px; font-size:12px; font-family:'Jost',sans-serif; color:var(--ink); outline:none; width:200px; }
+  .photo-picker-search::placeholder { color:var(--sepia); opacity:.6; }
+  .photo-picker-grid { flex:1; overflow-y:auto; padding:16px 28px 24px; display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:10px; }
+  .photo-item { cursor:pointer; border:2px solid transparent; transition:border-color .15s; }
+  .photo-item:hover { border-color:var(--gold); }
+  .photo-item.selected { border-color:var(--ink); }
+  .photo-item img { width:100%; aspect-ratio:3/4; object-fit:cover; display:block; }
+  .photo-item-label { font-size:10px; color:var(--sepia); padding:4px 4px 2px; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .photo-picker-footer { padding:14px 28px; border-top:1px solid rgba(139,111,71,.2); display:flex; gap:10px; justify-content:flex-end; flex-shrink:0; }
+  .btn-picker-apply { background:var(--ink); color:var(--paper); border:none; padding:11px 24px; font-size:12px; font-family:'Jost',sans-serif; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; transition:background .2s; }
+  .btn-picker-apply:hover { background:var(--rust); }
+  .btn-picker-apply:disabled { opacity:.4; cursor:not-allowed; }
+  .btn-picker-cancel { background:transparent; border:1px solid rgba(139,111,71,.4); color:var(--sepia); padding:11px 20px; font-size:12px; font-family:'Jost',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; }
+  .photo-picker-upload-area { display:none; padding:16px 28px; border-bottom:1px solid rgba(139,111,71,.12); }
+  .photo-picker-upload-area.show { display:block; }
+  .picker-drop-zone { border:2px dashed rgba(139,111,71,.4); padding:28px; text-align:center; transition:all .2s; }
+  .picker-drop-zone.dragover { border-color:var(--gold); background:rgba(201,168,76,.06); }
+  .picker-drop-zone p { font-size:13px; color:var(--sepia); }
+  .picker-upload-input { display:none; }
+
+  /* ── CONTACT ── */
+  #contact { padding:90px 48px; background:var(--ink); color:var(--paper); }
+  .contact-inner { max-width:880px; margin:0 auto; display:grid; grid-template-columns:1fr 1.4fr; gap:72px; }
+  .contact-left h2 { font-family:'Cormorant Garamond',serif; font-size:48px; font-weight:300; line-height:1.1; margin-bottom:22px; }
+  .contact-left h2 em { font-style:italic; color:var(--gold); }
+  .contact-left p { font-size:14px; line-height:1.8; color:rgba(245,240,232,.6); margin-bottom:28px; }
+  .contact-info { display:flex; flex-direction:column; gap:14px; }
+  .contact-item { font-size:13px; color:rgba(245,240,232,.7); }
+  .contact-item a { color:var(--gold); text-decoration:none; }
+  .contact-form { display:flex; flex-direction:column; gap:14px; }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .form-group { display:flex; flex-direction:column; gap:7px; }
+  .form-group label { font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:rgba(245,240,232,.5); }
+  .form-group input,.form-group select,.form-group textarea { background:rgba(245,240,232,.06); border:1px solid rgba(245,240,232,.15); color:var(--paper); padding:11px 14px; font-size:14px; font-family:'Jost',sans-serif; outline:none; transition:border-color .2s; resize:none; -webkit-appearance:none; }
+  .form-group input::placeholder,.form-group textarea::placeholder { color:rgba(245,240,232,.3); }
+  .form-group input:focus,.form-group select:focus,.form-group textarea:focus { border-color:var(--gold); }
+  .form-group select option { background:#1a1410; }
+  .form-group textarea { height:96px; }
+  .btn-submit { background:var(--gold); color:var(--ink); border:none; padding:15px; font-size:12px; font-family:'Jost',sans-serif; letter-spacing:.18em; text-transform:uppercase; cursor:pointer; transition:background .2s; font-weight:500; }
+  .btn-submit:hover { background:#e0b85c; }
+  .form-success { display:none; text-align:center; padding:36px; }
+  .form-success.show { display:block; }
+  .form-success h3 { font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:300; margin-bottom:8px; color:var(--gold); }
+  .form-success p { font-size:13px; color:rgba(245,240,232,.6); }
+
+  footer { padding:28px 48px; border-top:1px solid rgba(139,111,71,.2); display:flex; align-items:center; justify-content:space-between; font-size:12px; color:var(--sepia); }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:900px){
+    header{padding:0 20px;}
+    nav a:not(.btn-nav-cta):not(.admin-link){display:none;}
+    .hero{grid-template-columns:1fr;padding:50px 20px;gap:32px;margin-top:72px;}
+    .hero-stats{flex-direction:row;}
+    #catalog{padding:50px 20px;}
+    .admin-banner{padding:10px 20px;}
+    .contact-inner{grid-template-columns:1fr;gap:36px;}
+    #contact{padding:60px 20px;}
+    .modal{grid-template-columns:1fr;}
+    .modal-img-wrap{aspect-ratio:4/3;}
+    footer{padding:20px;flex-direction:column;gap:8px;}
+    .form-row{grid-template-columns:1fr;}
+    .upload-modal{width:calc(100% - 32px);padding:28px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="#" class="logo">
+    Святослав Ушаков
+    <span>Художник · Галерея</span>
+  </a>
+  <nav>
+    <a href="#catalog">Каталог</a>
+    <a href="#contact">Купить</a>
+    <a href="#contact">Контакты</a>
+    <a href="#contact" class="btn-nav-cta">Связаться</a>
+    <a href="/admin/" style="position:absolute;opacity:0;pointer-events:none" tabindex="-1" aria-hidden="true">admin</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="hero-section">
+  <div class="hero-text">
+    <h1>Галерея работ<br><em>Святослава</em><br>Ушакова</h1>
+    <p>Работы Святослава Ушакова — диалог классической техники и современного взгляда. Маркеры, тушь, акварель, пастель на тонированной бумаге.</p>
+    <div class="hero-cta">
+      <a href="#catalog" class="btn-primary">Смотреть каталог</a>
+      <a href="#contact" class="btn-outline">Купить работу</a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num" id="stat-total">—</div><div class="stat-label">Работ в каталоге</div></div>
+    <div class="stat"><div class="stat-num">30+</div><div class="stat-label">Лет практики</div></div>
+    <div class="stat"><div class="stat-num">6</div><div class="stat-label">Техник</div></div>
+  </div>
+</section>
+
+<!-- CATALOG -->
+<section id="catalog">
+  <div class="section-header">
+    <h2 class="section-title">Каталог работ</h2>
+    <span class="section-count" id="count-label">Загрузка…</span>
+  </div>
+  <div class="filters">
+    <span class="filter-label">Техника:</span>
+    <button class="filter-btn active" data-filter="all">Все</button>
+    <button class="filter-btn" data-filter="графика">Графика</button>
+    <button class="filter-btn" data-filter="живопись">Живопись</button>
+    <button class="filter-btn" data-filter="акварель">Акварель</button>
+    <button class="filter-btn" data-filter="принт">Принт</button>
+    <button class="filter-btn" data-filter="коллаж">Коллаж</button>
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="Поиск по названию…">
+      <svg viewBox="0 0 24 24" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    </div>
+  </div>
+  <div class="sort-row">
+    <span class="sort-label">Сортировка:</span>
+    <button class="sort-btn active" data-sort="default">По умолчанию</button>
+    <button class="sort-btn" data-sort="price-asc">Цена ↑</button>
+    <button class="sort-btn" data-sort="price-desc">Цена ↓</button>
+    <button class="sort-btn" data-sort="year-desc">Новее</button>
+    <button class="sort-btn" data-sort="year-asc">Старее</button>
+  </div>
+  <div class="catalog-grid" id="catalog-grid"></div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-inner">
+    <div class="contact-left">
+      <h2>Купить<br><em>работу</em></h2>
+      <p>Оригиналы продаются напрямую. Возможна доставка по всей России. Уточните детали удобным способом.</p>
+      <div class="contact-info">
+        <div class="contact-item">По вопросам приобретения:<br><a href="/cdn-cgi/l/email-protection#0e6f7c7a4e7b7d666f656178207c7b"><span class="__cf_email__" data-cfemail="573625231722243f363c3821792522">[email&#160;protected]</span></a></div>
+        <div class="contact-item">ArtStation:<br><a href="https://www.artstation.com/" target="_blank">artstation.com/ushakov</a></div>
+      </div>
+    </div>
+    <div>
+      <div id="form-success" class="form-success">
+        <h3>Заявка отправлена</h3>
+        <p>Мы свяжемся с вами в ближайшее время</p>
+      </div>
+      <form class="contact-form" id="contact-form">
+        <div class="form-row">
+          <div class="form-group"><label>Имя</label><input type="text" placeholder="Ваше имя" required></div>
+          <div class="form-group"><label>Телефон / Email</label><input type="text" placeholder="+7 или email" required></div>
+        </div>
+        <div class="form-group">
+          <label>Интересующая работа</label>
+          <select id="painting-select"><option value="">— выберите работу —</option></select>
+        </div>
+        <div class="form-group"><label>Сообщение</label><textarea placeholder="Вопросы по работе, доставке, просмотру…"></textarea></div>
+        <button type="submit" class="btn-submit">Отправить заявку</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>© 2025 Святослав Ушаков. Все права защищены.</span>
+  <span>Москва, Россия</span>
+</footer>
+
+<!-- DETAIL MODAL -->
+<div class="modal-backdrop" id="modal">
+  <div class="modal">
+    <button class="modal-close" id="modal-close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    <div class="modal-img-wrap" id="modal-img-wrap">
+      <div class="modal-img-placeholder">
+        <svg viewBox="0 0 100 100"><rect x="10" y="10" width="80" height="80" rx="2"/><path d="M10 70 L30 45 L50 60 L70 35 L90 55"/><circle cx="30" cy="30" r="8"/></svg>
+        <span>Изображение недоступно</span>
+      </div>
+    </div>
+    <div class="modal-info">
+      <div class="modal-technique" id="modal-technique"></div>
+      <div class="modal-title" id="modal-title"></div>
+      <div class="modal-details" id="modal-details"></div>
+      <div class="modal-price" id="modal-price"></div>
+      <div class="modal-actions">
+        <button class="btn-buy-modal" onclick="goToBuy()">Купить эту работу</button>
+        <button class="btn-inquire" onclick="closeModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- UPLOAD MODAL -->
+<div class="upload-modal-backdrop" id="upload-modal">
+  <div class="upload-modal">
+    <button class="modal-close" id="upload-modal-close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    <h3>Загрузить изображение</h3>
+    <p class="painting-name" id="upload-painting-name"></p>
+
+    <div class="upload-error" id="upload-error"></div>
+
+    <div id="upload-form-area">
+      <div class="drop-zone" id="drop-zone">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <strong>Перетащите файл сюда</strong>
+        <p>JPEG, PNG или WebP · максимум 10 МБ</p>
+        <button class="btn-choose-file" type="button" id="btn-choose-file">Выбрать файл</button>
+      </div>
+      <input type="file" id="upload-file-input" class="upload-file-input" accept="image/jpeg,image/png,image/webp">
+
+      <div class="upload-preview" id="upload-preview">
+        <img id="upload-preview-img" src="" alt="">
+        <div class="upload-preview-name" id="upload-preview-name"></div>
+      </div>
+
+      <div class="upload-progress" id="upload-progress">
+        <div class="upload-progress-bar"><div class="upload-progress-fill" id="upload-progress-fill"></div></div>
+        <div class="upload-progress-text" id="upload-progress-text">Загрузка…</div>
+      </div>
+
+      <div class="upload-actions">
+        <button class="btn-upload-confirm" id="btn-upload-confirm" disabled>Загрузить</button>
+        <button class="btn-upload-cancel" id="btn-upload-cancel">Отмена</button>
+      </div>
+    </div>
+
+    <div class="upload-success-msg" id="upload-success-msg">
+      <p>Изображение загружено ✓</p>
+      <small>Карточка обновится автоматически</small>
+    </div>
+  </div>
+</div>
+
+<script data-cfasync="false">
+// ─── CONFIG ─────────────────────────────────────────────────────
+const SUPABASE_URL = 'https://ojofrcgezoxoybltthqu.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qb2ZyY2dlem94b3libHR0aHF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwNTI0NjAsImV4cCI6MjA4NzYyODQ2MH0.Gpk4SQJ1mggZLcuIbJ3mzwuT0_XHsIHy_Df1rnQSgyc';
+const BUCKET = 'paintings-images';
+const SB_HEADERS = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json' };
+
+// ─── SUPABASE REST HELPERS ────────────────────────────────────────
+async function sbSelect(table, query = '') {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${query}`, { headers: SB_HEADERS });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+async function sbUpdate(table, id, data) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
+    method: 'PATCH', headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' }, body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error(await res.text());
+}
+async function sbStorageUpload(path, file) {
+  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`, {
+    method: 'POST',
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': file.type, 'Cache-Control': '3600' },
+    body: file
+  });
+  if (!res.ok) throw new Error(await res.text());
+}
+async function sbStorageDelete(paths) {
+  await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}`, {
+    method: 'DELETE',
+    headers: { ...SB_HEADERS },
+    body: JSON.stringify({ prefixes: paths })
+  });
+}
+
+// ─── STATE ───────────────────────────────────────────────────────
+let allPaintings = [];
+let currentFilter = 'all';
+let currentSort = 'default';
+let currentSearch = '';
+let currentModalPainting = null;
+let uploadTargetId = null;
+let uploadFile = null;
+
+// ─── UTILS ───────────────────────────────────────────────────────
+const fmt = n => n.toLocaleString('ru-RU');
+const techLabel = t => ({графика:'Графика',живопись:'Живопись',акварель:'Акварель',принт:'Принт',коллаж:'Коллаж'})[t] || t;
+const imgUrl = path => path ? (path.startsWith('http') ? path : `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${path}`) : null;
+
+// ─── LOAD DATA ───────────────────────────────────────────────────
+async function loadPaintings() {
+  document.getElementById('count-label').textContent = 'Загрузка…';
+  try {
+    const data = await sbSelect('paintings', 'order=id');
+    allPaintings = data || [];
+    document.getElementById('stat-total').textContent = allPaintings.length + '+';
+    populateSelect();
+    renderGrid();
+  } catch(e) {
+    console.error('Network error:', e);
+    document.getElementById('count-label').textContent = 'Ошибка сети';
+    document.getElementById('catalog-grid').innerHTML = `<div class="no-results"><p>Ошибка подключения</p><small>${e.message}</small></div>`;
+  }
+}
+
+// ─── GRID ────────────────────────────────────────────────────────
+function getFiltered() {
+  let d = [...allPaintings];
+  // Always hide hidden paintings on public site
+  d = d.filter(p => !p.flag_hidden);
+  if (currentFilter !== 'all') d = d.filter(p => p.technique === currentFilter);
+  if (currentSearch) { const q = currentSearch.toLowerCase(); d = d.filter(p => p.title.toLowerCase().includes(q) || (p.material||'').toLowerCase().includes(q)); }
+  if (currentSort === 'price-asc') d.sort((a,b) => a.price - b.price);
+  else if (currentSort === 'price-desc') d.sort((a,b) => b.price - a.price);
+  else if (currentSort === 'year-desc') d.sort((a,b) => b.year - a.year);
+  else if (currentSort === 'year-asc') d.sort((a,b) => a.year - b.year);
+  return d;
+}
+
+function renderGrid() {
+  const grid = document.getElementById('catalog-grid');
+  const data = getFiltered();
+  document.getElementById('count-label').textContent = `${data.length} работ`;
+
+  if (!data.length) {
+    const msg = (currentFilter === 'hidden') ? 'Нет скрытых работ' : 'Работы не найдены';
+    grid.innerHTML = `<div class="no-results"><p>${msg}</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = data.map((p, i) => {
+    const url = p.image_url ? imgUrl(p.image_url) : null;
+    const imgHtml = url
+      ? `<img src="${url}" alt="${p.title}" loading="lazy">`
+      : `<div class="card-placeholder"><svg viewBox="0 0 100 100"><rect x="8" y="8" width="84" height="84" rx="2"/><path d="M8 72 L28 48 L48 62 L70 36 L92 56"/><circle cx="28" cy="28" r="9"/></svg><span>Изображение</span></div>`;
+
+    const priceRow = `<div class="card-price-row"><div class="card-price">${fmt(p.price)}<span class="currency">₽</span></div><button class="card-buy-btn" onclick="event.stopPropagation();buyPainting(${p.id})">Купить</button></div>`;
+
+    return `<div class="card" style="animation-delay:${Math.min(i*.04,.5)}s" data-id="${p.id}">
+      <div class="card-image">
+        ${imgHtml}
+        <div class="card-size-badge">${p.width_cm}×${p.height_cm} см</div>
+        <div class="card-technique-badge">${techLabel(p.technique)}</div>
+        <div class="card-overlay">
+          <div class="card-overlay-actions">
+            <button class="overlay-btn primary" onclick="event.stopPropagation();buyPainting(${p.id})">Купить</button>
+            <button class="overlay-btn" onclick="event.stopPropagation();openModal(${p.id})">Подробнее</button>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">${p.title}</div>
+        <div class="card-year">${p.year}</div>
+        <div class="card-material">${p.material || ''}</div>
+        ${priceRow}
+      </div>
+    </div>`;
+  }).join('');
+
+  // click on card → modal, skip interactive elements
+  grid.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('click', e => {
+      if (e.target.closest('.card-buy-btn,.overlay-btn,.card-upload-btn')) return;
+      openModal(+card.dataset.id);
+    });
+  });
+}
+
+// ─── SELECT ──────────────────────────────────────────────────────
+function populateSelect() {
+  const sel = document.getElementById('painting-select');
+  sel.innerHTML = '<option value="">— выберите работу —</option>';
+  allPaintings.forEach(p => {
+    const o = document.createElement('option');
+    o.value = p.id; o.textContent = `${p.title} — ${fmt(p.price)} ₽`;
+    sel.appendChild(o);
+  });
+}
+
+// ─── MODAL ───────────────────────────────────────────────────────
+function openModal(id) {
+  const p = allPaintings.find(x => x.id === id);
+  if (!p) return;
+  currentModalPainting = p;
+  document.getElementById('modal-technique').textContent = techLabel(p.technique);
+  document.getElementById('modal-title').textContent = p.title;
+  document.getElementById('modal-price').innerHTML = `${fmt(p.price)}<span class="currency">₽</span>`;
+  document.getElementById('modal-details').innerHTML = `
+    <div class="modal-detail"><span class="modal-detail-label">Год</span><span>${p.year}</span></div>
+    <div class="modal-detail"><span class="modal-detail-label">Материал</span><span>${p.material||'—'}</span></div>
+    <div class="modal-detail"><span class="modal-detail-label">Размер</span><span>${p.width_cm}×${p.height_cm} см</span></div>
+    <div class="modal-detail"><span class="modal-detail-label">Техника</span><span>${techLabel(p.technique)}</span></div>
+    <div class="modal-detail"><span class="modal-detail-label">Наличие</span><span>${p.in_stock ? 'Оригинал в наличии' : 'Продано'}</span></div>
+  `;
+  const wrap = document.getElementById('modal-img-wrap');
+  const url = p.image_url ? imgUrl(p.image_url) : null;
+  wrap.innerHTML = url
+    ? `<img src="${url}" alt="${p.title}">`
+    : `<div class="modal-img-placeholder"><svg viewBox="0 0 100 100"><rect x="10" y="10" width="80" height="80" rx="2"/><path d="M10 70 L30 45 L50 60 L70 35 L90 55"/><circle cx="30" cy="30" r="8"/></svg><span>Изображение недоступно</span></div>`;
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function goToBuy() {
+  if (currentModalPainting) {
+    const sel = document.getElementById('painting-select');
+    for (const opt of sel.options) if (+opt.value === currentModalPainting.id) { sel.value = opt.value; break; }
+  }
+  closeModal();
+  document.getElementById('contact').scrollIntoView({behavior:'smooth'});
+}
+
+function buyPainting(id) {
+  const p = allPaintings.find(x => x.id === id);
+  if (p) {
+    const sel = document.getElementById('painting-select');
+    for (const opt of sel.options) if (+opt.value === p.id) { sel.value = opt.value; break; }
+  }
+  document.getElementById('contact').scrollIntoView({behavior:'smooth'});
+}
+
+// ─── UPLOAD ──────────────────────────────────────────────────────
+function openUpload(id) {
+  const p = allPaintings.find(x => x.id === id);
+  if (!p) return;
+  uploadTargetId = id;
+  uploadFile = null;
+
+  document.getElementById('upload-painting-name').textContent = `«${p.title}»`;
+  document.getElementById('upload-preview').style.display = 'none';
+  document.getElementById('upload-progress').style.display = 'none';
+  document.getElementById('upload-error').style.display = 'none';
+  document.getElementById('upload-form-area').style.display = 'block';
+  document.getElementById('upload-success-msg').style.display = 'none';
+  document.getElementById('btn-upload-confirm').disabled = true;
+  document.getElementById('upload-file-input').value = '';
+
+  document.getElementById('upload-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeUpload() {
+  document.getElementById('upload-modal').classList.remove('open');
+  document.body.style.overflow = '';
+  uploadTargetId = null;
+  uploadFile = null;
+}
+
+function handleFileSelect(file) {
+  if (!file) return;
+  const allowed = ['image/jpeg','image/jpg','image/png','image/webp'];
+  if (!allowed.includes(file.type)) { showUploadError('Допустимые форматы: JPEG, PNG, WebP'); return; }
+  if (file.size > 10 * 1024 * 1024) { showUploadError('Файл превышает 10 МБ'); return; }
+  uploadFile = file;
+  document.getElementById('upload-error').style.display = 'none';
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('upload-preview-img').src = e.target.result;
+    document.getElementById('upload-preview-name').textContent = `${file.name} (${(file.size/1024).toFixed(0)} КБ)`;
+    document.getElementById('upload-preview').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+  document.getElementById('btn-upload-confirm').disabled = false;
+}
+
+function showUploadError(msg) {
+  const el = document.getElementById('upload-error');
+  el.textContent = msg; el.style.display = 'block';
+}
+
+async function doUpload() {
+  if (!uploadFile || !uploadTargetId) return;
+  const btn = document.getElementById('btn-upload-confirm');
+  btn.disabled = true;
+
+  const ext = uploadFile.name.split('.').pop().toLowerCase();
+  const path = `painting_${uploadTargetId}_${Date.now()}.${ext}`;
+
+  document.getElementById('upload-progress').style.display = 'block';
+  document.getElementById('upload-progress-fill').style.width = '30%';
+  document.getElementById('upload-progress-text').textContent = 'Загрузка файла…';
+
+  // Delete old image if exists
+  const p = allPaintings.find(x => x.id === uploadTargetId);
+  if (p && p.image_url) {
+    await sbStorageDelete([p.image_url]);
+  }
+
+  document.getElementById('upload-progress-fill').style.width = '60%';
+
+  try {
+    await sbStorageUpload(path, uploadFile);
+  } catch(uploadErr) {
+    document.getElementById('upload-progress').style.display = 'none';
+    showUploadError('Ошибка загрузки файла: ' + uploadErr.message);
+    btn.disabled = false;
+    return;
+  }
+
+  document.getElementById('upload-progress-fill').style.width = '85%';
+  document.getElementById('upload-progress-text').textContent = 'Обновление записи…';
+
+  try {
+    await sbUpdate('paintings', uploadTargetId, { image_url: path });
+  } catch(dbErr) {
+    showUploadError('Файл загружен, но ошибка записи в БД: ' + dbErr.message);
+    btn.disabled = false;
+    return;
+  }
+
+  document.getElementById('upload-progress-fill').style.width = '100%';
+
+  // Update local state
+  const idx = allPaintings.findIndex(x => x.id === uploadTargetId);
+  if (idx >= 0) allPaintings[idx].image_url = path;
+
+  // Update card image in DOM without full re-render
+  const card = document.querySelector(`.card[data-id="${uploadTargetId}"] .card-image`);
+  if (card) {
+    const oldPlaceholder = card.querySelector('.card-placeholder');
+    if (oldPlaceholder) oldPlaceholder.remove();
+    let img = card.querySelector('img');
+    if (!img) { img = document.createElement('img'); img.style.cssText = 'width:100%;height:100%;object-fit:cover;transition:transform .5s;display:block;'; card.prepend(img); }
+    img.src = imgUrl(path);
+    img.alt = p ? p.title : '';
+  }
+
+  setTimeout(() => {
+    document.getElementById('upload-form-area').style.display = 'none';
+    document.getElementById('upload-success-msg').style.display = 'block';
+    setTimeout(closeUpload, 1800);
+  }, 400);
+}
+
+// ─── DROP ZONE ───────────────────────────────────────────────────
+const dz = document.getElementById('drop-zone');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('dragover'); if (e.dataTransfer.files[0]) handleFileSelect(e.dataTransfer.files[0]); });
+document.getElementById('btn-choose-file').addEventListener('click', () => document.getElementById('upload-file-input').click());
+document.getElementById('upload-file-input').addEventListener('change', e => handleFileSelect(e.target.files[0]));
+document.getElementById('btn-upload-confirm').addEventListener('click', doUpload);
+document.getElementById('btn-upload-cancel').addEventListener('click', closeUpload);
+document.getElementById('upload-modal-close').addEventListener('click', closeUpload);
+
+// ─── MODAL EVENTS ────────────────────────────────────────────────
+document.getElementById('modal-close').addEventListener('click', closeModal);
+document.getElementById('modal').addEventListener('click', e => { if (e.target === document.getElementById('modal')) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeUpload(); } });
+
+// ─── FILTER / SORT / SEARCH ──────────────────────────────────────
+document.querySelectorAll('.filter-btn').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter = btn.dataset.filter;
+  renderGrid();
+}));
+document.querySelectorAll('.sort-btn').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentSort = btn.dataset.sort;
+  renderGrid();
+}));
+document.getElementById('search-input').addEventListener('input', e => {
+  currentSearch = e.target.value.trim();
+  renderGrid();
+});
+
+// ─── FORM ───────────────────────────────────────────────────────
+document.getElementById('contact-form')?.addEventListener('submit', async e => {
+  e.preventDefault();
+  document.getElementById('contact-form').style.display = 'none';
+  document.getElementById('form-success').classList.add('show');
+});
+
+// ─── INIT ────────────────────────────────────────────────────────
+loadPaintings();
+</script>
+</body>
+</html>
