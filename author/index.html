@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#1a1410">
+  <title>Вход автора — Галерея Ушакова</title>
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=cormorant-garamond:400,500|jost:300,400,500" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink:#1a1410;
+      --paper:#f5f0e8;
+      --sepia:#8b6f47;
+      --gold:#c9a84c;
+      --rust:#a8522a;
+    }
+    * { box-sizing:border-box; }
+    body {
+      min-height:100vh;
+      margin:0;
+      display:grid;
+      place-items:center;
+      padding:24px;
+      background:var(--ink);
+      color:var(--ink);
+      font-family:'Jost',sans-serif;
+    }
+    main {
+      width:min(420px,100%);
+      padding:48px;
+      background:var(--paper);
+      box-shadow:0 30px 90px rgba(0,0,0,.32);
+    }
+    h1 {
+      margin:0 0 6px;
+      font:400 34px/1.1 'Cormorant Garamond',serif;
+    }
+    .subtitle {
+      margin:0 0 32px;
+      color:var(--sepia);
+      font-size:11px;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+    }
+    form { display:grid; gap:16px; }
+    label {
+      display:grid;
+      gap:7px;
+      color:var(--sepia);
+      font-size:11px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+    input {
+      width:100%;
+      border:1px solid rgba(139,111,71,.45);
+      border-radius:0;
+      background:#fff;
+      color:var(--ink);
+      padding:13px 14px;
+      outline:none;
+      font:400 15px 'Jost',sans-serif;
+    }
+    input:focus { border-color:var(--ink); }
+    button {
+      border:0;
+      background:var(--ink);
+      color:var(--paper);
+      padding:14px 18px;
+      cursor:pointer;
+      font:500 11px 'Jost',sans-serif;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+    }
+    button:hover { background:var(--rust); }
+    button:disabled { cursor:wait; opacity:.6; }
+    .magic-link {
+      border:1px solid var(--ink);
+      background:transparent;
+      color:var(--ink);
+    }
+    .magic-link:hover {
+      border-color:var(--rust);
+      background:transparent;
+      color:var(--rust);
+    }
+    .divider {
+      display:flex;
+      align-items:center;
+      gap:12px;
+      color:var(--sepia);
+      font-size:10px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+    .divider::before,
+    .divider::after {
+      content:'';
+      height:1px;
+      flex:1;
+      background:rgba(139,111,71,.35);
+    }
+    .error {
+      min-height:20px;
+      margin:0;
+      color:var(--rust);
+      font-size:12px;
+      line-height:1.5;
+    }
+    .back {
+      display:inline-block;
+      margin-top:22px;
+      color:var(--sepia);
+      font-size:12px;
+      text-decoration:none;
+    }
+    .back:hover { color:var(--ink); }
+    @media (max-width:520px) {
+      main { padding:36px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Галерея Ушакова</h1>
+    <p class="subtitle">Защищённый вход автора</p>
+
+    <form id="login-form">
+      <label>
+        Email
+        <input id="email" type="email" autocomplete="username" required>
+      </label>
+      <label>
+        Пароль
+        <input id="password" type="password" autocomplete="current-password" required>
+      </label>
+      <button id="submit" type="submit">Войти</button>
+      <span class="divider">или</span>
+      <button class="magic-link" id="magic-link" type="button">Получить ссылку на email</button>
+      <p class="error" id="error" role="alert" aria-live="polite"></p>
+    </form>
+
+    <a class="back" href="/">← Вернуться в галерею</a>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.8"></script>
+  <script>
+    const SUPABASE_URL = 'https://ojofrcgezoxoybltthqu.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qb2ZyY2dlem94b3libHR0aHF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwNTI0NjAsImV4cCI6MjA4NzYyODQ2MH0.Gpk4SQJ1mggZLcuIbJ3mzwuT0_XHsIHy_Df1rnQSgyc';
+    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
+      }
+    });
+
+    const form = document.getElementById('login-form');
+    const submit = document.getElementById('submit');
+    const magicLink = document.getElementById('magic-link');
+    const errorEl = document.getElementById('error');
+
+    function showError(message) {
+      errorEl.textContent = message;
+    }
+
+    function isAuthor(user) {
+      return user?.app_metadata?.role === 'author';
+    }
+
+    async function redirectExistingAuthor() {
+      const { data } = await client.auth.getUser();
+      if (isAuthor(data?.user)) window.location.replace('/?author=1');
+    }
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      showError('');
+      submit.disabled = true;
+      submit.textContent = 'Проверяем…';
+
+      const { data, error } = await client.auth.signInWithPassword({
+        email: document.getElementById('email').value.trim(),
+        password: document.getElementById('password').value
+      });
+
+      if (error || !isAuthor(data?.user)) {
+        await client.auth.signOut({ scope: 'local' });
+        showError('Не удалось войти. Проверьте данные или права автора.');
+        submit.disabled = false;
+        submit.textContent = 'Войти';
+        return;
+      }
+
+      window.location.replace('/?author=1');
+    });
+
+    magicLink.addEventListener('click', async () => {
+      const email = document.getElementById('email').value.trim();
+      if (!email) {
+        showError('Введите email, на который отправить ссылку.');
+        return;
+      }
+
+      showError('');
+      magicLink.disabled = true;
+      magicLink.textContent = 'Отправляем…';
+
+      const { error } = await client.auth.signInWithOtp({
+        email,
+        options: {
+          shouldCreateUser: false,
+          emailRedirectTo: `${window.location.origin}/author/`
+        }
+      });
+
+      if (error) {
+        showError('Не удалось отправить ссылку. Проверьте email или повторите позже.');
+      } else {
+        showError('Если этот email назначен владельцем, ссылка для входа уже отправлена.');
+      }
+
+      magicLink.disabled = false;
+      magicLink.textContent = 'Получить ссылку на email';
+    });
+
+    redirectExistingAuthor();
+  </script>
+</body>
+</html>
