@@ -21,6 +21,14 @@ for (const hash of hashes) {
   if (!netlify.includes(hash)) throw new Error(`CSP is missing ${hash}`);
 }
 
+const authorHtml = await readFile(resolve(root, 'author/index.html'), 'utf8');
+if (!authorHtml.includes("const AUTHOR_REDIRECT_URL = 'https://www.slavaushakov.gallery/author/';")) {
+  throw new Error('author/index.html is missing the canonical production Auth redirect');
+}
+if (/localhost(?::\d+)?/i.test(authorHtml)) {
+  throw new Error('author/index.html must not contain a localhost Auth redirect');
+}
+
 const config = JSON.parse(await readFile(resolve(root, 'catalog-config.json'), 'utf8'));
 if (!config.sectionById || !config.orderBySection) {
   throw new Error('catalog-config.json has an invalid shape');

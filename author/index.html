@@ -150,6 +150,7 @@
   <script>
     const SUPABASE_URL = 'https://ojofrcgezoxoybltthqu.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qb2ZyY2dlem94b3libHR0aHF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwNTI0NjAsImV4cCI6MjA4NzYyODQ2MH0.Gpk4SQJ1mggZLcuIbJ3mzwuT0_XHsIHy_Df1rnQSgyc';
+    const AUTHOR_REDIRECT_URL = 'https://www.slavaushakov.gallery/author/';
     const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
       auth: {
         persistSession: true,
@@ -213,7 +214,7 @@
         email,
         options: {
           shouldCreateUser: false,
-          emailRedirectTo: `${window.location.origin}/author/`
+          emailRedirectTo: AUTHOR_REDIRECT_URL
         }
       });
 
