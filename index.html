@@ -3,9 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Арт-галерея Святослава Ушакова: живопись, графика, акварель, коллажи и авторские коллекции.">
+<meta name="theme-color" content="#f5f0e8">
+<meta name="color-scheme" content="light">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Арт-галерея Святослава Ушакова">
+<meta property="og:description" content="Каталог живописи, графики, акварели, коллажей и авторских коллекций Святослава Ушакова.">
 <title>Святослав Ушаков — Художник</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%231a1410'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-family='serif' font-size='40' fill='%23c9a84c'%3ES%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.bunny.net">
-<link href="https://fonts.bunny.net/css?family=cormorant-garamond:300,400,500,600,700i|jost:300,400,500" rel="stylesheet">
+<link href="https://fonts.bunny.net/css?family=cormorant-garamond:300,400,500,600,700i|jost:300,400,500|manrope:300,400,500,600" rel="stylesheet">
 
 <style>
   :root {
@@ -28,19 +35,23 @@
     padding:0 48px; display:flex; align-items:center; justify-content:space-between;
     height:72px; background:var(--paper); border-bottom:1px solid rgba(139,111,71,.2);
   }
-  .logo { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:400; letter-spacing:.04em; color:var(--ink); text-decoration:none; line-height:1.1; }
-  .logo span { display:block; font-size:11px; font-family:'Jost',sans-serif; letter-spacing:.18em; text-transform:uppercase; color:var(--sepia); font-weight:400; }
+  .logo { font-family:'Manrope',sans-serif; font-size:18px; font-weight:500; letter-spacing:.06em; color:var(--ink); text-decoration:none; line-height:1.15; }
+  .logo strong { display:block; font:inherit; font-weight:500; }
+  .logo span { display:block; font-size:9px; font-family:'Manrope',sans-serif; letter-spacing:.2em; text-transform:uppercase; color:var(--sepia); font-weight:500; margin-top:3px; }
   nav { display:flex; gap:32px; align-items:center; }
-  nav a { font-family:'Jost',sans-serif; font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--sepia); text-decoration:none; transition:color .2s; }
+  nav a { font-family:'Manrope',sans-serif; font-size:11px; font-weight:500; letter-spacing:.14em; text-transform:uppercase; color:var(--sepia); text-decoration:none; transition:color .2s; }
   nav a:hover { color:var(--ink); }
   .btn-nav-cta { background:var(--ink) !important; color:var(--paper) !important; padding:10px 22px; font-size:11px !important; }
   .btn-nav-cta:hover { background:var(--sepia) !important; }
-  .admin-link { font-size:10px !important; opacity:.5; }
-  .admin-link:hover { opacity:1; }
+  .language-switch { display:flex; align-items:center; gap:3px; padding-left:4px; }
+  .language-btn { border:0; border-bottom:1px solid transparent; background:transparent; color:var(--sepia); padding:4px 3px; font:500 10px/1 'Manrope',sans-serif; letter-spacing:.12em; text-transform:uppercase; opacity:.55; transition:color .2s,opacity .2s,border-color .2s; }
+  .language-btn:hover,.language-btn.active { color:var(--ink); opacity:1; }
+  .language-btn.active { border-bottom-color:var(--ink); }
+  .language-divider { color:rgba(139,111,71,.45); font-size:10px; }
 
   /* ── HERO ── */
-  .hero { margin-top:72px; padding:90px 48px 70px; display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:end; border-bottom:1px solid rgba(139,111,71,.2); }
-  .hero-text h1 { font-family:'Cormorant Garamond',serif; font-size:clamp(48px,7vw,90px); font-weight:300; line-height:.9; letter-spacing:-.02em; }
+  .hero { padding:90px 48px 70px; display:grid; grid-template-columns:minmax(0,760px) minmax(380px,520px); gap:clamp(48px,5vw,96px); justify-content:start; align-items:center; border-bottom:1px solid rgba(139,111,71,.2); }
+  .hero-text h1 { font-family:'Jost',sans-serif; font-size:clamp(44px,6vw,82px); font-weight:300; line-height:.98; letter-spacing:-.035em; }
   .hero-text h1 em { font-style:italic; color:var(--sepia); }
   .hero-text p { margin-top:28px; font-size:15px; line-height:1.8; color:var(--sepia); max-width:420px; }
   .hero-cta { margin-top:36px; display:flex; gap:14px; align-items:center; }
@@ -52,30 +63,65 @@
   .stat { border-left:2px solid var(--gold); padding-left:20px; }
   .stat-num { font-family:'Cormorant Garamond',serif; font-size:46px; font-weight:300; line-height:1; color:var(--ink); }
   .stat-label { font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--sepia); margin-top:4px; }
+  .hero-art { position:relative; width:min(100%,520px); aspect-ratio:3/4; justify-self:start; overflow:hidden; background:#d8cfc0; box-shadow:0 28px 70px rgba(26,20,16,.16); }
+  .hero-art::after { content:''; position:absolute; inset:0; background:linear-gradient(to top,rgba(26,20,16,.72),transparent 46%); pointer-events:none; }
+  .hero-art img { width:100%; height:100%; position:absolute; inset:0; object-fit:cover; display:block; opacity:1; transform:scale(1); transition:opacity .45s ease,transform 6s ease; }
+  .hero-art img.is-changing { opacity:0; transform:scale(1.025); }
+  .hero-art-caption { position:absolute; left:28px; right:28px; bottom:24px; z-index:2; color:var(--paper); display:flex; align-items:flex-end; justify-content:space-between; gap:24px; }
+  .hero-art-kicker { display:block; margin-bottom:5px; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--gold); }
+  .hero-art-title { font-family:'Cormorant Garamond',serif; font-size:clamp(24px,3vw,38px); font-weight:300; line-height:1.05; }
+  .hero-art-meta { flex-shrink:0; text-align:right; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:rgba(245,240,232,.72); }
+  .hero-art-dots { position:absolute; z-index:3; top:22px; right:22px; display:flex; gap:7px; }
+  .hero-art-dot { width:22px; height:2px; padding:0; border:0; background:rgba(245,240,232,.45); transition:background .2s,width .2s; }
+  .hero-art-dot.active { width:34px; background:var(--gold); }
 
   /* ── CATALOG ── */
   #catalog { padding:80px 48px; }
-  .section-header { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:44px; padding-bottom:18px; border-bottom:1px solid rgba(139,111,71,.2); }
+  .section-header { display:flex; align-items:center; justify-content:space-between; gap:24px; margin-bottom:28px; }
   .section-title { font-family:'Cormorant Garamond',serif; font-size:38px; font-weight:300; color:var(--ink); }
   .section-count { font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--sepia); }
 
+  /* ── SECTION NAV (sticky technique filter) ── */
+  .section-nav {
+    position:sticky; top:72px; z-index:90;
+    margin-top:72px;
+    background:var(--paper);
+    padding:12px 48px;
+    display:flex; flex-wrap:wrap; gap:6px 8px; align-items:center;
+    border-bottom:1px solid rgba(139,111,71,.2);
+    box-shadow:0 1px 0 rgba(139,111,71,.05);
+  }
+  .section-nav-label { font-family:'Manrope',sans-serif; font-size:10px; font-weight:500; letter-spacing:.16em; text-transform:uppercase; color:var(--sepia); margin-right:6px; }
+  .section-nav a { font-family:'Manrope',sans-serif; font-size:11px; font-weight:500; letter-spacing:.1em; text-transform:uppercase; color:var(--sepia); text-decoration:none; padding:7px 14px; border:1px solid rgba(139,111,71,.3); transition:all .15s; white-space:nowrap; }
+  .section-nav a:hover,.section-nav a.active { background:var(--ink); border-color:var(--ink); color:var(--paper); }
+
+  /* ── TECHNIQUE GROUP ── */
+  .tech-group { margin-top:64px; scroll-margin-top:148px; }
+  .tech-group:first-child { margin-top:0; }
+  .tech-group-header { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:28px; padding-bottom:14px; border-bottom:1px solid rgba(139,111,71,.2); }
+  .tech-group-title { font-family:'Cormorant Garamond',serif; font-size:30px; font-weight:300; color:var(--ink); letter-spacing:-.01em; }
+  .tech-group-title em { font-style:italic; color:var(--sepia); }
+  .tech-group-count { font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--sepia); }
+  .tech-group-empty { padding:40px 20px; text-align:center; color:var(--sepia); font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:300; opacity:.7; border:1px dashed rgba(139,111,71,.25); }
+
   /* ── FILTERS ── */
-  .filters { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:36px; align-items:center; }
+  .catalog-toolbar { display:flex; align-items:center; justify-content:space-between; gap:28px; margin-bottom:44px; }
+  .filters { display:flex; flex-wrap:wrap; gap:8px; align-items:center; flex-shrink:0; }
   .filter-label { font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--sepia); margin-right:6px; }
   .filter-btn { background:transparent; border:1px solid rgba(139,111,71,.4); color:var(--sepia); padding:6px 16px; font-size:12px; font-family:'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; transition:all .2s; }
   .filter-btn:hover,.filter-btn.active { background:var(--ink); border-color:var(--ink); color:var(--paper); }
-  .search-bar { margin-left:auto; position:relative; }
+  .search-bar { position:relative; }
   .search-bar input { background:transparent; border:1px solid rgba(139,111,71,.4); padding:7px 36px 7px 14px; font-size:13px; font-family:'Jost',sans-serif; color:var(--ink); width:220px; outline:none; transition:border-color .2s; }
   .search-bar input::placeholder { color:var(--sepia); opacity:.6; }
   .search-bar input:focus { border-color:var(--sepia); }
   .search-bar svg { position:absolute; right:10px; top:50%; transform:translateY(-50%); width:15px; height:15px; stroke:var(--sepia); fill:none; pointer-events:none; }
-  .sort-row { display:flex; gap:12px; align-items:center; margin-bottom:28px; }
+  .sort-row { display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
   .sort-label { font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--sepia); }
   .sort-btn { background:transparent; border:none; font-size:12px; font-family:'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; color:var(--sepia); cursor:pointer; padding:4px 8px; border-bottom:1px solid transparent; transition:all .2s; }
   .sort-btn.active { color:var(--ink); border-bottom-color:var(--ink); }
 
   /* ── GRID ── */
-  .catalog-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:2px; }
+  .catalog-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:38px 28px; }
   .card { position:relative; background:var(--mist); overflow:hidden; transition:transform .3s; animation:fadeIn .4s ease both; }
   .card:hover { transform:translateY(-4px); z-index:2; box-shadow:0 20px 60px var(--shadow); }
   @keyframes fadeIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
@@ -218,6 +264,36 @@
   .admin-banner span { color:var(--gold); }
   .btn-exit-admin { background:transparent; border:1px solid rgba(245,240,232,.3); color:rgba(245,240,232,.7); padding:5px 14px; font-size:11px; font-family:'Jost',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; transition:all .2s; }
   .btn-exit-admin:hover { border-color:var(--paper); color:var(--paper); }
+  .admin-banner-actions { display:flex; align-items:center; gap:10px; }
+  .admin-banner-copy { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+  .admin-banner .admin-status { color:rgba(245,240,232,.72); letter-spacing:.04em; text-transform:none; }
+  .btn-save-layout { background:var(--gold); border:1px solid var(--gold); color:var(--ink); }
+  .btn-save-layout:hover { background:#d9b85c; border-color:#d9b85c; color:var(--ink); }
+  .btn-save-layout:disabled { opacity:.55; cursor:not-allowed; }
+
+  /* ── CARD ADMIN CONTROLS ── */
+  .card-admin { display:none; padding:12px 16px 16px; border-top:1px solid rgba(139,111,71,.12); background:#fbf7f0; }
+  .admin-mode .card-admin { display:block; }
+  .card-admin-top { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
+  .card-admin-label { font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--sepia); }
+  .card-admin-position { font-size:11px; color:var(--ink); }
+  .card-admin-field { display:block; margin-bottom:10px; }
+  .card-admin-field span { display:block; margin-bottom:6px; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--sepia); }
+  .card-section-select { width:100%; background:#fff; border:1px solid rgba(139,111,71,.3); color:var(--ink); padding:9px 12px; font-size:12px; font-family:'Jost',sans-serif; outline:none; }
+  .card-section-select:focus { border-color:var(--sepia); }
+  .card-admin-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+  .card-order-btn { flex:1; background:transparent; border:1px solid rgba(139,111,71,.35); color:var(--sepia); padding:8px 10px; font-size:11px; font-family:'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; transition:all .2s; }
+  .card-order-btn:hover:not(:disabled) { border-color:var(--ink); color:var(--ink); }
+  .card-order-btn:disabled { opacity:.35; cursor:not-allowed; }
+  .admin-mode .card { cursor:grab; }
+  .admin-mode .card:active { cursor:grabbing; }
+  .admin-mode .card.dragging { opacity:.35; transform:scale(.98); box-shadow:none; }
+  .admin-mode .card.drag-before::before,
+  .admin-mode .card.drag-after::after { content:''; position:absolute; z-index:12; top:0; bottom:0; width:4px; background:var(--rust); pointer-events:none; }
+  .admin-mode .card.drag-before::before { left:-16px; }
+  .admin-mode .card.drag-after::after { right:-16px; }
+  .admin-mode .tech-group.drag-target .catalog-grid,
+  .admin-mode .tech-group.drag-target .tech-group-empty { outline:2px dashed var(--gold); outline-offset:8px; }
 
   /* ── PHOTO PICKER MODAL ── */
   .photo-picker-backdrop { position:fixed; inset:0; z-index:400; background:rgba(26,20,16,.85); display:flex; align-items:center; justify-content:center; padding:24px; opacity:0; pointer-events:none; transition:opacity .25s; }
@@ -255,6 +331,7 @@
   /* ── CONTACT ── */
   #contact { padding:90px 48px; background:var(--ink); color:var(--paper); }
   .contact-inner { max-width:880px; margin:0 auto; display:grid; grid-template-columns:1fr 1.4fr; gap:72px; }
+  .contact-inner > * { min-width:0; }
   .contact-left h2 { font-family:'Cormorant Garamond',serif; font-size:48px; font-weight:300; line-height:1.1; margin-bottom:22px; }
   .contact-left h2 em { font-style:italic; color:var(--gold); }
   .contact-left p { font-size:14px; line-height:1.8; color:rgba(245,240,232,.6); margin-bottom:28px; }
@@ -265,7 +342,7 @@
   .form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
   .form-group { display:flex; flex-direction:column; gap:7px; }
   .form-group label { font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:rgba(245,240,232,.5); }
-  .form-group input,.form-group select,.form-group textarea { background:rgba(245,240,232,.06); border:1px solid rgba(245,240,232,.15); color:var(--paper); padding:11px 14px; font-size:14px; font-family:'Jost',sans-serif; outline:none; transition:border-color .2s; resize:none; -webkit-appearance:none; }
+  .form-group input,.form-group select,.form-group textarea { width:100%; min-width:0; background:rgba(245,240,232,.06); border:1px solid rgba(245,240,232,.15); color:var(--paper); padding:11px 14px; font-size:14px; font-family:'Jost',sans-serif; outline:none; transition:border-color .2s; resize:none; -webkit-appearance:none; }
   .form-group input::placeholder,.form-group textarea::placeholder { color:rgba(245,240,232,.3); }
   .form-group input:focus,.form-group select:focus,.form-group textarea:focus { border-color:var(--gold); }
   .form-group select option { background:#1a1410; }
@@ -282,11 +359,22 @@
   /* ── RESPONSIVE ── */
   @media(max-width:900px){
     header{padding:0 20px;}
-    nav a:not(.btn-nav-cta):not(.admin-link){display:none;}
-    .hero{grid-template-columns:1fr;padding:50px 20px;gap:32px;margin-top:72px;}
-    .hero-stats{flex-direction:row;}
+    header nav{gap:12px;}
+    header nav > a:not(.btn-nav-cta){display:none;}
+    .section-nav{padding:10px 16px;gap:6px;overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;}
+    .section-nav::-webkit-scrollbar{display:none;}
+    .section-nav a{padding:5px 12px;font-size:11px;}
+    .section-nav-label{display:none;}
+    .hero{grid-template-columns:1fr;padding:50px 20px;gap:32px;}
+    .tech-group{scroll-margin-top:132px;}
+    .hero-art{width:min(100%,460px);justify-self:center;}
+    .catalog-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 20px;}
+    .catalog-toolbar{align-items:flex-start;flex-direction:column;gap:18px;margin-bottom:36px;}
+    .filters,.search-bar,.search-bar input{width:100%;}
     #catalog{padding:50px 20px;}
     .admin-banner{padding:10px 20px;}
+    .admin-banner{align-items:flex-start;gap:12px;flex-direction:column;}
+    .admin-banner-actions{width:100%;justify-content:flex-start;flex-wrap:wrap;}
     .contact-inner{grid-template-columns:1fr;gap:36px;}
     #contact{padding:60px 20px;}
     .modal{grid-template-columns:1fr;}
@@ -294,6 +382,16 @@
     footer{padding:20px;flex-direction:column;gap:8px;}
     .form-row{grid-template-columns:1fr;}
     .upload-modal{width:calc(100% - 32px);padding:28px;}
+    .card-admin-actions{grid-template-columns:1fr;}
+  }
+  @media(max-width:600px){
+    .hero-art{width:min(100%,380px);}
+    .hero-art-caption{left:18px;right:18px;bottom:18px;}
+    .hero-art-meta{display:none;}
+    .catalog-grid{grid-template-columns:1fr;gap:26px;}
+    .section-header{align-items:flex-start;flex-direction:column;gap:6px;}
+    .sort-row{gap:8px;}
+    .sort-label{width:100%;margin-bottom:2px;}
   }
 </style>
 </head>
@@ -301,100 +399,131 @@
 
 <header>
   <a href="#" class="logo">
-    Святослав Ушаков
-    <span>Художник · Галерея</span>
+    <strong data-i18n="logo.name">Святослав Ушаков</strong>
+    <span data-i18n="logo.subtitle">Художник · Галерея</span>
   </a>
   <nav>
-    <a href="#catalog">Каталог</a>
-    <a href="#contact">Купить</a>
-    <a href="#contact">Контакты</a>
-    <a href="#contact" class="btn-nav-cta">Связаться</a>
-    <a href="/admin/" style="position:absolute;opacity:0;pointer-events:none" tabindex="-1" aria-hidden="true">admin</a>
+    <a href="#catalog" data-i18n="nav.catalog">Каталог</a>
+    <a href="#contact" data-i18n="nav.contacts">Контакты</a>
+    <div class="language-switch" aria-label="Language">
+      <button class="language-btn" type="button" data-language="en">ENG</button>
+      <span class="language-divider">/</span>
+      <button class="language-btn" type="button" data-language="ru">RUS</button>
+    </div>
   </nav>
 </header>
+
+<!-- STICKY TECHNIQUE NAV -->
+<nav class="section-nav" id="section-nav">
+  <span class="section-nav-label" data-i18n="sections.label">Разделы:</span>
+  <a href="#tech-zhivopis" data-i18n="section.живопись">Живопись</a>
+  <a href="#tech-grafika" data-i18n="section.графика">Графика</a>
+  <a href="#tech-kollazh" data-i18n="section.коллаж">Коллаж</a>
+  <a href="#tech-akvarel" data-i18n="section.акварель">Акварель</a>
+  <a href="#tech-mifologiya" data-i18n="section.мифология">Мифология</a>
+  <a href="#tech-aviaciya" data-i18n="section.авиация">Авиация</a>
+  <a href="#tech-animaciya" data-i18n="section.анимация">Анимационная коллекция</a>
+  <a href="#tech-karikatura" data-i18n="section.карикатура">Карикатура</a>
+  <a href="#tech-print" data-i18n="section.принт">Принт</a>
+</nav>
 
 <!-- HERO -->
 <section class="hero" id="hero-section">
   <div class="hero-text">
-    <h1>Галерея работ<br><em>Святослава</em><br>Ушакова</h1>
-    <p>Работы Святослава Ушакова — диалог классической техники и современного взгляда. Маркеры, тушь, акварель, пастель на тонированной бумаге.</p>
+    <h1 data-i18n-html="hero.title">Арт-галерея<br>Святослав Ушаков</h1>
+    <p data-i18n="hero.intro">Работы Святослава Ушакова — диалог классической техники и современного взгляда.</p>
     <div class="hero-cta">
-      <a href="#catalog" class="btn-primary">Смотреть каталог</a>
-      <a href="#contact" class="btn-outline">Купить работу</a>
+      <a href="#catalog" class="btn-primary" data-i18n="hero.catalog">Смотреть каталог</a>
+      <a href="#contact" class="btn-outline" data-i18n="hero.buy">Купить работу</a>
     </div>
   </div>
-  <div class="hero-stats">
-    <div class="stat"><div class="stat-num" id="stat-total">—</div><div class="stat-label">Работ в каталоге</div></div>
-    <div class="stat"><div class="stat-num">30+</div><div class="stat-label">Лет практики</div></div>
-    <div class="stat"><div class="stat-num">6</div><div class="stat-label">Техник</div></div>
+  <div class="hero-art" id="hero-art" role="button" tabindex="0" aria-label="Открыть работу из подборки">
+    <img id="hero-art-image" src="" alt="" fetchpriority="high">
+    <div class="hero-art-dots" id="hero-art-dots" aria-hidden="true"></div>
+    <div class="hero-art-caption">
+      <div>
+        <span class="hero-art-kicker" data-i18n="hero.featured">Избранная работа</span>
+        <div class="hero-art-title" id="hero-art-title">Галерея Святослава Ушакова</div>
+      </div>
+      <div class="hero-art-meta" id="hero-art-meta"><span id="stat-total">—</span> работ<br>9 разделов</div>
+    </div>
   </div>
 </section>
+
+<div class="admin-banner" id="admin-banner">
+  <div class="admin-banner-copy">
+    <span data-i18n="admin.mode">Режим автора</span>
+    <span class="admin-status" id="admin-user-email"></span>
+    <span class="admin-status" id="admin-status">Перетаскивайте карточки мышью или используйте кнопки.</span>
+  </div>
+  <div class="admin-banner-actions">
+    <button class="btn-exit-admin btn-save-layout" id="btn-save-layout" type="button" data-i18n="admin.save">Сохранить каталог</button>
+    <button class="btn-exit-admin" id="btn-exit-admin" type="button" data-i18n="admin.exit">Выйти</button>
+  </div>
+</div>
 
 <!-- CATALOG -->
 <section id="catalog">
   <div class="section-header">
-    <h2 class="section-title">Каталог работ</h2>
+    <h2 class="section-title" data-i18n="catalog.title">Каталог работ</h2>
     <span class="section-count" id="count-label">Загрузка…</span>
   </div>
-  <div class="filters">
-    <span class="filter-label">Техника:</span>
-    <button class="filter-btn active" data-filter="all">Все</button>
-    <button class="filter-btn" data-filter="графика">Графика</button>
-    <button class="filter-btn" data-filter="живопись">Живопись</button>
-    <button class="filter-btn" data-filter="акварель">Акварель</button>
-    <button class="filter-btn" data-filter="принт">Принт</button>
-    <button class="filter-btn" data-filter="коллаж">Коллаж</button>
-    <div class="search-bar">
-      <input type="text" id="search-input" placeholder="Поиск по названию…">
-      <svg viewBox="0 0 24 24" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+
+  <div class="catalog-toolbar">
+    <div class="sort-row">
+      <span class="sort-label" data-i18n="catalog.sort">Сортировка:</span>
+      <button class="sort-btn active" data-sort="default" data-i18n="catalog.default">По умолчанию</button>
+      <button class="sort-btn" data-sort="price-asc" data-i18n="catalog.priceAsc">Цена ↑</button>
+      <button class="sort-btn" data-sort="price-desc" data-i18n="catalog.priceDesc">Цена ↓</button>
+      <button class="sort-btn" data-sort="year-desc" data-i18n="catalog.newer">Новее</button>
+      <button class="sort-btn" data-sort="year-asc" data-i18n="catalog.older">Старее</button>
+    </div>
+    <div class="filters">
+      <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Поиск по названию…" data-i18n-placeholder="catalog.search">
+        <svg viewBox="0 0 24 24" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </div>
     </div>
   </div>
-  <div class="sort-row">
-    <span class="sort-label">Сортировка:</span>
-    <button class="sort-btn active" data-sort="default">По умолчанию</button>
-    <button class="sort-btn" data-sort="price-asc">Цена ↑</button>
-    <button class="sort-btn" data-sort="price-desc">Цена ↓</button>
-    <button class="sort-btn" data-sort="year-desc">Новее</button>
-    <button class="sort-btn" data-sort="year-asc">Старее</button>
-  </div>
-  <div class="catalog-grid" id="catalog-grid"></div>
+
+  <div id="tech-sections"></div>
 </section>
 
 <!-- CONTACT -->
 <section id="contact">
   <div class="contact-inner">
     <div class="contact-left">
-      <h2>Купить<br><em>работу</em></h2>
-      <p>Оригиналы продаются напрямую. Возможна доставка по всей России. Уточните детали удобным способом.</p>
+      <h2 data-i18n-html="contact.title">Купить<br><em>работу</em></h2>
+      <p data-i18n="contact.description">Оригиналы продаются напрямую. Возможна доставка по всей России. Уточните детали удобным способом.</p>
       <div class="contact-info">
-        <div class="contact-item">По вопросам приобретения:<br><a href="/cdn-cgi/l/email-protection#0e6f7c7a4e7b7d666f656178207c7b"><span class="__cf_email__" data-cfemail="573625231722243f363c3821792522">[email&#160;protected]</span></a></div>
-        <div class="contact-item">ArtStation:<br><a href="https://www.artstation.com/" target="_blank">artstation.com/ushakov</a></div>
+        <div class="contact-item"><span data-i18n="contact.purchase">По вопросам приобретения:</span><br><a href="mailto:slavaushy@gmail.com">slavaushy@gmail.com</a></div>
+        <div class="contact-item">ArtStation:<br><a href="https://www.artstation.com/slava-i-ushakov" target="_blank" rel="noopener noreferrer">artstation.com/slava-i-ushakov</a></div>
       </div>
     </div>
     <div>
       <div id="form-success" class="form-success">
-        <h3>Заявка отправлена</h3>
-        <p>Мы свяжемся с вами в ближайшее время</p>
+        <h3 data-i18n="form.successTitle">Заявка отправлена</h3>
+        <p data-i18n="form.successText">Мы свяжемся с вами в ближайшее время</p>
       </div>
       <form class="contact-form" id="contact-form">
         <div class="form-row">
-          <div class="form-group"><label>Имя</label><input type="text" placeholder="Ваше имя" required></div>
-          <div class="form-group"><label>Телефон / Email</label><input type="text" placeholder="+7 или email" required></div>
+          <div class="form-group"><label data-i18n="form.name">Имя</label><input id="contact-name" type="text" placeholder="Ваше имя" data-i18n-placeholder="form.namePlaceholder" required></div>
+          <div class="form-group"><label data-i18n="form.contact">Email</label><input id="contact-value" type="email" inputmode="email" autocomplete="email" maxlength="254" placeholder="name@example.com" data-i18n-placeholder="form.contactPlaceholder" required></div>
         </div>
         <div class="form-group">
-          <label>Интересующая работа</label>
+          <label data-i18n="form.painting">Интересующая работа</label>
           <select id="painting-select"><option value="">— выберите работу —</option></select>
         </div>
-        <div class="form-group"><label>Сообщение</label><textarea placeholder="Вопросы по работе, доставке, просмотру…"></textarea></div>
-        <button type="submit" class="btn-submit">Отправить заявку</button>
+        <div class="form-group"><label data-i18n="form.message">Сообщение</label><textarea id="contact-message" placeholder="Вопросы по работе, доставке, просмотру…" data-i18n-placeholder="form.messagePlaceholder"></textarea></div>
+        <button type="submit" class="btn-submit" data-i18n="form.submit">Отправить заявку</button>
       </form>
     </div>
   </div>
 </section>
 
 <footer>
-  <span>© 2025 Святослав Ушаков. Все права защищены.</span>
-  <span>Москва, Россия</span>
+  <span data-i18n="footer.copyright">© 2026 Святослав Ушаков. Все права защищены.</span>
+  <span data-i18n="footer.location">Москва, Россия</span>
 </footer>
 
 <!-- DETAIL MODAL -->
@@ -406,7 +535,7 @@
     <div class="modal-img-wrap" id="modal-img-wrap">
       <div class="modal-img-placeholder">
         <svg viewBox="0 0 100 100"><rect x="10" y="10" width="80" height="80" rx="2"/><path d="M10 70 L30 45 L50 60 L70 35 L90 55"/><circle cx="30" cy="30" r="8"/></svg>
-        <span>Изображение недоступно</span>
+        <span data-i18n="common.imageUnavailable">Изображение недоступно</span>
       </div>
     </div>
     <div class="modal-info">
@@ -415,8 +544,8 @@
       <div class="modal-details" id="modal-details"></div>
       <div class="modal-price" id="modal-price"></div>
       <div class="modal-actions">
-        <button class="btn-buy-modal" onclick="goToBuy()">Купить эту работу</button>
-        <button class="btn-inquire" onclick="closeModal()">Закрыть</button>
+        <button class="btn-buy-modal" id="modal-buy" type="button" data-i18n="modal.buy">Купить эту работу</button>
+        <button class="btn-inquire" id="modal-close-secondary" type="button" data-i18n="common.close">Закрыть</button>
       </div>
     </div>
   </div>
@@ -428,7 +557,7 @@
     <button class="modal-close" id="upload-modal-close">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
     </button>
-    <h3>Загрузить изображение</h3>
+    <h3 data-i18n="upload.title">Загрузить изображение</h3>
     <p class="painting-name" id="upload-painting-name"></p>
 
     <div class="upload-error" id="upload-error"></div>
@@ -436,9 +565,9 @@
     <div id="upload-form-area">
       <div class="drop-zone" id="drop-zone">
         <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        <strong>Перетащите файл сюда</strong>
-        <p>JPEG, PNG или WebP · максимум 10 МБ</p>
-        <button class="btn-choose-file" type="button" id="btn-choose-file">Выбрать файл</button>
+        <strong data-i18n="upload.drop">Перетащите файл сюда</strong>
+        <p data-i18n="upload.formats">JPEG, PNG или WebP · максимум 10 МБ</p>
+        <button class="btn-choose-file" type="button" id="btn-choose-file" data-i18n="upload.choose">Выбрать файл</button>
       </div>
       <input type="file" id="upload-file-input" class="upload-file-input" accept="image/jpeg,image/png,image/webp">
 
@@ -449,181 +578,931 @@
 
       <div class="upload-progress" id="upload-progress">
         <div class="upload-progress-bar"><div class="upload-progress-fill" id="upload-progress-fill"></div></div>
-        <div class="upload-progress-text" id="upload-progress-text">Загрузка…</div>
+        <div class="upload-progress-text" id="upload-progress-text" data-i18n="common.loading">Загрузка…</div>
       </div>
 
       <div class="upload-actions">
-        <button class="btn-upload-confirm" id="btn-upload-confirm" disabled>Загрузить</button>
-        <button class="btn-upload-cancel" id="btn-upload-cancel">Отмена</button>
+        <button class="btn-upload-confirm" id="btn-upload-confirm" disabled data-i18n="upload.upload">Загрузить</button>
+        <button class="btn-upload-cancel" id="btn-upload-cancel" data-i18n="common.cancel">Отмена</button>
       </div>
     </div>
 
     <div class="upload-success-msg" id="upload-success-msg">
-      <p>Изображение загружено ✓</p>
-      <small>Карточка обновится автоматически</small>
+      <p data-i18n="upload.success">Изображение загружено ✓</p>
+      <small data-i18n="upload.autoUpdate">Карточка обновится автоматически</small>
     </div>
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.8"></script>
 <script data-cfasync="false">
 // ─── CONFIG ─────────────────────────────────────────────────────
 const SUPABASE_URL = 'https://ojofrcgezoxoybltthqu.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qb2ZyY2dlem94b3libHR0aHF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwNTI0NjAsImV4cCI6MjA4NzYyODQ2MH0.Gpk4SQJ1mggZLcuIbJ3mzwuT0_XHsIHy_Df1rnQSgyc';
 const BUCKET = 'paintings-images';
+const CATALOG_CONFIG_PATH = 'catalog-config.json';
+const LOCAL_CONFIG_KEY = 'ushakov-catalog-config';
+const LANGUAGE_KEY = 'ushakov-language';
+const AUTHOR_MODE_REQUESTED = new URLSearchParams(window.location.search).get('author') === '1';
 const SB_HEADERS = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json' };
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: false
+  }
+});
+const DEFAULT_CATALOG_CONFIG = {"sectionById":{"93":"графика","641":"анимация","677":"анимация","678":"анимация","679":"анимация","680":"анимация","681":"анимация","683":"анимация","684":"анимация","685":"анимация","686":"анимация"},"orderBySection":{"живопись":[91,92,630,631,632,647,90,634,629,633,635,636,637,638,640,665,642,643,644,645,650,646,648,649,653,651,654,656,664,659,662,668,655,652,666,657,663,658,667,661,670,671,672,673,674,682,675,676,639,669,687,688,706,689,690,692,691,693,694,696,697,700,698,699,701,702,703,704,705,707,708,709,710,711,712,715,716,718,719,720,721,723,724,725,726,727,728,729,730,731,732,733,734,735,737,999,1025,1026,1027,1028,1029,1030,1031,1032,1033,1045,1048,1067,1077],"графика":[1,2,3,4,5,7,8,10,11,12,13,14,15,16,17,18,19,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,66,69,70,71,72,73,74,75,76,77,78,79,80,82,83,84,85,86,87,88,89,747,750,759,762,763,764,765,766,768,769,770,771,772,773,774,775,776,777,803,804,805,806,807,808,809,810,811,812,813,814,815,816,817,818,819,820,821,822,823,824,825,826,827,828,829,830,831,832,833,834,835,836,837,838,839,840,841,842,843,844,845,846,847,848,849,850,851,852,872,853,854,855,856,857,858,859,864,882,885,886,887,888,889,890,891,892,893,894,895,896,898,899,900,901,902,903,904,905,907,908,909,910,911,912,913,914,915,916,917,918,919,920,921,922,923,924,925,926,927,928,929,930,931,932,933,934,935,936,937,938,939,940,941,942,943,944,945,946,947,948,949,950,951,952,953,954,955,956,957,958,959,960,961,962,1092,1093,1094,1096,1097,1098,1095,93],"коллаж":[963,964,965,966,967,968,969,970,971,972,973,974,975,976,977,978,979,980,981,982,983,984,985,986,987,988,989,990,991,992,993,994,995,996,997,998,1074,1075,1076,1078,1079,1080,1081,1082,1083,1084,1085,1086,1087,1088,1089,1091,1090],"акварель":[6,9,20,21,64,65,67,68,81,1000,1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1011,1012,1013,1014,1015,1016,1017,1018,1019,1020,1021,1022,1023,1024,1034,1035,1036,1037,1038,1039,1040,1041,1042,1043,1044,1046,1047,1049,1050,1051,1052,1053,1054,1055,1056,1057,1058,1059,1060,1061,1062,1063,1064,1065,1066,1068,1069,1070,1071,1072,1073,1099,1100,1101,1102,1103,1104,1105,1106,1107,1108,1109,1110,1111,1112,1113,1114,1115,1116,1117,1118,1119,1120,1121,1122,1123,1124,1125,1126,1127,1128,1129,1130,1131,1132,1133,1134,1135,1136,1137,1138,1139,1140,1141,1142,1143,1144,1145,1146,1147,1148,1149,1150,1151,1152],"карикатура":[],"анимация":[641,677,678,679,680,681,683,684,685,686],"принт":[]},"updatedAt":"2026-07-11T12:27:55.563Z"};
 
-// ─── SUPABASE REST HELPERS ────────────────────────────────────────
+const I18N = {
+  ru: {
+    'page.title': 'Святослав Ушаков — Художник',
+    'logo.name': 'Святослав Ушаков', 'logo.subtitle': 'Художник · Галерея',
+    'nav.catalog': 'Каталог', 'nav.contacts': 'Контакты', 'nav.author': 'Режим автора',
+    'sections.label': 'Разделы:',
+    'section.живопись': 'Живопись', 'section.графика': 'Графика', 'section.коллаж': 'Коллаж',
+    'section.акварель': 'Акварель', 'section.карикатура': 'Карикатура', 'section.мифология': 'Мифология',
+    'section.авиация': 'Авиация', 'section.анимация': 'Анимационная коллекция', 'section.принт': 'Принт',
+    'hero.title': 'Арт-галерея<br>Святослав Ушаков',
+    'hero.intro': 'Работы Святослава Ушакова — диалог классической техники и современного взгляда.',
+    'hero.catalog': 'Смотреть каталог', 'hero.buy': 'Купить работу', 'hero.featured': 'Избранная работа',
+    'hero.galleryName': 'Галерея Святослава Ушакова', 'hero.works': 'работ', 'hero.sections': '9 разделов',
+    'hero.openFeatured': 'Открыть работу из подборки',
+    'admin.mode': 'Режим автора', 'admin.save': 'Сохранить каталог', 'admin.exit': 'Выйти',
+    'admin.help': 'Перетаскивайте карточки мышью или используйте кнопки.',
+    'admin.unsaved': 'Есть несохранённые изменения.', 'admin.saving': 'Сохраняем…',
+    'admin.remoteSaved': 'Каталог сохранён и опубликован.',
+    'admin.authRequired': 'Сессия автора завершена. Войдите снова.',
+    'admin.orderChanged': 'Порядок изменён. Нажмите «Сохранить каталог».',
+    'admin.sectionChanged': 'Раздел изменён. Нажмите «Сохранить каталог».',
+    'admin.dragChanged': 'Порядок изменён перетаскиванием. Нажмите «Сохранить каталог».',
+    'admin.saved': 'Сохранено {date}',
+    'catalog.title': 'Каталог работ', 'catalog.loading': 'Загрузка…', 'catalog.sort': 'Сортировка:',
+    'catalog.default': 'По умолчанию', 'catalog.priceAsc': 'Цена ↑', 'catalog.priceDesc': 'Цена ↓',
+    'catalog.newer': 'Новее', 'catalog.older': 'Старее', 'catalog.search': 'Поиск по названию…',
+    'catalog.noResults': 'Нет работ по запросу', 'catalog.empty': 'Раздел скоро пополнится',
+    'catalog.networkError': 'Ошибка сети', 'catalog.connectionError': 'Ошибка подключения',
+    'contact.title': 'Купить<br><em>работу</em>',
+    'contact.description': 'Оригиналы продаются напрямую. Возможна доставка по всей России. Уточните детали удобным способом.',
+    'contact.purchase': 'По вопросам приобретения:',
+    'form.successTitle': 'Заявка отправлена', 'form.successText': 'Мы свяжемся с вами в ближайшее время',
+    'form.name': 'Имя', 'form.namePlaceholder': 'Ваше имя', 'form.contact': 'Email',
+    'form.contactPlaceholder': 'name@example.com', 'form.invalidEmail': 'Введите корректный email, например name@example.com', 'form.painting': 'Интересующая работа',
+    'form.choosePainting': '— выберите работу —', 'form.message': 'Сообщение',
+    'form.messagePlaceholder': 'Вопросы по работе, доставке, просмотру…', 'form.submit': 'Отправить заявку',
+    'form.sending': 'Отправляем…', 'form.sendError': 'Ошибка — попробуйте ещё раз', 'form.sendFailed': 'Ошибка отправки',
+    'footer.copyright': '© 2026 Святослав Ушаков. Все права защищены.', 'footer.location': 'Москва, Россия',
+    'common.loading': 'Загрузка…', 'common.close': 'Закрыть', 'common.cancel': 'Отмена',
+    'common.image': 'Изображение', 'common.imageUnavailable': 'Изображение недоступно',
+    'modal.buy': 'Купить эту работу',
+    'card.buy': 'Купить', 'card.details': 'Подробнее', 'card.management': 'Управление каталогом',
+    'card.position': 'Позиция {position} из {total}', 'card.section': 'Раздел',
+    'card.left': 'Левее', 'card.right': 'Правее', 'card.up': 'Выше', 'card.down': 'Ниже',
+    'details.year': 'Год', 'details.material': 'Материал', 'details.size': 'Размер',
+    'details.technique': 'Техника', 'details.availability': 'Наличие',
+    'details.inStock': 'Оригинал в наличии', 'details.sold': 'Продано', 'details.cm': 'см',
+    'upload.title': 'Загрузить изображение', 'upload.drop': 'Перетащите файл сюда',
+    'upload.formats': 'JPEG, PNG или WebP · максимум 10 МБ', 'upload.choose': 'Выбрать файл',
+    'upload.upload': 'Загрузить', 'upload.success': 'Изображение загружено ✓',
+    'upload.autoUpdate': 'Карточка обновится автоматически', 'upload.fileLoading': 'Загрузка файла…',
+    'upload.recordUpdate': 'Обновление записи…', 'upload.allowed': 'Допустимые форматы: JPEG, PNG, WebP',
+    'upload.tooLarge': 'Файл превышает 10 МБ', 'upload.fileError': 'Ошибка загрузки файла: ',
+    'upload.databaseError': 'Файл загружен, но ошибка записи в БД: ', 'upload.kb': 'КБ',
+    'upload.localOnly': 'Загрузка изображений с сайта отключена. Измените файл на этом ноутбуке.'
+  },
+  en: {
+    'page.title': 'Slava Ushakov — Artist',
+    'logo.name': 'Slava Ushakov', 'logo.subtitle': 'Artist · Gallery',
+    'nav.catalog': 'Catalogue', 'nav.contacts': 'Contacts', 'nav.author': 'Artist mode',
+    'sections.label': 'Sections:',
+    'section.живопись': 'Painting', 'section.графика': 'Graphic Art', 'section.коллаж': 'Collage',
+    'section.акварель': 'Watercolour', 'section.карикатура': 'Caricature', 'section.мифология': 'Mythology',
+    'section.авиация': 'Aviation', 'section.анимация': 'Animation Collection', 'section.принт': 'Prints',
+    'hero.title': 'Art Gallery<br>Slava Ushakov',
+    'hero.intro': "Slava Ushakov's work is a dialogue between classical technique and a contemporary point of view.",
+    'hero.catalog': 'View catalogue', 'hero.buy': 'Buy an artwork', 'hero.featured': 'Featured artwork',
+    'hero.galleryName': 'Slava Ushakov Gallery', 'hero.works': 'works', 'hero.sections': '9 sections',
+    'hero.openFeatured': 'Open featured artwork',
+    'admin.mode': 'Artist mode', 'admin.save': 'Save catalogue', 'admin.exit': 'Sign out',
+    'admin.help': 'Drag cards with the mouse or use the buttons.',
+    'admin.unsaved': 'There are unsaved changes.', 'admin.saving': 'Saving…',
+    'admin.remoteSaved': 'Catalogue saved and published.',
+    'admin.authRequired': 'Your author session has expired. Sign in again.',
+    'admin.orderChanged': 'Order changed. Click “Save catalogue”.',
+    'admin.sectionChanged': 'Section changed. Click “Save catalogue”.',
+    'admin.dragChanged': 'Order changed by dragging. Click “Save catalogue”.',
+    'admin.saved': 'Saved {date}',
+    'catalog.title': 'Art catalogue', 'catalog.loading': 'Loading…', 'catalog.sort': 'Sort:',
+    'catalog.default': 'Default', 'catalog.priceAsc': 'Price ↑', 'catalog.priceDesc': 'Price ↓',
+    'catalog.newer': 'Newest', 'catalog.older': 'Oldest', 'catalog.search': 'Search by title…',
+    'catalog.noResults': 'No artworks found', 'catalog.empty': 'More works coming soon',
+    'catalog.networkError': 'Network error', 'catalog.connectionError': 'Connection error',
+    'contact.title': 'Buy an<br><em>artwork</em>',
+    'contact.description': 'Original works are sold directly. Delivery is available throughout Russia and internationally. Contact us for details.',
+    'contact.purchase': 'Purchase enquiries:',
+    'form.successTitle': 'Request sent', 'form.successText': 'We will contact you shortly',
+    'form.name': 'Name', 'form.namePlaceholder': 'Your name', 'form.contact': 'Email',
+    'form.contactPlaceholder': 'name@example.com', 'form.invalidEmail': 'Enter a valid email, for example name@example.com', 'form.painting': 'Artwork of interest',
+    'form.choosePainting': '— choose an artwork —', 'form.message': 'Message',
+    'form.messagePlaceholder': 'Questions about the artwork, delivery or viewing…', 'form.submit': 'Send request',
+    'form.sending': 'Sending…', 'form.sendError': 'Error — please try again', 'form.sendFailed': 'Failed to send',
+    'footer.copyright': '© 2026 Slava Ushakov. All rights reserved.', 'footer.location': 'Moscow, Russia',
+    'common.loading': 'Loading…', 'common.close': 'Close', 'common.cancel': 'Cancel',
+    'common.image': 'Image', 'common.imageUnavailable': 'Image unavailable',
+    'modal.buy': 'Buy this artwork',
+    'card.buy': 'Buy', 'card.details': 'Details', 'card.management': 'Catalogue controls',
+    'card.position': 'Position {position} of {total}', 'card.section': 'Section',
+    'card.left': 'Left', 'card.right': 'Right', 'card.up': 'Up', 'card.down': 'Down',
+    'details.year': 'Year', 'details.material': 'Material', 'details.size': 'Size',
+    'details.technique': 'Technique', 'details.availability': 'Availability',
+    'details.inStock': 'Available', 'details.sold': 'Sold', 'details.cm': 'cm',
+    'upload.title': 'Upload image', 'upload.drop': 'Drop a file here',
+    'upload.formats': 'JPEG, PNG or WebP · maximum 10 MB', 'upload.choose': 'Choose file',
+    'upload.upload': 'Upload', 'upload.success': 'Image uploaded ✓',
+    'upload.autoUpdate': 'The card will update automatically', 'upload.fileLoading': 'Uploading file…',
+    'upload.recordUpdate': 'Updating record…', 'upload.allowed': 'Allowed formats: JPEG, PNG, WebP',
+    'upload.tooLarge': 'File exceeds 10 MB', 'upload.fileError': 'File upload error: ',
+    'upload.databaseError': 'File uploaded, but database update failed: ', 'upload.kb': 'KB',
+    'upload.localOnly': 'Website image uploads are disabled. Edit the file on this laptop.'
+  }
+};
+
+let currentLanguage = localStorage.getItem(LANGUAGE_KEY) === 'en' ? 'en' : 'ru';
+
+function t(key, variables = {}) {
+  const value = I18N[currentLanguage][key] ?? I18N.ru[key] ?? key;
+  return Object.entries(variables).reduce((text, [name, replacement]) => text.replaceAll(`{${name}}`, replacement), value);
+}
+
+function formatWorksCount(count) {
+  if (currentLanguage === 'en') return `${count} ${count === 1 ? 'work' : 'works'}`;
+  const mod100 = count % 100;
+  const mod10 = count % 10;
+  const noun = mod100 >= 11 && mod100 <= 14 ? 'работ' : mod10 === 1 ? 'работа' : mod10 >= 2 && mod10 <= 4 ? 'работы' : 'работ';
+  return `${count} ${noun}`;
+}
+
+// ─── SUPABASE REST HELPERS ──────────────────────────────────────
 async function sbSelect(table, query = '') {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${query}`, { headers: SB_HEADERS });
   if (!res.ok) throw new Error(await res.text());
   return res.json();
 }
-async function sbUpdate(table, id, data) {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
-    method: 'PATCH', headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' }, body: JSON.stringify(data)
-  });
-  if (!res.ok) throw new Error(await res.text());
-}
-async function sbStorageUpload(path, file) {
-  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`, {
-    method: 'POST',
-    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': file.type, 'Cache-Control': '3600' },
-    body: file
-  });
-  if (!res.ok) throw new Error(await res.text());
-}
-async function sbStorageDelete(paths) {
-  await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}`, {
-    method: 'DELETE',
-    headers: { ...SB_HEADERS },
-    body: JSON.stringify({ prefixes: paths })
-  });
-}
 
-// ─── STATE ───────────────────────────────────────────────────────
+// ─── STATE ──────────────────────────────────────────────────────
 let allPaintings = [];
-let currentFilter = 'all';
 let currentSort = 'default';
 let currentSearch = '';
 let currentModalPainting = null;
 let uploadTargetId = null;
 let uploadFile = null;
+let catalogConfig = createEmptyCatalogConfig();
+let adminMode = false;
+let catalogConfigDirty = false;
+let savingCatalogConfig = false;
+let draggedPaintingId = null;
+let dragJustFinished = false;
+let heroPaintings = [];
+let heroPaintingIndex = 0;
+let heroRotationTimer = null;
+let currentAuthor = null;
 
-// ─── UTILS ───────────────────────────────────────────────────────
-const fmt = n => n.toLocaleString('ru-RU');
-const techLabel = t => ({графика:'Графика',живопись:'Живопись',акварель:'Акварель',принт:'Принт',коллаж:'Коллаж'})[t] || t;
+// ─── TECHNIQUE GROUPS (display order) ───────────────────────────
+const TECH_GROUPS = [
+  { key: 'живопись', anchor: 'tech-zhivopis', label: 'Живопись' },
+  { key: 'графика', anchor: 'tech-grafika', label: 'Графика' },
+  { key: 'коллаж', anchor: 'tech-kollazh', label: 'Коллаж' },
+  { key: 'акварель', anchor: 'tech-akvarel', label: 'Акварель' },
+  { key: 'мифология', anchor: 'tech-mifologiya', label: 'Мифология' },
+  { key: 'авиация', anchor: 'tech-aviaciya', label: 'Авиация' },
+  { key: 'анимация', anchor: 'tech-animaciya', label: 'Анимационная коллекция' },
+  { key: 'карикатура', anchor: 'tech-karikatura', label: 'Карикатура' },
+  { key: 'принт', anchor: 'tech-print', label: 'Принт' }
+];
+const TECH_LABEL_MAP = Object.fromEntries(TECH_GROUPS.map(g => [g.key, g.label]));
+const MYTHOLOGY_PAINTING_IDS = new Set([4, 83, 84, 91, 656, 658, 671, 675, 705, 710, 728, 845, 848, 899, 905, 908, 939, 970, 971, 974, 1031, 1081]);
+const AVIATION_PAINTING_IDS = new Set([639, 657, 669, 687, 688, 697, 726, 730, 1025, 1032, 1049]);
+const ANIMATION_PAINTING_IDS = new Set([29, 74, 641, 677, 678, 679, 680, 681, 683, 684, 685, 686, 1076]);
+const FEATURED_PAINTING_IDS = [629, 639, 649, 657, 700, 1032];
+const EXCLUDED_DUPLICATE_PAINTING_IDS = new Set([
+  11, 14, 24, 39, 42, 45, 46, 47, 48, 49, 50, 51,
+  52, 53, 54, 55, 58, 61, 62, 64, 65, 66, 68, 69,
+  76, 89, 1147
+]);
+const REPLACED_PAINTING_IDS = new Set([636]);
+const RESTORED_PAINTING_IDS = new Set([735]);
+const PAINTING_TITLE_OVERRIDES = new Map([
+  [37, 'Рассыпались апельсины'],
+  [38, 'Кормление чайки'],
+  [40, 'Объятия'],
+  [41, 'Всадник'],
+  [44, 'Назаренко'],
+  [60, 'Красная Шапочка'],
+  [63, 'Писатель']
+]);
+
+// ─── UTILS ──────────────────────────────────────────────────────
+const fmt = n => n.toLocaleString(currentLanguage === 'en' ? 'en-US' : 'ru-RU');
+const techLabel = section => TECH_LABEL_MAP[section] ? t(`section.${section}`) : section;
 const imgUrl = path => path ? (path.startsWith('http') ? path : `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${path}`) : null;
+const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, character => ({
+  '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+})[character]);
+const imagePlaceholderHTML = label => `<svg viewBox="0 0 100 100"><rect x="8" y="8" width="84" height="84" rx="2"/><path d="M8 72 L28 48 L48 62 L70 36 L92 56"/><circle cx="28" cy="28" r="9"/></svg><span>${escapeHTML(label)}</span>`;
 
-// ─── LOAD DATA ───────────────────────────────────────────────────
-async function loadPaintings() {
-  document.getElementById('count-label').textContent = 'Загрузка…';
+function attachImageFallback(image, className) {
+  image?.addEventListener('error', () => {
+    const placeholder = document.createElement('div');
+    placeholder.className = className;
+    placeholder.innerHTML = imagePlaceholderHTML(t('common.imageUnavailable'));
+    image.replaceWith(placeholder);
+  }, { once: true });
+}
+
+function translateMaterial(material) {
+  return material || '';
+}
+
+function applyLanguage(language = currentLanguage) {
+  currentLanguage = language === 'en' ? 'en' : 'ru';
+  localStorage.setItem(LANGUAGE_KEY, currentLanguage);
+  document.documentElement.lang = currentLanguage;
+  document.title = t('page.title');
+
+  document.querySelectorAll('[data-i18n]').forEach(element => {
+    element.textContent = t(element.dataset.i18n);
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(element => {
+    element.innerHTML = t(element.dataset.i18nHtml);
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+    element.placeholder = t(element.dataset.i18nPlaceholder);
+  });
+  document.querySelectorAll('.language-btn').forEach(button => {
+    const active = button.dataset.language === currentLanguage;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
+
+  document.getElementById('hero-art')?.setAttribute('aria-label', t('hero.openFeatured'));
+  const total = allPaintings.length ? `${allPaintings.length}+` : '—';
+  const heroMeta = document.getElementById('hero-art-meta');
+  if (heroMeta) heroMeta.innerHTML = `<span id="stat-total">${total}</span> ${t('hero.works')}<br>${t('hero.sections')}`;
+  if (!heroPaintings.length) document.getElementById('hero-art-title').textContent = t('hero.galleryName');
+
+  if (allPaintings.length) {
+    renderGrid();
+    populateSelect();
+    if (currentModalPainting && document.getElementById('modal').classList.contains('open')) openModal(currentModalPainting.id);
+  }
+  if (adminMode) setAdminStatus(catalogConfigDirty ? t('admin.unsaved') : formatSavedAt(catalogConfig.updatedAt));
+}
+
+function createEmptyCatalogConfig() {
+  return { sectionById: {}, orderBySection: {}, appliedMigrations: [], updatedAt: null };
+}
+
+function normalizeCatalogConfig(raw = {}) {
+  const validSections = new Set(TECH_GROUPS.map(group => group.key));
+  const sectionById = {};
+  const orderBySection = {};
+
+  Object.entries(raw.sectionById || {}).forEach(([id, section]) => {
+    if (validSections.has(section)) sectionById[String(Number(id))] = section;
+  });
+
+  TECH_GROUPS.forEach(group => {
+    const ids = Array.isArray(raw.orderBySection?.[group.key]) ? raw.orderBySection[group.key] : [];
+    orderBySection[group.key] = [...new Set(ids.map(Number).filter(Number.isFinite))];
+  });
+
+  return {
+    sectionById,
+    orderBySection,
+    appliedMigrations: Array.isArray(raw.appliedMigrations)
+      ? [...new Set(raw.appliedMigrations.filter(item => typeof item === 'string'))]
+      : [],
+    updatedAt: typeof raw.updatedAt === 'string' ? raw.updatedAt : null
+  };
+}
+
+function saveLocalCatalogConfig() {
+  localStorage.setItem(LOCAL_CONFIG_KEY, JSON.stringify(catalogConfig));
+}
+
+function loadLocalCatalogConfig() {
   try {
+    const raw = localStorage.getItem(LOCAL_CONFIG_KEY);
+    return normalizeCatalogConfig(raw ? JSON.parse(raw) : DEFAULT_CATALOG_CONFIG);
+  } catch {
+    return normalizeCatalogConfig(DEFAULT_CATALOG_CONFIG);
+  }
+}
+
+function getDefaultPaintingSection(painting) {
+  if (MYTHOLOGY_PAINTING_IDS.has(painting.id)) return 'мифология';
+  if (AVIATION_PAINTING_IDS.has(painting.id)) return 'авиация';
+  if (ANIMATION_PAINTING_IDS.has(painting.id)) return 'анимация';
+  return painting.technique;
+}
+
+function getPaintingSection(painting) {
+  return catalogConfig.sectionById[String(painting.id)] || getDefaultPaintingSection(painting);
+}
+
+function getPaintingsInSection(sectionKey) {
+  return allPaintings.filter(painting => getPaintingSection(painting) === sectionKey);
+}
+
+function syncSectionOrder(sectionKey) {
+  const presentIds = getPaintingsInSection(sectionKey).map(painting => painting.id);
+  const current = Array.isArray(catalogConfig.orderBySection[sectionKey]) ? catalogConfig.orderBySection[sectionKey] : [];
+  const filtered = current.filter(id => presentIds.includes(id));
+  const missing = presentIds.filter(id => !filtered.includes(id));
+  const next = [...filtered, ...missing];
+  catalogConfig.orderBySection[sectionKey] = next;
+  return next;
+}
+
+function applyCatalogMigrations() {
+  const migrationKey = 'mythology-odyssey-sirens-near-top-v1';
+  if (catalogConfig.appliedMigrations.includes(migrationKey)) return;
+
+  const order = syncSectionOrder('мифология').filter(id => id !== 1031);
+  if (allPaintings.some(painting => painting.id === 1031)) order.splice(Math.min(1, order.length), 0, 1031);
+  catalogConfig.orderBySection['мифология'] = order;
+  catalogConfig.appliedMigrations.push(migrationKey);
+  saveLocalCatalogConfig();
+}
+
+function sortSectionItems(items, sectionKey) {
+  if (currentSort === 'price-asc') return [...items].sort((a, b) => a.price - b.price);
+  if (currentSort === 'price-desc') return [...items].sort((a, b) => b.price - a.price);
+  if (currentSort === 'year-desc') return [...items].sort((a, b) => b.year - a.year);
+  if (currentSort === 'year-asc') return [...items].sort((a, b) => a.year - b.year);
+
+  const order = syncSectionOrder(sectionKey);
+  const rank = new Map(order.map((id, index) => [id, index]));
+  return [...items].sort((a, b) => (rank.get(a.id) ?? Number.MAX_SAFE_INTEGER) - (rank.get(b.id) ?? Number.MAX_SAFE_INTEGER));
+}
+
+function setAdminStatus(message) {
+  const statusEl = document.getElementById('admin-status');
+  if (statusEl) statusEl.textContent = message;
+}
+
+function formatSavedAt(iso) {
+  if (!iso) return t('admin.help');
+  const savedAt = new Date(iso);
+  if (Number.isNaN(savedAt.getTime())) return t('admin.help');
+  const date = savedAt.toLocaleString(currentLanguage === 'en' ? 'en-GB' : 'ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+  return t('admin.saved', { date });
+}
+
+function setConfigDirty(message = t('admin.unsaved')) {
+  catalogConfigDirty = true;
+  saveLocalCatalogConfig();
+  setAdminStatus(message);
+  const btn = document.getElementById('btn-save-layout');
+  if (btn) btn.disabled = false;
+}
+
+function setConfigClean(message = formatSavedAt(catalogConfig.updatedAt)) {
+  catalogConfigDirty = false;
+  saveLocalCatalogConfig();
+  setAdminStatus(message);
+  const btn = document.getElementById('btn-save-layout');
+  if (btn) btn.disabled = false;
+}
+
+async function loadCatalogConfig() {
+  try {
+    const { data, error } = await supabaseClient
+      .from('catalog_config')
+      .select('config,updated_at')
+      .eq('id', 'main')
+      .maybeSingle();
+
+    if (error) throw error;
+    if (data?.config) {
+      catalogConfig = normalizeCatalogConfig({
+        ...data.config,
+        updatedAt: data.updated_at || data.config.updatedAt
+      });
+      return;
+    }
+  } catch (error) {
+    console.warn('Supabase catalog config fallback:', error);
+  }
+
+  try {
+    const response = await fetch(CATALOG_CONFIG_PATH, { cache: 'no-store' });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    catalogConfig = normalizeCatalogConfig(await response.json());
+  } catch (error) {
+    console.warn('Catalog config fallback:', error);
+    catalogConfig = normalizeCatalogConfig(DEFAULT_CATALOG_CONFIG);
+  }
+}
+
+function buildCatalogConfigPayload() {
+  const payload = normalizeCatalogConfig(catalogConfig);
+  payload.updatedAt = new Date().toISOString();
+  return payload;
+}
+
+async function saveCatalogConfig() {
+  if (savingCatalogConfig) return;
+  savingCatalogConfig = true;
+
+  const btn = document.getElementById('btn-save-layout');
+  const initialText = btn ? btn.textContent : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = t('admin.saving');
+  }
+
+  try {
+    const { data: userData, error: userError } = await supabaseClient.auth.getUser();
+    const user = userData?.user;
+    if (userError || !user || user.app_metadata?.role !== 'author') {
+      throw new Error(t('admin.authRequired'));
+    }
+
+    const payload = buildCatalogConfigPayload();
+    const { error } = await supabaseClient
+      .from('catalog_config')
+      .upsert({
+        id: 'main',
+        config: payload,
+        updated_at: payload.updatedAt,
+        updated_by: user.id
+      }, { onConflict: 'id' });
+
+    if (error) throw error;
+    catalogConfig = payload;
+    setConfigClean(t('admin.remoteSaved'));
+  } catch (err) {
+    setConfigDirty(err.message || t('catalog.connectionError'));
+    console.error('Catalog config save error:', err);
+  } finally {
+    savingCatalogConfig = false;
+    if (btn) btn.disabled = false;
+    if (btn) btn.textContent = initialText || t('admin.save');
+  }
+}
+
+function setCurrentSort(sort) {
+  currentSort = sort;
+  document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.sort === sort));
+  renderGrid();
+}
+
+function updateAdminModeState(enabled) {
+  adminMode = Boolean(enabled && currentAuthor?.app_metadata?.role === 'author');
+  document.body.classList.toggle('admin-mode', adminMode);
+  document.getElementById('admin-banner')?.classList.toggle('show', adminMode);
+  const emailEl = document.getElementById('admin-user-email');
+  if (emailEl) emailEl.textContent = adminMode ? currentAuthor.email : '';
+  if (adminMode) {
+    setCurrentSort('default');
+    setAdminStatus(catalogConfigDirty ? t('admin.unsaved') : formatSavedAt(catalogConfig.updatedAt));
+  } else if (allPaintings.length) {
+    renderGrid();
+  }
+}
+
+async function initAdminMode() {
+  if (!AUTHOR_MODE_REQUESTED) {
+    updateAdminModeState(false);
+    return true;
+  }
+
+  const { data, error } = await supabaseClient.auth.getUser();
+  const user = data?.user;
+  if (error || !user || user.app_metadata?.role !== 'author') {
+    await supabaseClient.auth.signOut({ scope: 'local' });
+    window.location.replace('/author/');
+    return false;
+  }
+
+  currentAuthor = user;
+  updateAdminModeState(true);
+  return true;
+}
+
+function movePaintingWithinSection(id, delta) {
+  const painting = allPaintings.find(item => item.id === id);
+  if (!painting) return;
+
+  const sectionKey = getPaintingSection(painting);
+  const order = syncSectionOrder(sectionKey);
+  const index = order.indexOf(id);
+  const nextIndex = index + delta;
+  if (index < 0 || nextIndex < 0 || nextIndex >= order.length) return;
+
+  [order[index], order[nextIndex]] = [order[nextIndex], order[index]];
+  catalogConfig.orderBySection[sectionKey] = order;
+  setCurrentSort('default');
+  setConfigDirty(t('admin.orderChanged'));
+}
+
+function changePaintingSection(id, sectionKey) {
+  const painting = allPaintings.find(item => item.id === id);
+  if (!painting || !TECH_LABEL_MAP[sectionKey]) return;
+
+  const currentSection = getPaintingSection(painting);
+  if (currentSection === sectionKey) return;
+
+  TECH_GROUPS.forEach(group => {
+    const list = Array.isArray(catalogConfig.orderBySection[group.key]) ? catalogConfig.orderBySection[group.key] : [];
+    catalogConfig.orderBySection[group.key] = list.filter(itemId => itemId !== id);
+  });
+
+  if (sectionKey === getDefaultPaintingSection(painting)) delete catalogConfig.sectionById[String(id)];
+  else catalogConfig.sectionById[String(id)] = sectionKey;
+
+  const targetOrder = syncSectionOrder(sectionKey);
+  if (!targetOrder.includes(id)) targetOrder.push(id);
+  catalogConfig.orderBySection[sectionKey] = targetOrder;
+
+  setCurrentSort('default');
+  setConfigDirty(t('admin.sectionChanged'));
+}
+
+function movePaintingByDrag(id, sectionKey, targetId = null, placeAfter = false) {
+  const painting = allPaintings.find(item => item.id === id);
+  if (!painting || !TECH_LABEL_MAP[sectionKey] || id === targetId) return;
+
+  TECH_GROUPS.forEach(group => {
+    const list = Array.isArray(catalogConfig.orderBySection[group.key]) ? catalogConfig.orderBySection[group.key] : [];
+    catalogConfig.orderBySection[group.key] = list.filter(itemId => itemId !== id);
+  });
+
+  if (sectionKey === getDefaultPaintingSection(painting)) delete catalogConfig.sectionById[String(id)];
+  else catalogConfig.sectionById[String(id)] = sectionKey;
+
+  const order = syncSectionOrder(sectionKey).filter(itemId => itemId !== id);
+  const targetIndex = targetId === null ? order.length : order.indexOf(targetId);
+  const insertAt = targetIndex < 0 ? order.length : targetIndex + (placeAfter ? 1 : 0);
+  order.splice(insertAt, 0, id);
+  catalogConfig.orderBySection[sectionKey] = order;
+
+  setCurrentSort('default');
+  setConfigDirty(t('admin.dragChanged'));
+}
+
+function clearCatalogDragState(container = document) {
+  container.querySelectorAll('.dragging,.drag-before,.drag-after,.drag-target').forEach(element => {
+    element.classList.remove('dragging', 'drag-before', 'drag-after', 'drag-target');
+  });
+}
+
+function showHeroPainting(index, immediate = false) {
+  if (!heroPaintings.length) return;
+  heroPaintingIndex = (index + heroPaintings.length) % heroPaintings.length;
+  const painting = heroPaintings[heroPaintingIndex];
+  const image = document.getElementById('hero-art-image');
+  const applyPainting = () => {
+    image.style.visibility = 'visible';
+    image.src = imgUrl(painting.image_url);
+    image.alt = painting.title;
+    document.getElementById('hero-art-title').textContent = painting.title;
+    document.querySelectorAll('.hero-art-dot').forEach((dot, dotIndex) => dot.classList.toggle('active', dotIndex === heroPaintingIndex));
+    requestAnimationFrame(() => image.classList.remove('is-changing'));
+  };
+
+  if (immediate || !image.src) applyPainting();
+  else {
+    image.classList.add('is-changing');
+    setTimeout(applyPainting, 320);
+  }
+}
+
+function restartHeroRotation() {
+  clearInterval(heroRotationTimer);
+  heroRotationTimer = setInterval(() => showHeroPainting(heroPaintingIndex + 1), 5500);
+}
+
+function initHeroRotation() {
+  heroPaintings = FEATURED_PAINTING_IDS
+    .map(id => allPaintings.find(painting => painting.id === id && painting.image_url && !painting.flag_hidden))
+    .filter(Boolean);
+  if (!heroPaintings.length) heroPaintings = allPaintings.filter(painting => painting.image_url && !painting.flag_hidden).slice(0, 6);
+
+  const dots = document.getElementById('hero-art-dots');
+  dots.innerHTML = heroPaintings.map((_, index) => `<button class="hero-art-dot" type="button" data-hero-index="${index}" tabindex="-1"></button>`).join('');
+  dots.querySelectorAll('.hero-art-dot').forEach(dot => dot.addEventListener('click', event => {
+    event.stopPropagation();
+    showHeroPainting(Number(dot.dataset.heroIndex));
+    restartHeroRotation();
+  }));
+
+  const heroArt = document.getElementById('hero-art');
+  document.getElementById('hero-art-image').addEventListener('error', event => {
+    event.currentTarget.style.visibility = 'hidden';
+    document.getElementById('hero-art-title').textContent = t('common.imageUnavailable');
+  });
+  const openCurrent = () => heroPaintings[heroPaintingIndex] && openModal(heroPaintings[heroPaintingIndex].id);
+  heroArt.addEventListener('click', openCurrent);
+  heroArt.addEventListener('keydown', event => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      openCurrent();
+    }
+  });
+  heroArt.addEventListener('mouseenter', () => clearInterval(heroRotationTimer));
+  heroArt.addEventListener('mouseleave', restartHeroRotation);
+  showHeroPainting(0, true);
+  restartHeroRotation();
+}
+
+// ─── LOAD DATA ──────────────────────────────────────────────────
+async function loadPaintings() {
+  document.getElementById('count-label').textContent = t('catalog.loading');
+  try {
+    await loadCatalogConfig();
     const data = await sbSelect('paintings', 'order=id');
-    allPaintings = data || [];
+    allPaintings = (data || [])
+      .filter(painting =>
+        !EXCLUDED_DUPLICATE_PAINTING_IDS.has(painting.id) &&
+        !REPLACED_PAINTING_IDS.has(painting.id)
+      )
+      .map(painting => ({
+        ...painting,
+        title: PAINTING_TITLE_OVERRIDES.get(painting.id) || painting.title,
+        flag_hidden: RESTORED_PAINTING_IDS.has(painting.id) ? false : painting.flag_hidden
+      }));
     document.getElementById('stat-total').textContent = allPaintings.length + '+';
+    initHeroRotation();
+    TECH_GROUPS.forEach(group => syncSectionOrder(group.key));
+    applyCatalogMigrations();
     populateSelect();
     renderGrid();
-  } catch(e) {
+    setConfigClean(formatSavedAt(catalogConfig.updatedAt));
+  } catch (e) {
     console.error('Network error:', e);
-    document.getElementById('count-label').textContent = 'Ошибка сети';
-    document.getElementById('catalog-grid').innerHTML = `<div class="no-results"><p>Ошибка подключения</p><small>${e.message}</small></div>`;
+    document.getElementById('count-label').textContent = t('catalog.networkError');
+    document.getElementById('tech-sections').innerHTML = `<div class="no-results"><p>${t('catalog.connectionError')}</p><small>${escapeHTML(e.message)}</small></div>`;
   }
 }
 
-// ─── GRID ────────────────────────────────────────────────────────
-function getFiltered() {
-  let d = [...allPaintings];
-  // Always hide hidden paintings on public site
-  d = d.filter(p => !p.flag_hidden);
-  if (currentFilter !== 'all') d = d.filter(p => p.technique === currentFilter);
-  if (currentSearch) { const q = currentSearch.toLowerCase(); d = d.filter(p => p.title.toLowerCase().includes(q) || (p.material||'').toLowerCase().includes(q)); }
-  if (currentSort === 'price-asc') d.sort((a,b) => a.price - b.price);
-  else if (currentSort === 'price-desc') d.sort((a,b) => b.price - a.price);
-  else if (currentSort === 'year-desc') d.sort((a,b) => b.year - a.year);
-  else if (currentSort === 'year-asc') d.sort((a,b) => a.year - b.year);
-  return d;
+// ─── GRID ───────────────────────────────────────────────────────
+function getVisible() {
+  let items = [...allPaintings];
+  items = items.filter(painting => !painting.flag_hidden);
+  if (currentSearch) {
+    const query = currentSearch.toLowerCase();
+    items = items.filter(painting =>
+      painting.title.toLowerCase().includes(query) ||
+      (painting.material || '').toLowerCase().includes(query) ||
+      translateMaterial(painting.material).toLowerCase().includes(query)
+    );
+  }
+  return items;
 }
 
-function renderGrid() {
-  const grid = document.getElementById('catalog-grid');
-  const data = getFiltered();
-  document.getElementById('count-label').textContent = `${data.length} работ`;
+function cardAdminHTML(painting, sectionKey, index, total) {
+  if (!adminMode) return '';
+  return `<div class="card-admin">
+    <div class="card-admin-top">
+      <span class="card-admin-label">${t('card.management')}</span>
+      <span class="card-admin-position">${t('card.position', { position: index + 1, total })}</span>
+    </div>
+    <label class="card-admin-field">
+      <span>${t('card.section')}</span>
+      <select class="card-section-select" data-role="section-select" data-id="${painting.id}">
+        ${TECH_GROUPS.map(group => `<option value="${group.key}" ${group.key === sectionKey ? 'selected' : ''}>${techLabel(group.key)}</option>`).join('')}
+      </select>
+    </label>
+    <div class="card-admin-actions">
+      <button class="card-order-btn" type="button" data-role="move-left" data-id="${painting.id}" ${index === 0 ? 'disabled' : ''}>${t('card.left')}</button>
+      <button class="card-order-btn" type="button" data-role="move-right" data-id="${painting.id}" ${index === total - 1 ? 'disabled' : ''}>${t('card.right')}</button>
+      <button class="card-order-btn" type="button" data-role="move-up" data-id="${painting.id}" ${index === 0 ? 'disabled' : ''}>${t('card.up')}</button>
+      <button class="card-order-btn" type="button" data-role="move-down" data-id="${painting.id}" ${index === total - 1 ? 'disabled' : ''}>${t('card.down')}</button>
+    </div>
+  </div>`;
+}
 
-  if (!data.length) {
-    const msg = (currentFilter === 'hidden') ? 'Нет скрытых работ' : 'Работы не найдены';
-    grid.innerHTML = `<div class="no-results"><p>${msg}</p></div>`;
-    return;
-  }
+function cardHTML(painting, index, sectionKey, total) {
+  const url = painting.image_url ? imgUrl(painting.image_url) : null;
+  const title = escapeHTML(painting.title);
+  const material = escapeHTML(translateMaterial(painting.material));
+  const imageHTML = url
+    ? `<img src="${escapeHTML(url)}" alt="${title}" loading="lazy">`
+    : `<div class="card-placeholder">${imagePlaceholderHTML(t('common.imageUnavailable'))}</div>`;
 
-  grid.innerHTML = data.map((p, i) => {
-    const url = p.image_url ? imgUrl(p.image_url) : null;
-    const imgHtml = url
-      ? `<img src="${url}" alt="${p.title}" loading="lazy">`
-      : `<div class="card-placeholder"><svg viewBox="0 0 100 100"><rect x="8" y="8" width="84" height="84" rx="2"/><path d="M8 72 L28 48 L48 62 L70 36 L92 56"/><circle cx="28" cy="28" r="9"/></svg><span>Изображение</span></div>`;
+  const priceRow = `<div class="card-price-row"><div class="card-price">${fmt(painting.price)}<span class="currency">₽</span></div><button class="card-buy-btn" type="button" data-action="buy" data-id="${painting.id}">${t('card.buy')}</button></div>`;
 
-    const priceRow = `<div class="card-price-row"><div class="card-price">${fmt(p.price)}<span class="currency">₽</span></div><button class="card-buy-btn" onclick="event.stopPropagation();buyPainting(${p.id})">Купить</button></div>`;
-
-    return `<div class="card" style="animation-delay:${Math.min(i*.04,.5)}s" data-id="${p.id}">
-      <div class="card-image">
-        ${imgHtml}
-        <div class="card-size-badge">${p.width_cm}×${p.height_cm} см</div>
-        <div class="card-technique-badge">${techLabel(p.technique)}</div>
-        <div class="card-overlay">
-          <div class="card-overlay-actions">
-            <button class="overlay-btn primary" onclick="event.stopPropagation();buyPainting(${p.id})">Купить</button>
-            <button class="overlay-btn" onclick="event.stopPropagation();openModal(${p.id})">Подробнее</button>
-          </div>
+  return `<div class="card" style="animation-delay:${Math.min(index * .04, .5)}s" data-id="${painting.id}" data-section="${sectionKey}" draggable="${adminMode}">
+    <div class="card-image">
+      ${imageHTML}
+      <div class="card-size-badge">${painting.width_cm}×${painting.height_cm} ${t('details.cm')}</div>
+      <div class="card-technique-badge">${techLabel(sectionKey)}</div>
+      <div class="card-overlay">
+        <div class="card-overlay-actions">
+          <button class="overlay-btn primary" type="button" data-action="buy" data-id="${painting.id}">${t('card.buy')}</button>
+          <button class="overlay-btn" type="button" data-action="details" data-id="${painting.id}">${t('card.details')}</button>
         </div>
       </div>
-      <div class="card-body">
-        <div class="card-title">${p.title}</div>
-        <div class="card-year">${p.year}</div>
-        <div class="card-material">${p.material || ''}</div>
-        ${priceRow}
-      </div>
-    </div>`;
-  }).join('');
+    </div>
+    <div class="card-body">
+      <div class="card-title">${title}</div>
+      <div class="card-year">${painting.year}</div>
+      <div class="card-material">${material}</div>
+      ${priceRow}
+    </div>
+    ${cardAdminHTML(painting, sectionKey, index, total)}
+  </div>`;
+}
 
-  // click on card → modal, skip interactive elements
-  grid.querySelectorAll('.card').forEach(card => {
-    card.addEventListener('click', e => {
-      if (e.target.closest('.card-buy-btn,.overlay-btn,.card-upload-btn')) return;
-      openModal(+card.dataset.id);
+function bindCatalogAdminControls(container) {
+  if (adminMode) {
+    container.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('dragstart', event => {
+        if (event.target.closest('button,select,input,label')) {
+          event.preventDefault();
+          return;
+        }
+        draggedPaintingId = Number(card.dataset.id);
+        event.dataTransfer.effectAllowed = 'move';
+        event.dataTransfer.setData('text/plain', String(draggedPaintingId));
+        requestAnimationFrame(() => card.classList.add('dragging'));
+      });
+
+      card.addEventListener('dragover', event => {
+        if (!draggedPaintingId || draggedPaintingId === Number(card.dataset.id)) return;
+        event.preventDefault();
+        event.stopPropagation();
+        clearCatalogDragState(container);
+        container.querySelector(`[data-id="${draggedPaintingId}"]`)?.classList.add('dragging');
+        const placeAfter = event.clientX > card.getBoundingClientRect().left + card.offsetWidth / 2;
+        card.classList.add(placeAfter ? 'drag-after' : 'drag-before');
+        event.dataTransfer.dropEffect = 'move';
+      });
+
+      card.addEventListener('drop', event => {
+        if (!draggedPaintingId) return;
+        event.preventDefault();
+        event.stopPropagation();
+        const paintingId = draggedPaintingId;
+        const placeAfter = event.clientX > card.getBoundingClientRect().left + card.offsetWidth / 2;
+        draggedPaintingId = null;
+        dragJustFinished = true;
+        setTimeout(() => { dragJustFinished = false; }, 0);
+        movePaintingByDrag(paintingId, card.dataset.section, Number(card.dataset.id), placeAfter);
+      });
+
+      card.addEventListener('dragend', () => {
+        clearCatalogDragState(container);
+        draggedPaintingId = null;
+        dragJustFinished = true;
+        setTimeout(() => { dragJustFinished = false; }, 0);
+      });
+    });
+
+    container.querySelectorAll('.tech-group').forEach(group => {
+      group.addEventListener('dragover', event => {
+        if (!draggedPaintingId || event.target.closest('.card')) return;
+        event.preventDefault();
+        clearCatalogDragState(container);
+        container.querySelector(`[data-id="${draggedPaintingId}"]`)?.classList.add('dragging');
+        group.classList.add('drag-target');
+      });
+      group.addEventListener('drop', event => {
+        if (!draggedPaintingId || event.target.closest('.card')) return;
+        event.preventDefault();
+        const sectionKey = TECH_GROUPS.find(item => item.anchor === group.id)?.key;
+        if (sectionKey) {
+          const paintingId = draggedPaintingId;
+          draggedPaintingId = null;
+          dragJustFinished = true;
+          setTimeout(() => { dragJustFinished = false; }, 0);
+          movePaintingByDrag(paintingId, sectionKey);
+        }
+      });
+    });
+  }
+
+  container.querySelectorAll('[data-role="move-left"]').forEach(button => {
+    button.addEventListener('click', event => {
+      event.stopPropagation();
+      movePaintingWithinSection(Number(button.dataset.id), -1);
+    });
+  });
+
+  container.querySelectorAll('[data-role="move-right"]').forEach(button => {
+    button.addEventListener('click', event => {
+      event.stopPropagation();
+      movePaintingWithinSection(Number(button.dataset.id), 1);
+    });
+  });
+
+  container.querySelectorAll('[data-role="move-up"]').forEach(button => {
+    button.addEventListener('click', event => {
+      event.stopPropagation();
+      movePaintingWithinSection(Number(button.dataset.id), -1);
+    });
+  });
+
+  container.querySelectorAll('[data-role="move-down"]').forEach(button => {
+    button.addEventListener('click', event => {
+      event.stopPropagation();
+      movePaintingWithinSection(Number(button.dataset.id), 1);
+    });
+  });
+
+  container.querySelectorAll('[data-role="section-select"]').forEach(select => {
+    select.addEventListener('change', event => {
+      event.stopPropagation();
+      changePaintingSection(Number(select.dataset.id), select.value);
     });
   });
 }
 
-// ─── SELECT ──────────────────────────────────────────────────────
-function populateSelect() {
-  const sel = document.getElementById('painting-select');
-  sel.innerHTML = '<option value="">— выберите работу —</option>';
-  allPaintings.forEach(p => {
-    const o = document.createElement('option');
-    o.value = p.id; o.textContent = `${p.title} — ${fmt(p.price)} ₽`;
-    sel.appendChild(o);
+function renderGrid() {
+  const container = document.getElementById('tech-sections');
+  const visible = getVisible();
+  document.getElementById('count-label').textContent = formatWorksCount(visible.length);
+
+  container.innerHTML = TECH_GROUPS.map(group => {
+    const items = sortSectionItems(visible.filter(painting => getPaintingSection(painting) === group.key), group.key);
+    const body = items.length
+      ? `<div class="catalog-grid">${items.map((painting, index) => cardHTML(painting, index, group.key, items.length)).join('')}</div>`
+      : `<div class="tech-group-empty">${currentSearch ? t('catalog.noResults') : t('catalog.empty')}</div>`;
+
+    return `<div class="tech-group" id="${group.anchor}">
+      <div class="tech-group-header">
+        <h3 class="tech-group-title">${techLabel(group.key)}</h3>
+        <span class="tech-group-count">${formatWorksCount(items.length)}</span>
+      </div>
+      ${body}
+    </div>`;
+  }).join('');
+
+  container.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('click', event => {
+      if (dragJustFinished) return;
+      if (event.target.closest('.card-buy-btn,.overlay-btn,.card-upload-btn,.card-order-btn,.card-section-select')) return;
+      openModal(Number(card.dataset.id));
+    });
   });
+  container.querySelectorAll('.card-image > img').forEach(image => attachImageFallback(image, 'card-placeholder'));
+  container.querySelectorAll('[data-action="buy"]').forEach(button => {
+    button.addEventListener('click', event => {
+      event.stopPropagation();
+      buyPainting(Number(button.dataset.id));
+    });
+  });
+  container.querySelectorAll('[data-action="details"]').forEach(button => {
+    button.addEventListener('click', event => {
+      event.stopPropagation();
+      openModal(Number(button.dataset.id));
+    });
+  });
+
+  bindCatalogAdminControls(container);
 }
 
-// ─── MODAL ───────────────────────────────────────────────────────
+// ─── SELECT ─────────────────────────────────────────────────────
+function populateSelect() {
+  const select = document.getElementById('painting-select');
+  const selectedValue = select.value;
+  select.innerHTML = `<option value="">${t('form.choosePainting')}</option>`;
+  allPaintings.forEach(painting => {
+    const option = document.createElement('option');
+    option.value = painting.id;
+    option.textContent = `${painting.title} — ${fmt(painting.price)} ₽`;
+    select.appendChild(option);
+  });
+  if ([...select.options].some(option => option.value === selectedValue)) select.value = selectedValue;
+}
+
+// ─── MODAL ──────────────────────────────────────────────────────
 function openModal(id) {
-  const p = allPaintings.find(x => x.id === id);
-  if (!p) return;
-  currentModalPainting = p;
-  document.getElementById('modal-technique').textContent = techLabel(p.technique);
-  document.getElementById('modal-title').textContent = p.title;
-  document.getElementById('modal-price').innerHTML = `${fmt(p.price)}<span class="currency">₽</span>`;
+  const painting = allPaintings.find(item => item.id === id);
+  if (!painting) return;
+
+  const sectionKey = getPaintingSection(painting);
+  currentModalPainting = painting;
+  document.getElementById('modal-technique').textContent = techLabel(sectionKey);
+  document.getElementById('modal-title').textContent = painting.title;
+  document.getElementById('modal-price').innerHTML = `${fmt(painting.price)}<span class="currency">₽</span>`;
   document.getElementById('modal-details').innerHTML = `
-    <div class="modal-detail"><span class="modal-detail-label">Год</span><span>${p.year}</span></div>
-    <div class="modal-detail"><span class="modal-detail-label">Материал</span><span>${p.material||'—'}</span></div>
-    <div class="modal-detail"><span class="modal-detail-label">Размер</span><span>${p.width_cm}×${p.height_cm} см</span></div>
-    <div class="modal-detail"><span class="modal-detail-label">Техника</span><span>${techLabel(p.technique)}</span></div>
-    <div class="modal-detail"><span class="modal-detail-label">Наличие</span><span>${p.in_stock ? 'Оригинал в наличии' : 'Продано'}</span></div>
+    <div class="modal-detail"><span class="modal-detail-label">${t('details.year')}</span><span>${painting.year}</span></div>
+    <div class="modal-detail"><span class="modal-detail-label">${t('details.material')}</span><span>${escapeHTML(translateMaterial(painting.material) || '—')}</span></div>
+    <div class="modal-detail"><span class="modal-detail-label">${t('details.size')}</span><span>${painting.width_cm}×${painting.height_cm} ${t('details.cm')}</span></div>
+    <div class="modal-detail"><span class="modal-detail-label">${t('details.technique')}</span><span>${techLabel(sectionKey)}</span></div>
+    <div class="modal-detail"><span class="modal-detail-label">${t('details.availability')}</span><span>${painting.in_stock ? t('details.inStock') : t('details.sold')}</span></div>
   `;
+
   const wrap = document.getElementById('modal-img-wrap');
-  const url = p.image_url ? imgUrl(p.image_url) : null;
+  const url = painting.image_url ? imgUrl(painting.image_url) : null;
   wrap.innerHTML = url
-    ? `<img src="${url}" alt="${p.title}">`
-    : `<div class="modal-img-placeholder"><svg viewBox="0 0 100 100"><rect x="10" y="10" width="80" height="80" rx="2"/><path d="M10 70 L30 45 L50 60 L70 35 L90 55"/><circle cx="30" cy="30" r="8"/></svg><span>Изображение недоступно</span></div>`;
+    ? `<img src="${escapeHTML(url)}" alt="${escapeHTML(painting.title)}">`
+    : `<div class="modal-img-placeholder">${imagePlaceholderHTML(t('common.imageUnavailable'))}</div>`;
+  attachImageFallback(wrap.querySelector('img'), 'modal-img-placeholder');
+
   document.getElementById('modal').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -635,30 +1514,40 @@ function closeModal() {
 
 function goToBuy() {
   if (currentModalPainting) {
-    const sel = document.getElementById('painting-select');
-    for (const opt of sel.options) if (+opt.value === currentModalPainting.id) { sel.value = opt.value; break; }
+    const select = document.getElementById('painting-select');
+    for (const option of select.options) {
+      if (+option.value === currentModalPainting.id) {
+        select.value = option.value;
+        break;
+      }
+    }
   }
   closeModal();
-  document.getElementById('contact').scrollIntoView({behavior:'smooth'});
+  document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
 }
 
 function buyPainting(id) {
-  const p = allPaintings.find(x => x.id === id);
-  if (p) {
-    const sel = document.getElementById('painting-select');
-    for (const opt of sel.options) if (+opt.value === p.id) { sel.value = opt.value; break; }
+  const painting = allPaintings.find(item => item.id === id);
+  if (painting) {
+    const select = document.getElementById('painting-select');
+    for (const option of select.options) {
+      if (+option.value === painting.id) {
+        select.value = option.value;
+        break;
+      }
+    }
   }
-  document.getElementById('contact').scrollIntoView({behavior:'smooth'});
+  document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
 }
 
-// ─── UPLOAD ──────────────────────────────────────────────────────
+// ─── UPLOAD ─────────────────────────────────────────────────────
 function openUpload(id) {
-  const p = allPaintings.find(x => x.id === id);
-  if (!p) return;
+  const painting = allPaintings.find(item => item.id === id);
+  if (!painting) return;
+
   uploadTargetId = id;
   uploadFile = null;
-
-  document.getElementById('upload-painting-name').textContent = `«${p.title}»`;
+  document.getElementById('upload-painting-name').textContent = `«${painting.title}»`;
   document.getElementById('upload-preview').style.display = 'none';
   document.getElementById('upload-progress').style.display = 'none';
   document.getElementById('upload-error').style.display = 'none';
@@ -666,7 +1555,6 @@ function openUpload(id) {
   document.getElementById('upload-success-msg').style.display = 'none';
   document.getElementById('btn-upload-confirm').disabled = true;
   document.getElementById('upload-file-input').value = '';
-
   document.getElementById('upload-modal').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -680,140 +1568,122 @@ function closeUpload() {
 
 function handleFileSelect(file) {
   if (!file) return;
-  const allowed = ['image/jpeg','image/jpg','image/png','image/webp'];
-  if (!allowed.includes(file.type)) { showUploadError('Допустимые форматы: JPEG, PNG, WebP'); return; }
-  if (file.size > 10 * 1024 * 1024) { showUploadError('Файл превышает 10 МБ'); return; }
+
+  const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+  if (!allowed.includes(file.type)) {
+    showUploadError(t('upload.allowed'));
+    return;
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    showUploadError(t('upload.tooLarge'));
+    return;
+  }
+
   uploadFile = file;
   document.getElementById('upload-error').style.display = 'none';
+
   const reader = new FileReader();
-  reader.onload = e => {
-    document.getElementById('upload-preview-img').src = e.target.result;
-    document.getElementById('upload-preview-name').textContent = `${file.name} (${(file.size/1024).toFixed(0)} КБ)`;
+  reader.onload = event => {
+    document.getElementById('upload-preview-img').src = event.target.result;
+    document.getElementById('upload-preview-name').textContent = `${file.name} (${(file.size / 1024).toFixed(0)} ${t('upload.kb')})`;
     document.getElementById('upload-preview').style.display = 'block';
   };
   reader.readAsDataURL(file);
   document.getElementById('btn-upload-confirm').disabled = false;
 }
 
-function showUploadError(msg) {
-  const el = document.getElementById('upload-error');
-  el.textContent = msg; el.style.display = 'block';
+function showUploadError(message) {
+  const errorEl = document.getElementById('upload-error');
+  errorEl.textContent = message;
+  errorEl.style.display = 'block';
 }
 
-async function doUpload() {
-  if (!uploadFile || !uploadTargetId) return;
-  const btn = document.getElementById('btn-upload-confirm');
-  btn.disabled = true;
-
-  const ext = uploadFile.name.split('.').pop().toLowerCase();
-  const path = `painting_${uploadTargetId}_${Date.now()}.${ext}`;
-
-  document.getElementById('upload-progress').style.display = 'block';
-  document.getElementById('upload-progress-fill').style.width = '30%';
-  document.getElementById('upload-progress-text').textContent = 'Загрузка файла…';
-
-  // Delete old image if exists
-  const p = allPaintings.find(x => x.id === uploadTargetId);
-  if (p && p.image_url) {
-    await sbStorageDelete([p.image_url]);
-  }
-
-  document.getElementById('upload-progress-fill').style.width = '60%';
-
-  try {
-    await sbStorageUpload(path, uploadFile);
-  } catch(uploadErr) {
-    document.getElementById('upload-progress').style.display = 'none';
-    showUploadError('Ошибка загрузки файла: ' + uploadErr.message);
-    btn.disabled = false;
-    return;
-  }
-
-  document.getElementById('upload-progress-fill').style.width = '85%';
-  document.getElementById('upload-progress-text').textContent = 'Обновление записи…';
-
-  try {
-    await sbUpdate('paintings', uploadTargetId, { image_url: path });
-  } catch(dbErr) {
-    showUploadError('Файл загружен, но ошибка записи в БД: ' + dbErr.message);
-    btn.disabled = false;
-    return;
-  }
-
-  document.getElementById('upload-progress-fill').style.width = '100%';
-
-  // Update local state
-  const idx = allPaintings.findIndex(x => x.id === uploadTargetId);
-  if (idx >= 0) allPaintings[idx].image_url = path;
-
-  // Update card image in DOM without full re-render
-  const card = document.querySelector(`.card[data-id="${uploadTargetId}"] .card-image`);
-  if (card) {
-    const oldPlaceholder = card.querySelector('.card-placeholder');
-    if (oldPlaceholder) oldPlaceholder.remove();
-    let img = card.querySelector('img');
-    if (!img) { img = document.createElement('img'); img.style.cssText = 'width:100%;height:100%;object-fit:cover;transition:transform .5s;display:block;'; card.prepend(img); }
-    img.src = imgUrl(path);
-    img.alt = p ? p.title : '';
-  }
-
-  setTimeout(() => {
-    document.getElementById('upload-form-area').style.display = 'none';
-    document.getElementById('upload-success-msg').style.display = 'block';
-    setTimeout(closeUpload, 1800);
-  }, 400);
+function doUpload() {
+  document.getElementById('upload-progress').style.display = 'none';
+  showUploadError(t('upload.localOnly'));
+  document.getElementById('btn-upload-confirm').disabled = false;
 }
 
-// ─── DROP ZONE ───────────────────────────────────────────────────
+// ─── DROP ZONE ──────────────────────────────────────────────────
 const dz = document.getElementById('drop-zone');
-dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+dz.addEventListener('dragover', event => {
+  event.preventDefault();
+  dz.classList.add('dragover');
+});
 dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
-dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('dragover'); if (e.dataTransfer.files[0]) handleFileSelect(e.dataTransfer.files[0]); });
+dz.addEventListener('drop', event => {
+  event.preventDefault();
+  dz.classList.remove('dragover');
+  if (event.dataTransfer.files[0]) handleFileSelect(event.dataTransfer.files[0]);
+});
 document.getElementById('btn-choose-file').addEventListener('click', () => document.getElementById('upload-file-input').click());
-document.getElementById('upload-file-input').addEventListener('change', e => handleFileSelect(e.target.files[0]));
+document.getElementById('upload-file-input').addEventListener('change', event => handleFileSelect(event.target.files[0]));
 document.getElementById('btn-upload-confirm').addEventListener('click', doUpload);
 document.getElementById('btn-upload-cancel').addEventListener('click', closeUpload);
 document.getElementById('upload-modal-close').addEventListener('click', closeUpload);
 
-// ─── MODAL EVENTS ────────────────────────────────────────────────
+// ─── MODAL EVENTS ───────────────────────────────────────────────
 document.getElementById('modal-close').addEventListener('click', closeModal);
-document.getElementById('modal').addEventListener('click', e => { if (e.target === document.getElementById('modal')) closeModal(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeUpload(); } });
+document.getElementById('modal-close-secondary').addEventListener('click', closeModal);
+document.getElementById('modal-buy').addEventListener('click', goToBuy);
+document.getElementById('modal').addEventListener('click', event => {
+  if (event.target === document.getElementById('modal')) closeModal();
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') {
+    closeModal();
+    closeUpload();
+  }
+});
 
-// ─── FILTER / SORT / SEARCH ──────────────────────────────────────
-document.querySelectorAll('.filter-btn').forEach(btn => btn.addEventListener('click', () => {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  currentFilter = btn.dataset.filter;
-  renderGrid();
+// ─── SORT / SEARCH ──────────────────────────────────────────────
+document.querySelectorAll('.sort-btn').forEach(button => button.addEventListener('click', () => {
+  setCurrentSort(button.dataset.sort);
 }));
-document.querySelectorAll('.sort-btn').forEach(btn => btn.addEventListener('click', () => {
-  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  currentSort = btn.dataset.sort;
-  renderGrid();
-}));
-document.getElementById('search-input').addEventListener('input', e => {
-  currentSearch = e.target.value.trim();
+document.getElementById('search-input').addEventListener('input', event => {
+  currentSearch = event.target.value.trim();
   renderGrid();
 });
 
 // ─── FORM ───────────────────────────────────────────────────────
-document.getElementById('contact-form')?.addEventListener('submit', async e => {
-  e.preventDefault();
-  const form = e.target;
-  const btn = form.querySelector('.btn-submit');
-  const inputs = form.querySelectorAll('input,select,textarea');
-  const name = form.querySelector('input[placeholder="Ваше имя"]').value.trim();
-  const contact = form.querySelector('input[placeholder="+7 или email"]').value.trim();
-  const sel = document.getElementById('painting-select');
-  const painting_id = sel.value ? parseInt(sel.value) : null;
-  const painting_title = sel.value ? sel.options[sel.selectedIndex].text.split(' — ')[0] : null;
-  const message = form.querySelector('textarea').value.trim();
+const CONTACT_EMAIL_PATTERN = /^[a-z0-9!#$%&'*+/=?^_`{|}~.-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i;
+const contactEmailInput = document.getElementById('contact-value');
+contactEmailInput?.addEventListener('input', () => contactEmailInput.setCustomValidity(''));
 
-  btn.disabled = true;
-  btn.textContent = 'Отправляем…';
-  inputs.forEach(i => i.disabled = true);
+function isValidContactEmail(value) {
+  const localPart = value.split('@')[0] || '';
+  return (
+    value.length <= 254 &&
+    localPart.length <= 64 &&
+    !localPart.startsWith('.') &&
+    !localPart.endsWith('.') &&
+    !localPart.includes('..') &&
+    CONTACT_EMAIL_PATTERN.test(value)
+  );
+}
+
+document.getElementById('contact-form')?.addEventListener('submit', async event => {
+  event.preventDefault();
+  const form = event.target;
+  const button = form.querySelector('.btn-submit');
+  const inputs = form.querySelectorAll('input,select,textarea');
+  const name = document.getElementById('contact-name').value.trim();
+  const contact = document.getElementById('contact-value').value.trim();
+  const select = document.getElementById('painting-select');
+  const painting_id = select.value ? parseInt(select.value, 10) : null;
+  const painting_title = select.value ? select.options[select.selectedIndex].text.split(' — ')[0] : null;
+  const message = document.getElementById('contact-message').value.trim();
+
+  if (!isValidContactEmail(contact)) {
+    contactEmailInput.setCustomValidity(t('form.invalidEmail'));
+    contactEmailInput.reportValidity();
+    return;
+  }
+  contactEmailInput.setCustomValidity('');
+
+  button.disabled = true;
+  button.textContent = t('form.sending');
+  inputs.forEach(input => { input.disabled = true; });
 
   try {
     const res = await fetch(`${SUPABASE_URL}/functions/v1/send-order`, {
@@ -822,22 +1692,63 @@ document.getElementById('contact-form')?.addEventListener('submit', async e => {
       body: JSON.stringify({ name, contact, painting_id, painting_title, message })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Ошибка отправки');
+    if (!res.ok) throw new Error(data.error || t('form.sendFailed'));
     form.style.display = 'none';
     document.getElementById('form-success').classList.add('show');
-  } catch(err) {
-    btn.disabled = false;
-    btn.textContent = 'Отправить заявку';
-    inputs.forEach(i => i.disabled = false);
-    btn.style.background = '#a8522a';
-    btn.textContent = 'Ошибка — попробуйте ещё раз';
-    setTimeout(() => { btn.style.background = ''; btn.textContent = 'Отправить заявку'; }, 3000);
+  } catch (err) {
+    button.disabled = false;
+    button.textContent = t('form.submit');
+    inputs.forEach(input => { input.disabled = false; });
+    button.style.background = '#a8522a';
+    button.textContent = t('form.sendError');
+    setTimeout(() => {
+      button.style.background = '';
+      button.textContent = t('form.submit');
+    }, 3000);
     console.error('Form error:', err);
   }
 });
 
-// ─── INIT ────────────────────────────────────────────────────────
-loadPaintings();
+// ─── SCROLLSPY ──────────────────────────────────────────────────
+function initScrollSpy() {
+  const links = document.querySelectorAll('#section-nav a');
+  const linkByAnchor = {};
+  links.forEach(link => { linkByAnchor[link.getAttribute('href').slice(1)] = link; });
+  const sections = TECH_GROUPS.map(group => document.getElementById(group.anchor)).filter(Boolean);
+  if (!sections.length) return;
+
+  const setActive = id => {
+    links.forEach(link => link.classList.remove('active'));
+    if (id && linkByAnchor[id]) linkByAnchor[id].classList.add('active');
+  };
+
+  const observer = new IntersectionObserver(entries => {
+    const visible = entries.filter(entry => entry.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+    if (visible[0]) setActive(visible[0].target.id);
+  }, { rootMargin: '-160px 0px -55% 0px', threshold: 0 });
+
+  sections.forEach(section => observer.observe(section));
+}
+
+// ─── INIT ───────────────────────────────────────────────────────
+document.querySelectorAll('.language-btn').forEach(button => {
+  button.addEventListener('click', () => applyLanguage(button.dataset.language));
+});
+document.getElementById('btn-save-layout').addEventListener('click', saveCatalogConfig);
+document.getElementById('btn-exit-admin').addEventListener('click', async () => {
+  await supabaseClient.auth.signOut();
+  window.location.assign('/');
+});
+
+async function initApp() {
+  applyLanguage(currentLanguage);
+  const canContinue = await initAdminMode();
+  if (!canContinue) return;
+  await loadPaintings();
+  initScrollSpy();
+}
+
+initApp();
 </script>
 </body>
 </html>
