@@ -6,11 +6,24 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') ?? '';
 const TO_EMAIL = 'slavaushy@gmail.com';
 const CC_EMAIL = 'olegkaraev@gmail.com';
 const FROM_EMAIL = 'gallery@slavaushakov.gallery';
+const EMAIL_PATTERN = /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/;
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+const HTML_ESCAPE_MAP: Record<string, string> = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#039;',
+};
+
+function escapeHtml(value: string) {
+  return value.replace(/[&<>"']/g, character => HTML_ESCAPE_MAP[character]);
+}
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
@@ -19,10 +32,20 @@ Deno.serve(async (req: Request) => {
 
   try {
     const body = await req.json();
-    const { name, contact, painting_id, painting_title, message } = body;
+    const name = typeof body.name === 'string' ? body.name.trim() : '';
+    const contact = typeof body.contact === 'string' ? body.contact.trim() : '';
+    const painting_id = Number.isInteger(body.painting_id) ? body.painting_id : null;
+    const painting_title = typeof body.painting_title === 'string' ? body.painting_title.trim() : '';
+    const message = typeof body.message === 'string' ? body.message.trim() : '';
 
-    if (!name || !contact) {
-      return new Response(JSON.stringify({ error: 'name and contact are required' }), {
+    if (!name) {
+      return new Response(JSON.stringify({ error: 'name is required' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
+    if (!EMAIL_PATTERN.test(contact) || contact.length > 254) {
+      return new Response(JSON.stringify({ error: 'valid email is required' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
@@ -46,17 +69,22 @@ Deno.serve(async (req: Request) => {
       });
     }
 
+    const safeName = escapeHtml(name);
+    const safeContact = escapeHtml(contact);
+    const safePaintingTitle = escapeHtml(painting_title);
+    const safeMessage = escapeHtml(message);
+
     const emailHtml = `
       <h2>Новая заявка с сайта галереи</h2>
       <table style="border-collapse:collapse;width:100%">
-        <tr><td style="padding:8px;font-weight:bold;background:#f5f0e8">Имя</td><td style="padding:8px">${name}</td></tr>
-        <tr><td style="padding:8px;font-weight:bold;background:#f5f0e8">Контакт</td><td style="padding:8px">${contact}</td></tr>
-        ${painting_title ? `<tr><td style="padding:8px;font-weight:bold;background:#f5f0e8">Работа</td><td style="padding:8px">${painting_title}</td></tr>` : ''}
-        ${message ? `<tr><td style="padding:8px;font-weight:bold;background:#f5f0e8">Сообщение</td><td style="padding:8px">${message}</td></tr>` : ''}
+        <tr><td style="padding:8px;font-weight:bold;background:#f5f0e8">Имя</td><td style="padding:8px">${safeName}</td></tr>
+        <tr><td style="padding:8px;font-weight:bold;background:#f5f0e8">Email</td><td style="padding:8px">${safeContact}</td></tr>
+        ${painting_title ? `<tr><td style="padding:8px;font-weight:bold;background:#f5f0e8">Работа</td><td style="padding:8px">${safePaintingTitle}</td></tr>` : ''}
+        ${message ? `<tr><td style="padding:8px;font-weight:bold;background:#f5f0e8">Сообщение</td><td style="padding:8px">${safeMessage}</td></tr>` : ''}
         <tr><td style="padding:8px;font-weight:bold;background:#f5f0e8">ID заявки</td><td style="padding:8px">#${order.id}</td></tr>
         <tr><td style="padding:8px;font-weight:bold;background:#f5f0e8">Дата</td><td style="padding:8px">${new Date().toLocaleString('ru-RU')}</td></tr>
       </table>
-      <p style="margin-top:16px;color:#8b6f47;font-size:13px">Ответить: <a href="mailto:${contact}">${contact}</a></p>
+      <p style="margin-top:16px;color:#8b6f47;font-size:13px">Ответить: <a href="mailto:${safeContact}">${safeContact}</a></p>
     `;
 
     const resendRes = await fetch('https://api.resend.com/emails', {

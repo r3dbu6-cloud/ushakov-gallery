@@ -508,7 +508,7 @@
       <form class="contact-form" id="contact-form">
         <div class="form-row">
           <div class="form-group"><label data-i18n="form.name">Имя</label><input id="contact-name" type="text" placeholder="Ваше имя" data-i18n-placeholder="form.namePlaceholder" required></div>
-          <div class="form-group"><label data-i18n="form.contact">Телефон / Email</label><input id="contact-value" type="text" placeholder="+7 или email" data-i18n-placeholder="form.contactPlaceholder" required></div>
+          <div class="form-group"><label data-i18n="form.contact">Email</label><input id="contact-value" type="email" inputmode="email" autocomplete="email" maxlength="254" placeholder="name@example.com" data-i18n-placeholder="form.contactPlaceholder" required></div>
         </div>
         <div class="form-group">
           <label data-i18n="form.painting">Интересующая работа</label>
@@ -646,8 +646,8 @@ const I18N = {
     'contact.description': 'Оригиналы продаются напрямую. Возможна доставка по всей России. Уточните детали удобным способом.',
     'contact.purchase': 'По вопросам приобретения:',
     'form.successTitle': 'Заявка отправлена', 'form.successText': 'Мы свяжемся с вами в ближайшее время',
-    'form.name': 'Имя', 'form.namePlaceholder': 'Ваше имя', 'form.contact': 'Телефон / Email',
-    'form.contactPlaceholder': '+7 или email', 'form.painting': 'Интересующая работа',
+    'form.name': 'Имя', 'form.namePlaceholder': 'Ваше имя', 'form.contact': 'Email',
+    'form.contactPlaceholder': 'name@example.com', 'form.invalidEmail': 'Введите корректный email, например name@example.com', 'form.painting': 'Интересующая работа',
     'form.choosePainting': '— выберите работу —', 'form.message': 'Сообщение',
     'form.messagePlaceholder': 'Вопросы по работе, доставке, просмотру…', 'form.submit': 'Отправить заявку',
     'form.sending': 'Отправляем…', 'form.sendError': 'Ошибка — попробуйте ещё раз', 'form.sendFailed': 'Ошибка отправки',
@@ -701,8 +701,8 @@ const I18N = {
     'contact.description': 'Original works are sold directly. Delivery is available throughout Russia and internationally. Contact us for details.',
     'contact.purchase': 'Purchase enquiries:',
     'form.successTitle': 'Request sent', 'form.successText': 'We will contact you shortly',
-    'form.name': 'Name', 'form.namePlaceholder': 'Your name', 'form.contact': 'Phone / Email',
-    'form.contactPlaceholder': 'Phone number or email', 'form.painting': 'Artwork of interest',
+    'form.name': 'Name', 'form.namePlaceholder': 'Your name', 'form.contact': 'Email',
+    'form.contactPlaceholder': 'name@example.com', 'form.invalidEmail': 'Enter a valid email, for example name@example.com', 'form.painting': 'Artwork of interest',
     'form.choosePainting': '— choose an artwork —', 'form.message': 'Message',
     'form.messagePlaceholder': 'Questions about the artwork, delivery or viewing…', 'form.submit': 'Send request',
     'form.sending': 'Sending…', 'form.sendError': 'Error — please try again', 'form.sendFailed': 'Failed to send',
@@ -1646,6 +1646,10 @@ document.getElementById('search-input').addEventListener('input', event => {
 });
 
 // ─── FORM ───────────────────────────────────────────────────────
+const CONTACT_EMAIL_PATTERN = /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/;
+const contactEmailInput = document.getElementById('contact-value');
+contactEmailInput?.addEventListener('input', () => contactEmailInput.setCustomValidity(''));
+
 document.getElementById('contact-form')?.addEventListener('submit', async event => {
   event.preventDefault();
   const form = event.target;
@@ -1657,6 +1661,13 @@ document.getElementById('contact-form')?.addEventListener('submit', async event 
   const painting_id = select.value ? parseInt(select.value, 10) : null;
   const painting_title = select.value ? select.options[select.selectedIndex].text.split(' — ')[0] : null;
   const message = document.getElementById('contact-message').value.trim();
+
+  if (!CONTACT_EMAIL_PATTERN.test(contact) || contact.length > 254) {
+    contactEmailInput.setCustomValidity(t('form.invalidEmail'));
+    contactEmailInput.reportValidity();
+    return;
+  }
+  contactEmailInput.setCustomValidity('');
 
   button.disabled = true;
   button.textContent = t('form.sending');
