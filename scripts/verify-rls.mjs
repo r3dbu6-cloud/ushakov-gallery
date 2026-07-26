@@ -40,12 +40,19 @@ const checks = [
     expected: [401, 403]
   },
   {
-    name: 'invalid order email blocked',
-    request: () => fetch(`${url}/functions/v1/send-order`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({ name: 'Validation Test', contact: 'not-an-email' })
-    }),
+    name: 'invalid order emails blocked',
+    request: async () => {
+      const invalidEmails = ['not-an-email', 'olegkaraev@gmail.21132', '.name@example.com', 'name..test@example.com'];
+      const responses = await Promise.all(invalidEmails.map(contact =>
+        fetch(`${url}/functions/v1/send-order`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ name: 'Validation Test', contact })
+        })
+      ));
+      const unexpected = responses.find(response => response.status !== 400);
+      return unexpected || responses[0];
+    },
     expected: [400]
   }
 ];

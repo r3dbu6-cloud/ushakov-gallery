@@ -6,7 +6,7 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') ?? '';
 const TO_EMAIL = 'slavaushy@gmail.com';
 const CC_EMAIL = 'olegkaraev@gmail.com';
 const FROM_EMAIL = 'gallery@slavaushakov.gallery';
-const EMAIL_PATTERN = /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/;
+const EMAIL_PATTERN = /^[a-z0-9!#$%&'*+/=?^_`{|}~.-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i;
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -23,6 +23,18 @@ const HTML_ESCAPE_MAP: Record<string, string> = {
 
 function escapeHtml(value: string) {
   return value.replace(/[&<>"']/g, character => HTML_ESCAPE_MAP[character]);
+}
+
+function isValidEmail(value: string) {
+  const localPart = value.split('@')[0] || '';
+  return (
+    value.length <= 254 &&
+    localPart.length <= 64 &&
+    !localPart.startsWith('.') &&
+    !localPart.endsWith('.') &&
+    !localPart.includes('..') &&
+    EMAIL_PATTERN.test(value)
+  );
 }
 
 Deno.serve(async (req: Request) => {
@@ -44,7 +56,7 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    if (!EMAIL_PATTERN.test(contact) || contact.length > 254) {
+    if (!isValidEmail(contact)) {
       return new Response(JSON.stringify({ error: 'valid email is required' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });

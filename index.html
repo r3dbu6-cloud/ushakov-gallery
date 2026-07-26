@@ -1646,9 +1646,21 @@ document.getElementById('search-input').addEventListener('input', event => {
 });
 
 // ─── FORM ───────────────────────────────────────────────────────
-const CONTACT_EMAIL_PATTERN = /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/;
+const CONTACT_EMAIL_PATTERN = /^[a-z0-9!#$%&'*+/=?^_`{|}~.-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i;
 const contactEmailInput = document.getElementById('contact-value');
 contactEmailInput?.addEventListener('input', () => contactEmailInput.setCustomValidity(''));
+
+function isValidContactEmail(value) {
+  const localPart = value.split('@')[0] || '';
+  return (
+    value.length <= 254 &&
+    localPart.length <= 64 &&
+    !localPart.startsWith('.') &&
+    !localPart.endsWith('.') &&
+    !localPart.includes('..') &&
+    CONTACT_EMAIL_PATTERN.test(value)
+  );
+}
 
 document.getElementById('contact-form')?.addEventListener('submit', async event => {
   event.preventDefault();
@@ -1662,7 +1674,7 @@ document.getElementById('contact-form')?.addEventListener('submit', async event 
   const painting_title = select.value ? select.options[select.selectedIndex].text.split(' — ')[0] : null;
   const message = document.getElementById('contact-message').value.trim();
 
-  if (!CONTACT_EMAIL_PATTERN.test(contact) || contact.length > 254) {
+  if (!isValidContactEmail(contact)) {
     contactEmailInput.setCustomValidity(t('form.invalidEmail'));
     contactEmailInput.reportValidity();
     return;

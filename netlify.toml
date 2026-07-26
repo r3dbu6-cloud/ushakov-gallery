@@ -18,7 +18,7 @@
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
     Cross-Origin-Opener-Policy = "same-origin"
     Strict-Transport-Security = "max-age=31536000; includeSubDomains"
-    Content-Security-Policy = "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'sha256-YoVLn54bLypWDnf7PnO1veUyaIRDSB+n/u9ec5LCHtU=' 'sha256-fjEeFQW1Hz4Vy20Yio3JsQBiFJpAqq1GZE/jSr8PKxk='; style-src 'self' 'unsafe-inline' https://fonts.bunny.net; font-src 'self' https://fonts.bunny.net data:; img-src 'self' data: blob: https:; connect-src 'self' https://ojofrcgezoxoybltthqu.supabase.co wss://ojofrcgezoxoybltthqu.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'sha256-tAnh2pUTeoVJ3J1nn3AGH5ugcrVrey+sSt1YX7+dKbM=' 'sha256-fjEeFQW1Hz4Vy20Yio3JsQBiFJpAqq1GZE/jSr8PKxk='; style-src 'self' 'unsafe-inline' https://fonts.bunny.net; font-src 'self' https://fonts.bunny.net data:; img-src 'self' data: blob: https:; connect-src 'self' https://ojofrcgezoxoybltthqu.supabase.co wss://ojofrcgezoxoybltthqu.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
 
 [[headers]]
   for = "/author/*"
