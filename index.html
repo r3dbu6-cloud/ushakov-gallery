@@ -152,6 +152,7 @@
   .card-price .currency { font-size:12px; font-weight:400; color:var(--sepia); margin-left:2px; }
   .card-buy-btn { background:transparent; border:1px solid var(--ink); color:var(--ink); padding:5px 12px; font-size:11px; font-family:'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; transition:all .2s; }
   .card-buy-btn:hover { background:var(--ink); color:var(--paper); }
+  .card-sold-status { border:1px solid rgba(139,111,71,.35); color:var(--sepia); padding:5px 12px; font-size:11px; letter-spacing:.1em; text-transform:uppercase; }
 
   .no-results { text-align:center; padding:80px; color:var(--sepia); grid-column:1/-1; }
   .no-results p { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:300; }
@@ -181,7 +182,8 @@
   .modal-price .currency { font-size:20px; color:var(--sepia); margin-left:4px; }
   .modal-actions { display:flex; flex-direction:column; gap:9px; }
   .btn-buy-modal { background:var(--ink); color:var(--paper); border:none; padding:15px 28px; font-size:12px; font-family:'Jost',sans-serif; letter-spacing:.15em; text-transform:uppercase; cursor:pointer; transition:background .2s; }
-  .btn-buy-modal:hover { background:var(--rust); }
+  .btn-buy-modal:hover:not(:disabled) { background:var(--rust); }
+  .btn-buy-modal:disabled { background:var(--sepia); cursor:not-allowed; opacity:.58; }
   .btn-inquire { background:transparent; border:1px solid rgba(139,111,71,.5); color:var(--sepia); padding:13px 28px; font-size:12px; font-family:'Jost',sans-serif; letter-spacing:.15em; text-transform:uppercase; cursor:pointer; transition:all .2s; }
   .btn-inquire:hover { border-color:var(--ink); color:var(--ink); }
   .modal-close { position:absolute; top:14px; right:14px; background:none; border:none; cursor:pointer; width:34px; height:34px; display:flex; align-items:center; justify-content:center; color:var(--sepia); transition:color .2s; }
@@ -515,8 +517,8 @@ const I18N = {
     'footer.copyright': '© 2026 Святослав Ушаков. Все права защищены.', 'footer.location': 'Москва, Россия',
     'common.loading': 'Загрузка…', 'common.close': 'Закрыть', 'common.cancel': 'Отмена',
     'common.image': 'Изображение', 'common.imageUnavailable': 'Изображение недоступно',
-    'modal.buy': 'Купить эту работу',
-    'card.buy': 'Купить', 'card.details': 'Подробнее', 'card.management': 'Управление каталогом',
+    'modal.buy': 'Купить эту работу', 'modal.sold': 'Работа продана',
+    'card.buy': 'Купить', 'card.sold': 'Продано', 'card.details': 'Подробнее', 'card.management': 'Управление каталогом',
     'card.position': 'Позиция {position} из {total}', 'card.section': 'Раздел',
     'card.previous': 'Раньше', 'card.next': 'Позже', 'card.drag': 'Перетащить работу',
     'card.dropBefore': 'Перед этой работой', 'card.dropAfter': 'После этой работы',
@@ -568,8 +570,8 @@ const I18N = {
     'footer.copyright': '© 2026 Slava Ushakov. All rights reserved.', 'footer.location': 'Moscow, Russia',
     'common.loading': 'Loading…', 'common.close': 'Close', 'common.cancel': 'Cancel',
     'common.image': 'Image', 'common.imageUnavailable': 'Image unavailable',
-    'modal.buy': 'Buy this artwork',
-    'card.buy': 'Buy', 'card.details': 'Details', 'card.management': 'Catalogue controls',
+    'modal.buy': 'Buy this artwork', 'modal.sold': 'Artwork sold',
+    'card.buy': 'Buy', 'card.sold': 'Sold', 'card.details': 'Details', 'card.management': 'Catalogue controls',
     'card.position': 'Position {position} of {total}', 'card.section': 'Section',
     'card.previous': 'Earlier', 'card.next': 'Later', 'card.drag': 'Drag artwork',
     'card.dropBefore': 'Before this artwork', 'card.dropAfter': 'After this artwork',
@@ -698,7 +700,8 @@ function applyLanguage(language = currentLanguage) {
   });
 
   document.getElementById('hero-art')?.setAttribute('aria-label', t('hero.openFeatured'));
-  const total = allPaintings.length ? `${allPaintings.length}+` : '—';
+  const publicPaintings = getPublicPaintings();
+  const total = publicPaintings.length ? `${publicPaintings.length}+` : '—';
   const heroMeta = document.getElementById('hero-art-meta');
   if (heroMeta) heroMeta.innerHTML = `<span id="stat-total">${total}</span> ${t('hero.works')}<br>${t('hero.sections')}`;
   if (!heroPaintings.length) document.getElementById('hero-art-title').textContent = t('hero.galleryName');
@@ -1188,7 +1191,7 @@ async function loadPaintings() {
         title: PAINTING_TITLE_OVERRIDES.get(painting.id) || painting.title,
         flag_hidden: RESTORED_PAINTING_IDS.has(painting.id) ? false : painting.flag_hidden
       }));
-    document.getElementById('stat-total').textContent = allPaintings.length + '+';
+    document.getElementById('stat-total').textContent = getPublicPaintings().length + '+';
     initHeroRotation();
     TECH_GROUPS.forEach(group => syncSectionOrder(group.key));
     applyCatalogMigrations();
@@ -1206,9 +1209,12 @@ async function loadPaintings() {
 }
 
 // ─── GRID ───────────────────────────────────────────────────────
+function getPublicPaintings() {
+  return allPaintings.filter(painting => !painting.flag_hidden);
+}
+
 function getVisible() {
-  let items = [...allPaintings];
-  items = items.filter(painting => !painting.flag_hidden);
+  let items = getPublicPaintings();
   if (currentSearch) {
     const query = currentSearch.toLowerCase();
     items = items.filter(painting =>
@@ -1251,7 +1257,13 @@ function cardHTML(painting, index, sectionKey, total) {
     ? `<img src="${escapeHTML(url)}" alt="${title}" loading="lazy">`
     : `<div class="card-placeholder">${imagePlaceholderHTML(t('common.imageUnavailable'))}</div>`;
 
-  const priceRow = `<div class="card-price-row"><div class="card-price">${fmt(painting.price)}<span class="currency">₽</span></div><button class="card-buy-btn" type="button" data-action="buy" data-id="${painting.id}">${t('card.buy')}</button></div>`;
+  const purchaseAction = painting.in_stock
+    ? `<button class="card-buy-btn" type="button" data-action="buy" data-id="${painting.id}">${t('card.buy')}</button>`
+    : `<span class="card-sold-status">${t('card.sold')}</span>`;
+  const priceRow = `<div class="card-price-row"><div class="card-price">${fmt(painting.price)}<span class="currency">₽</span></div>${purchaseAction}</div>`;
+  const overlayPurchaseAction = painting.in_stock
+    ? `<button class="overlay-btn primary" type="button" data-action="buy" data-id="${painting.id}">${t('card.buy')}</button>`
+    : '';
 
   return `<div class="card" style="animation-delay:${Math.min(index * .04, .5)}s" data-id="${painting.id}" data-section="${sectionKey}">
     <div class="card-image">
@@ -1260,7 +1272,7 @@ function cardHTML(painting, index, sectionKey, total) {
       <div class="card-technique-badge">${techLabel(sectionKey)}</div>
       <div class="card-overlay">
         <div class="card-overlay-actions">
-          <button class="overlay-btn primary" type="button" data-action="buy" data-id="${painting.id}">${t('card.buy')}</button>
+          ${overlayPurchaseAction}
           <button class="overlay-btn" type="button" data-action="details" data-id="${painting.id}">${t('card.details')}</button>
         </div>
       </div>
@@ -1394,7 +1406,7 @@ function populateSelect() {
   const select = document.getElementById('painting-select');
   const selectedValue = select.value;
   select.innerHTML = `<option value="">${t('form.choosePainting')}</option>`;
-  allPaintings.forEach(painting => {
+  getPublicPaintings().filter(painting => painting.in_stock).forEach(painting => {
     const option = document.createElement('option');
     option.value = painting.id;
     option.textContent = `${painting.title} — ${fmt(painting.price)} ₽`;
@@ -1421,6 +1433,10 @@ function openModal(id) {
     <div class="modal-detail"><span class="modal-detail-label">${t('details.availability')}</span><span>${painting.in_stock ? t('details.inStock') : t('details.sold')}</span></div>
   `;
 
+  const buyButton = document.getElementById('modal-buy');
+  buyButton.disabled = !painting.in_stock;
+  buyButton.textContent = painting.in_stock ? t('modal.buy') : t('modal.sold');
+
   const wrap = document.getElementById('modal-img-wrap');
   const url = painting.image_url ? imgUrl(painting.image_url) : null;
   wrap.innerHTML = url
@@ -1438,6 +1454,7 @@ function closeModal() {
 }
 
 function goToBuy() {
+  if (!currentModalPainting?.in_stock) return;
   if (currentModalPainting) {
     const select = document.getElementById('painting-select');
     for (const option of select.options) {
@@ -1453,6 +1470,7 @@ function goToBuy() {
 
 function buyPainting(id) {
   const painting = allPaintings.find(item => item.id === id);
+  if (!painting?.in_stock || painting.flag_hidden) return;
   if (painting) {
     const select = document.getElementById('painting-select');
     for (const option of select.options) {
