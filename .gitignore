@@ -3,6 +3,7 @@
 .netlify/
 .supabase/
 dist/
+.backups/
 supabase/.temp/
 
 # Existing migrations belong to the shared remote Supabase project and include
