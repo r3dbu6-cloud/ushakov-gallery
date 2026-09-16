@@ -204,8 +204,12 @@
   .card-admin { display:none; padding:12px 16px 16px; border-top:1px solid rgba(139,111,71,.12); background:#fbf7f0; }
   .admin-mode .card-admin { display:block; }
   .card-admin-top { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
+  .card-admin-heading { display:flex; align-items:center; gap:8px; min-width:0; }
   .card-admin-label { font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--sepia); }
   .card-admin-position { font-size:11px; color:var(--ink); }
+  .card-drag-handle { display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; flex:0 0 30px; padding:0; border:1px solid rgba(139,111,71,.35); background:#fff; color:var(--sepia); cursor:grab; font-size:17px; line-height:1; touch-action:none; }
+  .card-drag-handle:hover { border-color:var(--ink); color:var(--ink); }
+  .card-drag-handle:active { cursor:grabbing; }
   .card-admin-field { display:block; margin-bottom:10px; }
   .card-admin-field span { display:block; margin-bottom:6px; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--sepia); }
   .card-section-select { width:100%; background:#fff; border:1px solid rgba(139,111,71,.3); color:var(--ink); padding:9px 12px; font-size:12px; font-family:'Jost',sans-serif; outline:none; }
@@ -214,15 +218,13 @@
   .card-order-btn { flex:1; background:transparent; border:1px solid rgba(139,111,71,.35); color:var(--sepia); padding:8px 10px; font-size:11px; font-family:'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; transition:all .2s; }
   .card-order-btn:hover:not(:disabled) { border-color:var(--ink); color:var(--ink); }
   .card-order-btn:disabled { opacity:.35; cursor:not-allowed; }
-  .admin-mode .card { cursor:grab; }
-  .admin-mode .card:active { cursor:grabbing; }
   .admin-mode .card.dragging { opacity:.35; transform:scale(.98); box-shadow:none; }
   .admin-mode .card.drag-before::before,
-  .admin-mode .card.drag-after::after { content:''; position:absolute; z-index:12; top:0; bottom:0; width:4px; background:var(--rust); pointer-events:none; }
-  .admin-mode .card.drag-before::before { left:-16px; }
-  .admin-mode .card.drag-after::after { right:-16px; }
-  .admin-mode .tech-group.drag-target .catalog-grid,
-  .admin-mode .tech-group.drag-target .tech-group-empty { outline:2px dashed var(--gold); outline-offset:8px; }
+  .admin-mode .card.drag-after::after { content:attr(data-drop-label); position:absolute; z-index:12; top:10px; width:max-content; max-width:150px; background:var(--rust); color:#fff; padding:6px 9px; font-size:10px; line-height:1.2; letter-spacing:.08em; text-transform:uppercase; pointer-events:none; box-shadow:0 4px 14px rgba(26,20,16,.22); }
+  .admin-mode .card.drag-before { box-shadow:inset 6px 0 0 var(--rust),0 8px 28px rgba(26,20,16,.16); }
+  .admin-mode .card.drag-after { box-shadow:inset -6px 0 0 var(--rust),0 8px 28px rgba(26,20,16,.16); }
+  .admin-mode .card.drag-before::before { left:10px; }
+  .admin-mode .card.drag-after::after { right:10px; }
 
   /* ── CONTACT ── */
   #contact { padding:90px 48px; background:var(--ink); color:var(--paper); }
@@ -516,7 +518,8 @@ const I18N = {
     'modal.buy': 'Купить эту работу',
     'card.buy': 'Купить', 'card.details': 'Подробнее', 'card.management': 'Управление каталогом',
     'card.position': 'Позиция {position} из {total}', 'card.section': 'Раздел',
-    'card.previous': 'Раньше', 'card.next': 'Позже',
+    'card.previous': 'Раньше', 'card.next': 'Позже', 'card.drag': 'Перетащить работу',
+    'card.dropBefore': 'Перед этой работой', 'card.dropAfter': 'После этой работы',
     'details.year': 'Год', 'details.material': 'Материал', 'details.size': 'Размер',
     'details.technique': 'Техника', 'details.availability': 'Наличие',
     'details.inStock': 'Оригинал в наличии', 'details.sold': 'Продано', 'details.cm': 'см'
@@ -568,7 +571,8 @@ const I18N = {
     'modal.buy': 'Buy this artwork',
     'card.buy': 'Buy', 'card.details': 'Details', 'card.management': 'Catalogue controls',
     'card.position': 'Position {position} of {total}', 'card.section': 'Section',
-    'card.previous': 'Earlier', 'card.next': 'Later',
+    'card.previous': 'Earlier', 'card.next': 'Later', 'card.drag': 'Drag artwork',
+    'card.dropBefore': 'Before this artwork', 'card.dropAfter': 'After this artwork',
     'details.year': 'Year', 'details.material': 'Material', 'details.size': 'Size',
     'details.technique': 'Technique', 'details.availability': 'Availability',
     'details.inStock': 'Available', 'details.sold': 'Sold', 'details.cm': 'cm'
@@ -1105,6 +1109,7 @@ function movePaintingByDrag(id, sectionKey, targetId = null, placeAfter = false)
 function clearCatalogDragState(container = document) {
   container.querySelectorAll('.dragging,.drag-before,.drag-after,.drag-target').forEach(element => {
     element.classList.remove('dragging', 'drag-before', 'drag-after', 'drag-target');
+    element.removeAttribute('data-drop-label');
   });
 }
 
@@ -1219,7 +1224,10 @@ function cardAdminHTML(painting, sectionKey, index, total) {
   if (!adminMode) return '';
   return `<div class="card-admin">
     <div class="card-admin-top">
-      <span class="card-admin-label">${t('card.management')}</span>
+      <div class="card-admin-heading">
+        <button class="card-drag-handle" type="button" draggable="true" data-role="drag-handle" data-id="${painting.id}" aria-label="${t('card.drag')}" title="${t('card.drag')}">⠿</button>
+        <span class="card-admin-label">${t('card.management')}</span>
+      </div>
       <span class="card-admin-position">${t('card.position', { position: index + 1, total })}</span>
     </div>
     <label class="card-admin-field">
@@ -1245,7 +1253,7 @@ function cardHTML(painting, index, sectionKey, total) {
 
   const priceRow = `<div class="card-price-row"><div class="card-price">${fmt(painting.price)}<span class="currency">₽</span></div><button class="card-buy-btn" type="button" data-action="buy" data-id="${painting.id}">${t('card.buy')}</button></div>`;
 
-  return `<div class="card" style="animation-delay:${Math.min(index * .04, .5)}s" data-id="${painting.id}" data-section="${sectionKey}" draggable="${adminMode}">
+  return `<div class="card" style="animation-delay:${Math.min(index * .04, .5)}s" data-id="${painting.id}" data-section="${sectionKey}">
     <div class="card-image">
       ${imageHTML}
       <div class="card-size-badge">${painting.width_cm}×${painting.height_cm} ${t('details.cm')}</div>
@@ -1271,13 +1279,14 @@ function bindCatalogAdminControls(container) {
   if (adminMode) {
     container.querySelectorAll('.card').forEach(card => {
       card.addEventListener('dragstart', event => {
-        if (event.target.closest('button,select,input,label')) {
+        if (!event.target.closest('[data-role="drag-handle"]')) {
           event.preventDefault();
           return;
         }
         draggedPaintingId = Number(card.dataset.id);
         event.dataTransfer.effectAllowed = 'move';
         event.dataTransfer.setData('text/plain', String(draggedPaintingId));
+        event.dataTransfer.setDragImage(card, card.offsetWidth / 2, 30);
         requestAnimationFrame(() => card.classList.add('dragging'));
       });
 
@@ -1289,6 +1298,7 @@ function bindCatalogAdminControls(container) {
         container.querySelector(`[data-id="${draggedPaintingId}"]`)?.classList.add('dragging');
         const placeAfter = event.clientX > card.getBoundingClientRect().left + card.offsetWidth / 2;
         card.classList.add(placeAfter ? 'drag-after' : 'drag-before');
+        card.dataset.dropLabel = t(placeAfter ? 'card.dropAfter' : 'card.dropBefore');
         event.dataTransfer.dropEffect = 'move';
       });
 
@@ -1309,28 +1319,6 @@ function bindCatalogAdminControls(container) {
         draggedPaintingId = null;
         dragJustFinished = true;
         setTimeout(() => { dragJustFinished = false; }, 0);
-      });
-    });
-
-    container.querySelectorAll('.tech-group').forEach(group => {
-      group.addEventListener('dragover', event => {
-        if (!draggedPaintingId || event.target.closest('.card')) return;
-        event.preventDefault();
-        clearCatalogDragState(container);
-        container.querySelector(`[data-id="${draggedPaintingId}"]`)?.classList.add('dragging');
-        group.classList.add('drag-target');
-      });
-      group.addEventListener('drop', event => {
-        if (!draggedPaintingId || event.target.closest('.card')) return;
-        event.preventDefault();
-        const sectionKey = TECH_GROUPS.find(item => item.anchor === group.id)?.key;
-        if (sectionKey) {
-          const paintingId = draggedPaintingId;
-          draggedPaintingId = null;
-          dragJustFinished = true;
-          setTimeout(() => { dragJustFinished = false; }, 0);
-          movePaintingByDrag(paintingId, sectionKey);
-        }
       });
     });
   }
@@ -1380,7 +1368,7 @@ function renderGrid() {
   container.querySelectorAll('.card').forEach(card => {
     card.addEventListener('click', event => {
       if (dragJustFinished) return;
-      if (event.target.closest('.card-buy-btn,.overlay-btn,.card-order-btn,.card-section-select')) return;
+      if (event.target.closest('.card-buy-btn,.overlay-btn,.card-order-btn,.card-section-select,.card-drag-handle')) return;
       openModal(Number(card.dataset.id));
     });
   });
