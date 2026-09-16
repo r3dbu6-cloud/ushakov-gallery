@@ -143,14 +143,6 @@
   .overlay-btn.primary { background:var(--ink); color:var(--paper); }
   .overlay-btn.primary:hover { background:var(--rust); }
 
-  /* Upload zone on card */
-  .card-upload-zone { position:absolute; inset:0; background:rgba(201,168,76,.15); border:2px dashed var(--gold); display:none; align-items:center; justify-content:center; flex-direction:column; gap:8px; transition:all .2s; }
-  .card-upload-zone.active { display:flex; }
-  .card-upload-zone.dragover { background:rgba(201,168,76,.3); }
-  .card-upload-zone span { font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink); }
-  .card-upload-zone svg { width:32px; height:32px; stroke:var(--gold); fill:none; }
-  .card-upload-input { display:none; }
-
   .card-body { padding:14px 16px 18px; }
   .card-title { font-family:'Cormorant Garamond',serif; font-size:17px; font-weight:500; line-height:1.3; color:var(--ink); margin-bottom:5px; }
   .card-year { font-size:11px; color:var(--sepia); letter-spacing:.08em; }
@@ -161,38 +153,8 @@
   .card-buy-btn { background:transparent; border:1px solid var(--ink); color:var(--ink); padding:5px 12px; font-size:11px; font-family:'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; transition:all .2s; }
   .card-buy-btn:hover { background:var(--ink); color:var(--paper); }
 
-  /* Upload button on card (admin mode) */
-  .card-upload-btn { display:none; position:absolute; bottom:56px; right:10px; background:rgba(201,168,76,.9); border:none; padding:5px 10px; font-size:10px; font-family:'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; color:var(--ink); transition:background .2s; }
-  .admin-mode .card-upload-btn { display:block; }
-  .card-upload-btn:hover { background:var(--gold); }
-
   .no-results { text-align:center; padding:80px; color:var(--sepia); grid-column:1/-1; }
   .no-results p { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:300; }
-
-  /* ── ADMIN FLAGS (visible only in admin-mode) ── */
-  .card-flags { display:none; padding:8px 12px 10px; background:#fff8f0; border-top:1px solid rgba(139,111,71,.12); flex-direction:column; gap:0; }
-  .admin-mode .card-flags { display:flex; }
-  .flag-row { display:flex; align-items:center; gap:7px; padding:3px 0; }
-  .flag-row input[type=checkbox] { width:13px; height:13px; accent-color:var(--rust); cursor:pointer; flex-shrink:0; }
-  .flag-row span { font-size:11px; font-family:'Jost',sans-serif; color:var(--sepia); cursor:pointer; letter-spacing:.04em; user-select:none; }
-  .flag-row.flag-image span { color:#c0392b; }
-  .flag-row.flag-desc span { color:#e67e22; }
-  .flag-row.flag-hide span { color:#7f8c8d; }
-  .flag-row input:checked ~ span { font-weight:500; }
-  .card.has-flag-image { outline:2px solid rgba(192,57,43,.4); }
-  .card.has-flag-desc { outline:2px solid rgba(230,126,34,.4); }
-  .card.has-flag-hidden { opacity:.4; }
-  .flag-saving { font-size:10px; color:var(--sepia); opacity:.6; padding:2px 0 4px 20px; display:none; font-family:'Jost',sans-serif; font-style:italic; }
-  .flag-saving.show { display:block; }
-
-  /* ── ADMIN PHOTO BUTTON ── */
-  .card-photo-btn { display:none; position:absolute; bottom:10px; right:10px; background:var(--ink); border:none; padding:5px 10px; font-size:10px; font-family:'Jost',sans-serif; letter-spacing:.08em; text-transform:uppercase; cursor:pointer; color:var(--paper); transition:background .2s; z-index:5; }
-  .admin-mode .card-photo-btn { display:block; }
-  .card-photo-btn:hover { background:var(--rust); }
-
-  /* ── HIDDEN tab (admin only) ── */
-  .filter-btn-hidden { display:none; }
-  .admin-mode .filter-btn-hidden { display:block; }
 
   /* Loading skeleton */
   .skeleton { background:linear-gradient(90deg,#e0d8cc 25%,#d0c8b8 50%,#e0d8cc 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; }
@@ -225,39 +187,6 @@
   .modal-close { position:absolute; top:14px; right:14px; background:none; border:none; cursor:pointer; width:34px; height:34px; display:flex; align-items:center; justify-content:center; color:var(--sepia); transition:color .2s; }
   .modal-close:hover { color:var(--ink); }
 
-  /* ── UPLOAD MODAL ── */
-  .upload-modal-backdrop { position:fixed; inset:0; z-index:300; background:rgba(26,20,16,.8); display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .2s; }
-  .upload-modal-backdrop.open { opacity:1; pointer-events:all; }
-  .upload-modal { background:var(--paper); width:480px; padding:40px; position:relative; transform:translateY(20px); transition:transform .2s; }
-  .upload-modal-backdrop.open .upload-modal { transform:translateY(0); }
-  .upload-modal h3 { font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:300; margin-bottom:6px; }
-  .upload-modal .painting-name { font-size:13px; color:var(--sepia); margin-bottom:28px; }
-  .drop-zone { border:2px dashed rgba(139,111,71,.5); padding:40px 20px; text-align:center; transition:all .2s; margin-bottom:16px; }
-  .drop-zone.dragover { border-color:var(--gold); background:rgba(201,168,76,.08); }
-  .drop-zone p { font-size:13px; color:var(--sepia); line-height:1.6; }
-  .drop-zone strong { font-size:12px; letter-spacing:.12em; text-transform:uppercase; display:block; margin-bottom:8px; color:var(--ink); }
-  .drop-zone svg { width:36px; height:36px; stroke:var(--sepia); fill:none; margin:0 auto 12px; display:block; }
-  .upload-file-input { display:none; }
-  .btn-choose-file { display:inline-block; margin-top:12px; background:transparent; border:1px solid var(--sepia); color:var(--sepia); padding:9px 22px; font-size:12px; font-family:'Jost',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; transition:all .2s; }
-  .btn-choose-file:hover { border-color:var(--ink); color:var(--ink); }
-  .upload-preview { display:none; margin-bottom:16px; }
-  .upload-preview img { width:100%; max-height:220px; object-fit:contain; border:1px solid var(--mist); }
-  .upload-preview-name { font-size:12px; color:var(--sepia); margin-top:8px; }
-  .upload-progress { display:none; margin-bottom:16px; }
-  .upload-progress-bar { height:2px; background:var(--mist); overflow:hidden; }
-  .upload-progress-fill { height:100%; background:var(--gold); width:0; transition:width .3s; }
-  .upload-progress-text { font-size:11px; color:var(--sepia); margin-top:6px; letter-spacing:.08em; }
-  .upload-actions { display:flex; gap:10px; }
-  .btn-upload-confirm { flex:1; background:var(--ink); color:var(--paper); border:none; padding:14px; font-size:12px; font-family:'Jost',sans-serif; letter-spacing:.15em; text-transform:uppercase; cursor:pointer; transition:background .2s; }
-  .btn-upload-confirm:hover { background:var(--rust); }
-  .btn-upload-confirm:disabled { background:var(--sepia); cursor:not-allowed; opacity:.5; }
-  .btn-upload-cancel { background:transparent; border:1px solid rgba(139,111,71,.4); color:var(--sepia); padding:14px 20px; font-size:12px; font-family:'Jost',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; transition:all .2s; }
-  .btn-upload-cancel:hover { border-color:var(--ink); color:var(--ink); }
-  .upload-error { color:var(--rust); font-size:12px; margin-bottom:12px; display:none; }
-  .upload-success-msg { display:none; text-align:center; padding:20px 0; }
-  .upload-success-msg p { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:300; color:var(--ink); }
-  .upload-success-msg small { font-size:12px; color:var(--sepia); }
-
   /* ── ADMIN BANNER ── */
   .admin-banner { display:none; background:var(--ink); color:var(--paper); padding:10px 48px; font-size:12px; letter-spacing:.1em; text-transform:uppercase; align-items:center; justify-content:space-between; margin-top:72px; }
   .admin-banner.show { display:flex; }
@@ -269,7 +198,7 @@
   .admin-banner .admin-status { color:rgba(245,240,232,.72); letter-spacing:.04em; text-transform:none; }
   .btn-save-layout { background:var(--gold); border:1px solid var(--gold); color:var(--ink); }
   .btn-save-layout:hover { background:#d9b85c; border-color:#d9b85c; color:var(--ink); }
-  .btn-save-layout:disabled { opacity:.55; cursor:not-allowed; }
+  .admin-banner-actions button:disabled { opacity:.4; cursor:not-allowed; }
 
   /* ── CARD ADMIN CONTROLS ── */
   .card-admin { display:none; padding:12px 16px 16px; border-top:1px solid rgba(139,111,71,.12); background:#fbf7f0; }
@@ -294,39 +223,6 @@
   .admin-mode .card.drag-after::after { right:-16px; }
   .admin-mode .tech-group.drag-target .catalog-grid,
   .admin-mode .tech-group.drag-target .tech-group-empty { outline:2px dashed var(--gold); outline-offset:8px; }
-
-  /* ── PHOTO PICKER MODAL ── */
-  .photo-picker-backdrop { position:fixed; inset:0; z-index:400; background:rgba(26,20,16,.85); display:flex; align-items:center; justify-content:center; padding:24px; opacity:0; pointer-events:none; transition:opacity .25s; }
-  .photo-picker-backdrop.open { opacity:1; pointer-events:all; }
-  .photo-picker { background:var(--paper); width:min(900px,95vw); max-height:85vh; display:flex; flex-direction:column; position:relative; transform:translateY(20px); transition:transform .25s; }
-  .photo-picker-backdrop.open .photo-picker { transform:translateY(0); }
-  .photo-picker-header { padding:22px 28px 16px; border-bottom:1px solid rgba(139,111,71,.2); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
-  .photo-picker-header h3 { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:300; }
-  .photo-picker-header p { font-size:12px; color:var(--sepia); margin-top:3px; }
-  .photo-picker-close { background:none; border:none; cursor:pointer; font-size:20px; color:var(--sepia); width:32px; height:32px; display:flex; align-items:center; justify-content:center; }
-  .photo-picker-close:hover { color:var(--ink); }
-  .photo-picker-actions { padding:14px 28px; border-bottom:1px solid rgba(139,111,71,.12); display:flex; gap:12px; align-items:center; flex-shrink:0; flex-wrap:wrap; }
-  .btn-upload-new { background:var(--ink); color:var(--paper); border:none; padding:9px 20px; font-size:11px; font-family:'Jost',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; transition:background .2s; }
-  .btn-upload-new:hover { background:var(--rust); }
-  .photo-picker-search { background:transparent; border:1px solid rgba(139,111,71,.4); padding:8px 14px; font-size:12px; font-family:'Jost',sans-serif; color:var(--ink); outline:none; width:200px; }
-  .photo-picker-search::placeholder { color:var(--sepia); opacity:.6; }
-  .photo-picker-grid { flex:1; overflow-y:auto; padding:16px 28px 24px; display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:10px; }
-  .photo-item { cursor:pointer; border:2px solid transparent; transition:border-color .15s; }
-  .photo-item:hover { border-color:var(--gold); }
-  .photo-item.selected { border-color:var(--ink); }
-  .photo-item img { width:100%; aspect-ratio:3/4; object-fit:cover; display:block; }
-  .photo-item-label { font-size:10px; color:var(--sepia); padding:4px 4px 2px; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .photo-picker-footer { padding:14px 28px; border-top:1px solid rgba(139,111,71,.2); display:flex; gap:10px; justify-content:flex-end; flex-shrink:0; }
-  .btn-picker-apply { background:var(--ink); color:var(--paper); border:none; padding:11px 24px; font-size:12px; font-family:'Jost',sans-serif; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; transition:background .2s; }
-  .btn-picker-apply:hover { background:var(--rust); }
-  .btn-picker-apply:disabled { opacity:.4; cursor:not-allowed; }
-  .btn-picker-cancel { background:transparent; border:1px solid rgba(139,111,71,.4); color:var(--sepia); padding:11px 20px; font-size:12px; font-family:'Jost',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; }
-  .photo-picker-upload-area { display:none; padding:16px 28px; border-bottom:1px solid rgba(139,111,71,.12); }
-  .photo-picker-upload-area.show { display:block; }
-  .picker-drop-zone { border:2px dashed rgba(139,111,71,.4); padding:28px; text-align:center; transition:all .2s; }
-  .picker-drop-zone.dragover { border-color:var(--gold); background:rgba(201,168,76,.06); }
-  .picker-drop-zone p { font-size:13px; color:var(--sepia); }
-  .picker-upload-input { display:none; }
 
   /* ── CONTACT ── */
   #contact { padding:90px 48px; background:var(--ink); color:var(--paper); }
@@ -381,7 +277,6 @@
     .modal-img-wrap{aspect-ratio:4/3;}
     footer{padding:20px;flex-direction:column;gap:8px;}
     .form-row{grid-template-columns:1fr;}
-    .upload-modal{width:calc(100% - 32px);padding:28px;}
     .card-admin-actions{grid-template-columns:1fr;}
   }
   @media(max-width:600px){
@@ -457,7 +352,9 @@
     <span class="admin-status" id="admin-status">Перетаскивайте карточки мышью или используйте кнопки.</span>
   </div>
   <div class="admin-banner-actions">
-    <button class="btn-exit-admin btn-save-layout" id="btn-save-layout" type="button" data-i18n="admin.save">Сохранить каталог</button>
+    <button class="btn-exit-admin" id="btn-undo-layout" type="button" data-i18n="admin.undo" disabled>Отменить</button>
+    <button class="btn-exit-admin" id="btn-reset-layout" type="button" data-i18n="admin.reset" disabled>Сбросить</button>
+    <button class="btn-exit-admin btn-save-layout" id="btn-save-layout" type="button" data-i18n="admin.save" disabled>Сохранить каталог</button>
     <button class="btn-exit-admin" id="btn-exit-admin" type="button" data-i18n="admin.exit">Выйти</button>
   </div>
 </div>
@@ -551,49 +448,6 @@
   </div>
 </div>
 
-<!-- UPLOAD MODAL -->
-<div class="upload-modal-backdrop" id="upload-modal">
-  <div class="upload-modal">
-    <button class="modal-close" id="upload-modal-close">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
-    </button>
-    <h3 data-i18n="upload.title">Загрузить изображение</h3>
-    <p class="painting-name" id="upload-painting-name"></p>
-
-    <div class="upload-error" id="upload-error"></div>
-
-    <div id="upload-form-area">
-      <div class="drop-zone" id="drop-zone">
-        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        <strong data-i18n="upload.drop">Перетащите файл сюда</strong>
-        <p data-i18n="upload.formats">JPEG, PNG или WebP · максимум 10 МБ</p>
-        <button class="btn-choose-file" type="button" id="btn-choose-file" data-i18n="upload.choose">Выбрать файл</button>
-      </div>
-      <input type="file" id="upload-file-input" class="upload-file-input" accept="image/jpeg,image/png,image/webp">
-
-      <div class="upload-preview" id="upload-preview">
-        <img id="upload-preview-img" src="" alt="">
-        <div class="upload-preview-name" id="upload-preview-name"></div>
-      </div>
-
-      <div class="upload-progress" id="upload-progress">
-        <div class="upload-progress-bar"><div class="upload-progress-fill" id="upload-progress-fill"></div></div>
-        <div class="upload-progress-text" id="upload-progress-text" data-i18n="common.loading">Загрузка…</div>
-      </div>
-
-      <div class="upload-actions">
-        <button class="btn-upload-confirm" id="btn-upload-confirm" disabled data-i18n="upload.upload">Загрузить</button>
-        <button class="btn-upload-cancel" id="btn-upload-cancel" data-i18n="common.cancel">Отмена</button>
-      </div>
-    </div>
-
-    <div class="upload-success-msg" id="upload-success-msg">
-      <p data-i18n="upload.success">Изображение загружено ✓</p>
-      <small data-i18n="upload.autoUpdate">Карточка обновится автоматически</small>
-    </div>
-  </div>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.8"></script>
 <script data-cfasync="false">
 // ─── CONFIG ─────────────────────────────────────────────────────
@@ -628,7 +482,7 @@ const I18N = {
     'hero.catalog': 'Смотреть каталог', 'hero.buy': 'Купить работу', 'hero.featured': 'Избранная работа',
     'hero.galleryName': 'Галерея Святослава Ушакова', 'hero.works': 'работ', 'hero.sections': '9 разделов',
     'hero.openFeatured': 'Открыть работу из подборки',
-    'admin.mode': 'Режим автора', 'admin.save': 'Сохранить каталог', 'admin.exit': 'Выйти',
+    'admin.mode': 'Режим автора', 'admin.save': 'Сохранить каталог', 'admin.undo': 'Отменить', 'admin.reset': 'Сбросить', 'admin.exit': 'Выйти',
     'admin.help': 'Перетаскивайте карточки мышью или используйте кнопки.',
     'admin.unsaved': 'Есть несохранённые изменения.', 'admin.saving': 'Сохраняем…',
     'admin.remoteSaved': 'Каталог сохранён и опубликован.',
@@ -636,6 +490,11 @@ const I18N = {
     'admin.orderChanged': 'Порядок изменён. Нажмите «Сохранить каталог».',
     'admin.sectionChanged': 'Раздел изменён. Нажмите «Сохранить каталог».',
     'admin.dragChanged': 'Порядок изменён перетаскиванием. Нажмите «Сохранить каталог».',
+    'admin.undoDone': 'Последнее изменение отменено.', 'admin.resetDone': 'Восстановлена опубликованная версия.',
+    'admin.draftRestored': 'Восстановлен локальный черновик. Проверьте и сохраните его.',
+    'admin.remoteChanged': 'Каталог уже изменён другим автором. Обновите страницу: ваш черновик сохранён на этом устройстве.',
+    'admin.confirmReset': 'Сбросить все несохранённые изменения?',
+    'admin.confirmExit': 'Есть несохранённые изменения. Выйти и оставить черновик на этом устройстве?',
     'admin.saved': 'Сохранено {date}',
     'catalog.title': 'Каталог работ', 'catalog.loading': 'Загрузка…', 'catalog.sort': 'Сортировка:',
     'catalog.default': 'По умолчанию', 'catalog.priceAsc': 'Цена ↑', 'catalog.priceDesc': 'Цена ↓',
@@ -657,18 +516,10 @@ const I18N = {
     'modal.buy': 'Купить эту работу',
     'card.buy': 'Купить', 'card.details': 'Подробнее', 'card.management': 'Управление каталогом',
     'card.position': 'Позиция {position} из {total}', 'card.section': 'Раздел',
-    'card.left': 'Левее', 'card.right': 'Правее', 'card.up': 'Выше', 'card.down': 'Ниже',
+    'card.previous': 'Раньше', 'card.next': 'Позже',
     'details.year': 'Год', 'details.material': 'Материал', 'details.size': 'Размер',
     'details.technique': 'Техника', 'details.availability': 'Наличие',
-    'details.inStock': 'Оригинал в наличии', 'details.sold': 'Продано', 'details.cm': 'см',
-    'upload.title': 'Загрузить изображение', 'upload.drop': 'Перетащите файл сюда',
-    'upload.formats': 'JPEG, PNG или WebP · максимум 10 МБ', 'upload.choose': 'Выбрать файл',
-    'upload.upload': 'Загрузить', 'upload.success': 'Изображение загружено ✓',
-    'upload.autoUpdate': 'Карточка обновится автоматически', 'upload.fileLoading': 'Загрузка файла…',
-    'upload.recordUpdate': 'Обновление записи…', 'upload.allowed': 'Допустимые форматы: JPEG, PNG, WebP',
-    'upload.tooLarge': 'Файл превышает 10 МБ', 'upload.fileError': 'Ошибка загрузки файла: ',
-    'upload.databaseError': 'Файл загружен, но ошибка записи в БД: ', 'upload.kb': 'КБ',
-    'upload.localOnly': 'Загрузка изображений с сайта отключена. Измените файл на этом ноутбуке.'
+    'details.inStock': 'Оригинал в наличии', 'details.sold': 'Продано', 'details.cm': 'см'
   },
   en: {
     'page.title': 'Slava Ushakov — Artist',
@@ -683,7 +534,7 @@ const I18N = {
     'hero.catalog': 'View catalogue', 'hero.buy': 'Buy an artwork', 'hero.featured': 'Featured artwork',
     'hero.galleryName': 'Slava Ushakov Gallery', 'hero.works': 'works', 'hero.sections': '9 sections',
     'hero.openFeatured': 'Open featured artwork',
-    'admin.mode': 'Artist mode', 'admin.save': 'Save catalogue', 'admin.exit': 'Sign out',
+    'admin.mode': 'Artist mode', 'admin.save': 'Save catalogue', 'admin.undo': 'Undo', 'admin.reset': 'Reset', 'admin.exit': 'Sign out',
     'admin.help': 'Drag cards with the mouse or use the buttons.',
     'admin.unsaved': 'There are unsaved changes.', 'admin.saving': 'Saving…',
     'admin.remoteSaved': 'Catalogue saved and published.',
@@ -691,6 +542,11 @@ const I18N = {
     'admin.orderChanged': 'Order changed. Click “Save catalogue”.',
     'admin.sectionChanged': 'Section changed. Click “Save catalogue”.',
     'admin.dragChanged': 'Order changed by dragging. Click “Save catalogue”.',
+    'admin.undoDone': 'The last change was undone.', 'admin.resetDone': 'The published version was restored.',
+    'admin.draftRestored': 'A local draft was restored. Review and save it.',
+    'admin.remoteChanged': 'Another author has already changed the catalogue. Reload the page; your draft is saved on this device.',
+    'admin.confirmReset': 'Discard all unsaved changes?',
+    'admin.confirmExit': 'There are unsaved changes. Sign out and keep the draft on this device?',
     'admin.saved': 'Saved {date}',
     'catalog.title': 'Art catalogue', 'catalog.loading': 'Loading…', 'catalog.sort': 'Sort:',
     'catalog.default': 'Default', 'catalog.priceAsc': 'Price ↑', 'catalog.priceDesc': 'Price ↓',
@@ -712,18 +568,10 @@ const I18N = {
     'modal.buy': 'Buy this artwork',
     'card.buy': 'Buy', 'card.details': 'Details', 'card.management': 'Catalogue controls',
     'card.position': 'Position {position} of {total}', 'card.section': 'Section',
-    'card.left': 'Left', 'card.right': 'Right', 'card.up': 'Up', 'card.down': 'Down',
+    'card.previous': 'Earlier', 'card.next': 'Later',
     'details.year': 'Year', 'details.material': 'Material', 'details.size': 'Size',
     'details.technique': 'Technique', 'details.availability': 'Availability',
-    'details.inStock': 'Available', 'details.sold': 'Sold', 'details.cm': 'cm',
-    'upload.title': 'Upload image', 'upload.drop': 'Drop a file here',
-    'upload.formats': 'JPEG, PNG or WebP · maximum 10 MB', 'upload.choose': 'Choose file',
-    'upload.upload': 'Upload', 'upload.success': 'Image uploaded ✓',
-    'upload.autoUpdate': 'The card will update automatically', 'upload.fileLoading': 'Uploading file…',
-    'upload.recordUpdate': 'Updating record…', 'upload.allowed': 'Allowed formats: JPEG, PNG, WebP',
-    'upload.tooLarge': 'File exceeds 10 MB', 'upload.fileError': 'File upload error: ',
-    'upload.databaseError': 'File uploaded, but database update failed: ', 'upload.kb': 'KB',
-    'upload.localOnly': 'Website image uploads are disabled. Edit the file on this laptop.'
+    'details.inStock': 'Available', 'details.sold': 'Sold', 'details.cm': 'cm'
   }
 };
 
@@ -754,9 +602,9 @@ let allPaintings = [];
 let currentSort = 'default';
 let currentSearch = '';
 let currentModalPainting = null;
-let uploadTargetId = null;
-let uploadFile = null;
 let catalogConfig = createEmptyCatalogConfig();
+let publishedCatalogConfig = createEmptyCatalogConfig();
+let catalogUndoStack = [];
 let adminMode = false;
 let catalogConfigDirty = false;
 let savingCatalogConfig = false;
@@ -766,6 +614,7 @@ let heroPaintings = [];
 let heroPaintingIndex = 0;
 let heroRotationTimer = null;
 let currentAuthor = null;
+let allowAdminNavigation = false;
 
 // ─── TECHNIQUE GROUPS (display order) ───────────────────────────
 const TECH_GROUPS = [
@@ -886,16 +735,45 @@ function normalizeCatalogConfig(raw = {}) {
   };
 }
 
-function saveLocalCatalogConfig() {
-  localStorage.setItem(LOCAL_CONFIG_KEY, JSON.stringify(catalogConfig));
+function cloneCatalogConfig(config) {
+  return normalizeCatalogConfig(JSON.parse(JSON.stringify(config || {})));
 }
 
-function loadLocalCatalogConfig() {
+function catalogConfigFingerprint(config) {
+  const normalized = normalizeCatalogConfig(config);
+  return JSON.stringify({
+    sectionById: normalized.sectionById,
+    orderBySection: normalized.orderBySection,
+    appliedMigrations: normalized.appliedMigrations
+  });
+}
+
+function saveLocalCatalogDraft() {
+  if (!catalogConfigDirty) return;
+  localStorage.setItem(LOCAL_CONFIG_KEY, JSON.stringify({
+    version: 1,
+    baseUpdatedAt: publishedCatalogConfig.updatedAt,
+    savedAt: new Date().toISOString(),
+    config: catalogConfig
+  }));
+}
+
+function clearLocalCatalogDraft() {
+  localStorage.removeItem(LOCAL_CONFIG_KEY);
+}
+
+function loadLocalCatalogDraft() {
   try {
     const raw = localStorage.getItem(LOCAL_CONFIG_KEY);
-    return normalizeCatalogConfig(raw ? JSON.parse(raw) : DEFAULT_CATALOG_CONFIG);
+    if (!raw) return null;
+    const draft = JSON.parse(raw);
+    if (draft?.version !== 1 || !draft.config) return null;
+    return {
+      baseUpdatedAt: draft.baseUpdatedAt || null,
+      config: normalizeCatalogConfig(draft.config)
+    };
   } catch {
-    return normalizeCatalogConfig(DEFAULT_CATALOG_CONFIG);
+    return null;
   }
 }
 
@@ -932,7 +810,6 @@ function applyCatalogMigrations() {
   if (allPaintings.some(painting => painting.id === 1031)) order.splice(Math.min(1, order.length), 0, 1031);
   catalogConfig.orderBySection['мифология'] = order;
   catalogConfig.appliedMigrations.push(migrationKey);
-  saveLocalCatalogConfig();
 }
 
 function sortSectionItems(items, sectionKey) {
@@ -959,20 +836,72 @@ function formatSavedAt(iso) {
   return t('admin.saved', { date });
 }
 
+function updateAdminActionState() {
+  const saveButton = document.getElementById('btn-save-layout');
+  const undoButton = document.getElementById('btn-undo-layout');
+  const resetButton = document.getElementById('btn-reset-layout');
+  if (saveButton) saveButton.disabled = savingCatalogConfig || !catalogConfigDirty;
+  if (undoButton) undoButton.disabled = savingCatalogConfig || catalogUndoStack.length === 0;
+  if (resetButton) resetButton.disabled = savingCatalogConfig || !catalogConfigDirty;
+}
+
 function setConfigDirty(message = t('admin.unsaved')) {
-  catalogConfigDirty = true;
-  saveLocalCatalogConfig();
-  setAdminStatus(message);
-  const btn = document.getElementById('btn-save-layout');
-  if (btn) btn.disabled = false;
+  catalogConfigDirty = catalogConfigFingerprint(catalogConfig) !== catalogConfigFingerprint(publishedCatalogConfig);
+  if (catalogConfigDirty) {
+    saveLocalCatalogDraft();
+    setAdminStatus(message);
+  } else {
+    clearLocalCatalogDraft();
+    setAdminStatus(formatSavedAt(publishedCatalogConfig.updatedAt));
+  }
+  updateAdminActionState();
 }
 
 function setConfigClean(message = formatSavedAt(catalogConfig.updatedAt)) {
   catalogConfigDirty = false;
-  saveLocalCatalogConfig();
+  catalogUndoStack = [];
+  clearLocalCatalogDraft();
   setAdminStatus(message);
-  const btn = document.getElementById('btn-save-layout');
-  if (btn) btn.disabled = false;
+  updateAdminActionState();
+}
+
+function pushCatalogUndoState() {
+  catalogUndoStack.push(cloneCatalogConfig(catalogConfig));
+  if (catalogUndoStack.length > 50) catalogUndoStack.shift();
+}
+
+function restoreLocalCatalogDraft() {
+  if (!adminMode) return false;
+  const draft = loadLocalCatalogDraft();
+  if (!draft) return false;
+  if (draft.baseUpdatedAt !== publishedCatalogConfig.updatedAt) {
+    clearLocalCatalogDraft();
+    return false;
+  }
+  if (catalogConfigFingerprint(draft.config) === catalogConfigFingerprint(publishedCatalogConfig)) {
+    clearLocalCatalogDraft();
+    return false;
+  }
+  catalogConfig = draft.config;
+  catalogConfigDirty = true;
+  setAdminStatus(t('admin.draftRestored'));
+  updateAdminActionState();
+  return true;
+}
+
+function undoCatalogChange() {
+  const previous = catalogUndoStack.pop();
+  if (!previous) return;
+  catalogConfig = previous;
+  setCurrentSort('default');
+  setConfigDirty(t('admin.undoDone'));
+}
+
+function resetCatalogChanges() {
+  if (!catalogConfigDirty || !window.confirm(t('admin.confirmReset'))) return;
+  catalogConfig = cloneCatalogConfig(publishedCatalogConfig);
+  setCurrentSort('default');
+  setConfigClean(t('admin.resetDone'));
 }
 
 async function loadCatalogConfig() {
@@ -1012,7 +941,7 @@ function buildCatalogConfigPayload() {
 }
 
 async function saveCatalogConfig() {
-  if (savingCatalogConfig) return;
+  if (savingCatalogConfig || !catalogConfigDirty) return;
   savingCatalogConfig = true;
 
   const btn = document.getElementById('btn-save-layout');
@@ -1029,6 +958,17 @@ async function saveCatalogConfig() {
       throw new Error(t('admin.authRequired'));
     }
 
+    const { data: currentData, error: currentError } = await supabaseClient
+      .from('catalog_config')
+      .select('updated_at')
+      .eq('id', 'main')
+      .maybeSingle();
+    if (currentError) throw currentError;
+    const remoteUpdatedAt = currentData?.updated_at || null;
+    if (remoteUpdatedAt !== publishedCatalogConfig.updatedAt) {
+      throw new Error(t('admin.remoteChanged'));
+    }
+
     const payload = buildCatalogConfigPayload();
     const { error } = await supabaseClient
       .from('catalog_config')
@@ -1041,14 +981,15 @@ async function saveCatalogConfig() {
 
     if (error) throw error;
     catalogConfig = payload;
+    publishedCatalogConfig = cloneCatalogConfig(payload);
     setConfigClean(t('admin.remoteSaved'));
   } catch (err) {
     setConfigDirty(err.message || t('catalog.connectionError'));
     console.error('Catalog config save error:', err);
   } finally {
     savingCatalogConfig = false;
-    if (btn) btn.disabled = false;
     if (btn) btn.textContent = initialText || t('admin.save');
+    updateAdminActionState();
   }
 }
 
@@ -1067,6 +1008,7 @@ function updateAdminModeState(enabled) {
   if (adminMode) {
     setCurrentSort('default');
     setAdminStatus(catalogConfigDirty ? t('admin.unsaved') : formatSavedAt(catalogConfig.updatedAt));
+    updateAdminActionState();
   } else if (allPaintings.length) {
     renderGrid();
   }
@@ -1101,6 +1043,7 @@ function movePaintingWithinSection(id, delta) {
   const nextIndex = index + delta;
   if (index < 0 || nextIndex < 0 || nextIndex >= order.length) return;
 
+  pushCatalogUndoState();
   [order[index], order[nextIndex]] = [order[nextIndex], order[index]];
   catalogConfig.orderBySection[sectionKey] = order;
   setCurrentSort('default');
@@ -1114,6 +1057,7 @@ function changePaintingSection(id, sectionKey) {
   const currentSection = getPaintingSection(painting);
   if (currentSection === sectionKey) return;
 
+  pushCatalogUndoState();
   TECH_GROUPS.forEach(group => {
     const list = Array.isArray(catalogConfig.orderBySection[group.key]) ? catalogConfig.orderBySection[group.key] : [];
     catalogConfig.orderBySection[group.key] = list.filter(itemId => itemId !== id);
@@ -1134,6 +1078,7 @@ function movePaintingByDrag(id, sectionKey, targetId = null, placeAfter = false)
   const painting = allPaintings.find(item => item.id === id);
   if (!painting || !TECH_LABEL_MAP[sectionKey] || id === targetId) return;
 
+  pushCatalogUndoState();
   TECH_GROUPS.forEach(group => {
     const list = Array.isArray(catalogConfig.orderBySection[group.key]) ? catalogConfig.orderBySection[group.key] : [];
     catalogConfig.orderBySection[group.key] = list.filter(itemId => itemId !== id);
@@ -1147,6 +1092,11 @@ function movePaintingByDrag(id, sectionKey, targetId = null, placeAfter = false)
   const insertAt = targetIndex < 0 ? order.length : targetIndex + (placeAfter ? 1 : 0);
   order.splice(insertAt, 0, id);
   catalogConfig.orderBySection[sectionKey] = order;
+
+  const previous = catalogUndoStack[catalogUndoStack.length - 1];
+  if (previous && catalogConfigFingerprint(previous) === catalogConfigFingerprint(catalogConfig)) {
+    catalogUndoStack.pop();
+  }
 
   setCurrentSort('default');
   setConfigDirty(t('admin.dragChanged'));
@@ -1237,9 +1187,12 @@ async function loadPaintings() {
     initHeroRotation();
     TECH_GROUPS.forEach(group => syncSectionOrder(group.key));
     applyCatalogMigrations();
+    publishedCatalogConfig = cloneCatalogConfig(catalogConfig);
+    catalogUndoStack = [];
+    const draftRestored = restoreLocalCatalogDraft();
     populateSelect();
     renderGrid();
-    setConfigClean(formatSavedAt(catalogConfig.updatedAt));
+    if (!draftRestored) setConfigClean(formatSavedAt(catalogConfig.updatedAt));
   } catch (e) {
     console.error('Network error:', e);
     document.getElementById('count-label').textContent = t('catalog.networkError');
@@ -1276,10 +1229,8 @@ function cardAdminHTML(painting, sectionKey, index, total) {
       </select>
     </label>
     <div class="card-admin-actions">
-      <button class="card-order-btn" type="button" data-role="move-left" data-id="${painting.id}" ${index === 0 ? 'disabled' : ''}>${t('card.left')}</button>
-      <button class="card-order-btn" type="button" data-role="move-right" data-id="${painting.id}" ${index === total - 1 ? 'disabled' : ''}>${t('card.right')}</button>
-      <button class="card-order-btn" type="button" data-role="move-up" data-id="${painting.id}" ${index === 0 ? 'disabled' : ''}>${t('card.up')}</button>
-      <button class="card-order-btn" type="button" data-role="move-down" data-id="${painting.id}" ${index === total - 1 ? 'disabled' : ''}>${t('card.down')}</button>
+      <button class="card-order-btn" type="button" data-role="move-previous" data-id="${painting.id}" ${index === 0 ? 'disabled' : ''}>← ${t('card.previous')}</button>
+      <button class="card-order-btn" type="button" data-role="move-next" data-id="${painting.id}" ${index === total - 1 ? 'disabled' : ''}>${t('card.next')} →</button>
     </div>
   </div>`;
 }
@@ -1384,28 +1335,14 @@ function bindCatalogAdminControls(container) {
     });
   }
 
-  container.querySelectorAll('[data-role="move-left"]').forEach(button => {
+  container.querySelectorAll('[data-role="move-previous"]').forEach(button => {
     button.addEventListener('click', event => {
       event.stopPropagation();
       movePaintingWithinSection(Number(button.dataset.id), -1);
     });
   });
 
-  container.querySelectorAll('[data-role="move-right"]').forEach(button => {
-    button.addEventListener('click', event => {
-      event.stopPropagation();
-      movePaintingWithinSection(Number(button.dataset.id), 1);
-    });
-  });
-
-  container.querySelectorAll('[data-role="move-up"]').forEach(button => {
-    button.addEventListener('click', event => {
-      event.stopPropagation();
-      movePaintingWithinSection(Number(button.dataset.id), -1);
-    });
-  });
-
-  container.querySelectorAll('[data-role="move-down"]').forEach(button => {
+  container.querySelectorAll('[data-role="move-next"]').forEach(button => {
     button.addEventListener('click', event => {
       event.stopPropagation();
       movePaintingWithinSection(Number(button.dataset.id), 1);
@@ -1443,7 +1380,7 @@ function renderGrid() {
   container.querySelectorAll('.card').forEach(card => {
     card.addEventListener('click', event => {
       if (dragJustFinished) return;
-      if (event.target.closest('.card-buy-btn,.overlay-btn,.card-upload-btn,.card-order-btn,.card-section-select')) return;
+      if (event.target.closest('.card-buy-btn,.overlay-btn,.card-order-btn,.card-section-select')) return;
       openModal(Number(card.dataset.id));
     });
   });
@@ -1540,88 +1477,6 @@ function buyPainting(id) {
   document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
 }
 
-// ─── UPLOAD ─────────────────────────────────────────────────────
-function openUpload(id) {
-  const painting = allPaintings.find(item => item.id === id);
-  if (!painting) return;
-
-  uploadTargetId = id;
-  uploadFile = null;
-  document.getElementById('upload-painting-name').textContent = `«${painting.title}»`;
-  document.getElementById('upload-preview').style.display = 'none';
-  document.getElementById('upload-progress').style.display = 'none';
-  document.getElementById('upload-error').style.display = 'none';
-  document.getElementById('upload-form-area').style.display = 'block';
-  document.getElementById('upload-success-msg').style.display = 'none';
-  document.getElementById('btn-upload-confirm').disabled = true;
-  document.getElementById('upload-file-input').value = '';
-  document.getElementById('upload-modal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeUpload() {
-  document.getElementById('upload-modal').classList.remove('open');
-  document.body.style.overflow = '';
-  uploadTargetId = null;
-  uploadFile = null;
-}
-
-function handleFileSelect(file) {
-  if (!file) return;
-
-  const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-  if (!allowed.includes(file.type)) {
-    showUploadError(t('upload.allowed'));
-    return;
-  }
-  if (file.size > 10 * 1024 * 1024) {
-    showUploadError(t('upload.tooLarge'));
-    return;
-  }
-
-  uploadFile = file;
-  document.getElementById('upload-error').style.display = 'none';
-
-  const reader = new FileReader();
-  reader.onload = event => {
-    document.getElementById('upload-preview-img').src = event.target.result;
-    document.getElementById('upload-preview-name').textContent = `${file.name} (${(file.size / 1024).toFixed(0)} ${t('upload.kb')})`;
-    document.getElementById('upload-preview').style.display = 'block';
-  };
-  reader.readAsDataURL(file);
-  document.getElementById('btn-upload-confirm').disabled = false;
-}
-
-function showUploadError(message) {
-  const errorEl = document.getElementById('upload-error');
-  errorEl.textContent = message;
-  errorEl.style.display = 'block';
-}
-
-function doUpload() {
-  document.getElementById('upload-progress').style.display = 'none';
-  showUploadError(t('upload.localOnly'));
-  document.getElementById('btn-upload-confirm').disabled = false;
-}
-
-// ─── DROP ZONE ──────────────────────────────────────────────────
-const dz = document.getElementById('drop-zone');
-dz.addEventListener('dragover', event => {
-  event.preventDefault();
-  dz.classList.add('dragover');
-});
-dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
-dz.addEventListener('drop', event => {
-  event.preventDefault();
-  dz.classList.remove('dragover');
-  if (event.dataTransfer.files[0]) handleFileSelect(event.dataTransfer.files[0]);
-});
-document.getElementById('btn-choose-file').addEventListener('click', () => document.getElementById('upload-file-input').click());
-document.getElementById('upload-file-input').addEventListener('change', event => handleFileSelect(event.target.files[0]));
-document.getElementById('btn-upload-confirm').addEventListener('click', doUpload);
-document.getElementById('btn-upload-cancel').addEventListener('click', closeUpload);
-document.getElementById('upload-modal-close').addEventListener('click', closeUpload);
-
 // ─── MODAL EVENTS ───────────────────────────────────────────────
 document.getElementById('modal-close').addEventListener('click', closeModal);
 document.getElementById('modal-close-secondary').addEventListener('click', closeModal);
@@ -1632,7 +1487,6 @@ document.getElementById('modal').addEventListener('click', event => {
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape') {
     closeModal();
-    closeUpload();
   }
 });
 
@@ -1735,9 +1589,18 @@ document.querySelectorAll('.language-btn').forEach(button => {
   button.addEventListener('click', () => applyLanguage(button.dataset.language));
 });
 document.getElementById('btn-save-layout').addEventListener('click', saveCatalogConfig);
+document.getElementById('btn-undo-layout').addEventListener('click', undoCatalogChange);
+document.getElementById('btn-reset-layout').addEventListener('click', resetCatalogChanges);
 document.getElementById('btn-exit-admin').addEventListener('click', async () => {
+  if (catalogConfigDirty && !window.confirm(t('admin.confirmExit'))) return;
+  allowAdminNavigation = true;
   await supabaseClient.auth.signOut();
   window.location.assign('/');
+});
+window.addEventListener('beforeunload', event => {
+  if (!catalogConfigDirty || allowAdminNavigation) return;
+  event.preventDefault();
+  event.returnValue = '';
 });
 
 async function initApp() {
