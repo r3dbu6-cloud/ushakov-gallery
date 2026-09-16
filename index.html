@@ -69,11 +69,13 @@
   .hero-art img.is-changing { opacity:0; transform:scale(1.025); }
   .hero-art-caption { position:absolute; left:28px; right:28px; bottom:24px; z-index:2; color:var(--paper); display:flex; align-items:flex-end; justify-content:space-between; gap:24px; }
   .hero-art-kicker { display:block; margin-bottom:5px; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--gold); }
-  .hero-art-title { font-family:'Cormorant Garamond',serif; font-size:clamp(24px,3vw,38px); font-weight:300; line-height:1.05; }
+  .hero-art-title { display:block; padding:0; border:0; background:none; color:inherit; text-align:left; font-family:'Cormorant Garamond',serif; font-size:clamp(24px,3vw,38px); font-weight:300; line-height:1.05; cursor:pointer; }
+  .hero-art-title:focus-visible { outline:2px solid var(--gold); outline-offset:5px; }
   .hero-art-meta { flex-shrink:0; text-align:right; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:rgba(245,240,232,.72); }
   .hero-art-dots { position:absolute; z-index:3; top:22px; right:22px; display:flex; gap:7px; }
-  .hero-art-dot { width:22px; height:2px; padding:0; border:0; background:rgba(245,240,232,.45); transition:background .2s,width .2s; }
-  .hero-art-dot.active { width:34px; background:var(--gold); }
+  .hero-art-dot { width:22px; height:14px; padding:0; border:0; border-bottom:2px solid rgba(245,240,232,.45); background:transparent; cursor:pointer; transition:border-color .2s,width .2s; }
+  .hero-art-dot.active { width:34px; border-bottom-color:var(--gold); }
+  .hero-art-dot:focus-visible { outline:2px solid var(--paper); outline-offset:3px; }
 
   /* ── CATALOG ── */
   #catalog { padding:80px 48px; }
@@ -292,6 +294,9 @@
     .sort-row{gap:8px;}
     .sort-label{width:100%;margin-bottom:2px;}
   }
+  @media(prefers-reduced-motion:reduce){
+    .hero-art img,.card,.card-image img{animation:none;transition:none;}
+  }
 </style>
 </head>
 <body>
@@ -336,13 +341,13 @@
       <a href="#contact" class="btn-outline" data-i18n="hero.buy">Купить работу</a>
     </div>
   </div>
-  <div class="hero-art" id="hero-art" role="button" tabindex="0" aria-label="Открыть работу из подборки">
+  <div class="hero-art" id="hero-art" role="region" aria-label="Избранные работы">
     <img id="hero-art-image" src="" alt="" fetchpriority="high">
-    <div class="hero-art-dots" id="hero-art-dots" aria-hidden="true"></div>
+    <div class="hero-art-dots" id="hero-art-dots" role="group" aria-label="Выбор избранной работы"></div>
     <div class="hero-art-caption">
       <div>
         <span class="hero-art-kicker" data-i18n="hero.featured">Избранная работа</span>
-        <div class="hero-art-title" id="hero-art-title">Галерея Святослава Ушакова</div>
+        <button class="hero-art-title" id="hero-art-title" type="button">Галерея Святослава Ушакова</button>
       </div>
       <div class="hero-art-meta" id="hero-art-meta"><span id="stat-total">—</span> работ<br>9 разделов</div>
     </div>
@@ -485,7 +490,8 @@ const I18N = {
     'hero.intro': 'Работы Святослава Ушакова — диалог классической техники и современного взгляда.',
     'hero.catalog': 'Смотреть каталог', 'hero.buy': 'Купить работу', 'hero.featured': 'Избранная работа',
     'hero.galleryName': 'Галерея Святослава Ушакова', 'hero.works': 'работ', 'hero.sections': '9 разделов',
-    'hero.openFeatured': 'Открыть работу из подборки',
+    'hero.openFeatured': 'Открыть избранную работу', 'hero.region': 'Избранные работы',
+    'hero.controls': 'Выбор избранной работы', 'hero.slide': 'Показать работу {position}: {title}',
     'admin.mode': 'Режим автора', 'admin.save': 'Сохранить каталог', 'admin.undo': 'Отменить', 'admin.reset': 'Сбросить', 'admin.exit': 'Выйти',
     'admin.help': 'Перетаскивайте карточки мышью или используйте кнопки.',
     'admin.unsaved': 'Есть несохранённые изменения.', 'admin.saving': 'Сохраняем…',
@@ -538,7 +544,8 @@ const I18N = {
     'hero.intro': "Slava Ushakov's work is a dialogue between classical technique and a contemporary point of view.",
     'hero.catalog': 'View catalogue', 'hero.buy': 'Buy an artwork', 'hero.featured': 'Featured artwork',
     'hero.galleryName': 'Slava Ushakov Gallery', 'hero.works': 'works', 'hero.sections': '9 sections',
-    'hero.openFeatured': 'Open featured artwork',
+    'hero.openFeatured': 'Open featured artwork', 'hero.region': 'Featured artworks',
+    'hero.controls': 'Choose a featured artwork', 'hero.slide': 'Show artwork {position}: {title}',
     'admin.mode': 'Artist mode', 'admin.save': 'Save catalogue', 'admin.undo': 'Undo', 'admin.reset': 'Reset', 'admin.exit': 'Sign out',
     'admin.help': 'Drag cards with the mouse or use the buttons.',
     'admin.unsaved': 'There are unsaved changes.', 'admin.saving': 'Saving…',
@@ -621,6 +628,7 @@ let heroPaintingIndex = 0;
 let heroRotationTimer = null;
 let currentAuthor = null;
 let allowAdminNavigation = false;
+const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 // ─── TECHNIQUE GROUPS (display order) ───────────────────────────
 const TECH_GROUPS = [
@@ -699,7 +707,10 @@ function applyLanguage(language = currentLanguage) {
     button.setAttribute('aria-pressed', String(active));
   });
 
-  document.getElementById('hero-art')?.setAttribute('aria-label', t('hero.openFeatured'));
+  document.getElementById('hero-art')?.setAttribute('aria-label', t('hero.region'));
+  document.getElementById('hero-art-dots')?.setAttribute('aria-label', t('hero.controls'));
+  document.getElementById('hero-art-title')?.setAttribute('aria-label', t('hero.openFeatured'));
+  updateHeroControlsAccessibility();
   const publicPaintings = getPublicPaintings();
   const total = publicPaintings.length ? `${publicPaintings.length}+` : '—';
   const heroMeta = document.getElementById('hero-art-meta');
@@ -1116,6 +1127,14 @@ function clearCatalogDragState(container = document) {
   });
 }
 
+function updateHeroControlsAccessibility() {
+  document.querySelectorAll('.hero-art-dot').forEach((dot, index) => {
+    const painting = heroPaintings[index];
+    dot.setAttribute('aria-label', t('hero.slide', { position: index + 1, title: painting?.title || '' }));
+    dot.setAttribute('aria-pressed', String(index === heroPaintingIndex));
+  });
+}
+
 function showHeroPainting(index, immediate = false) {
   if (!heroPaintings.length) return;
   heroPaintingIndex = (index + heroPaintings.length) % heroPaintings.length;
@@ -1127,10 +1146,11 @@ function showHeroPainting(index, immediate = false) {
     image.alt = painting.title;
     document.getElementById('hero-art-title').textContent = painting.title;
     document.querySelectorAll('.hero-art-dot').forEach((dot, dotIndex) => dot.classList.toggle('active', dotIndex === heroPaintingIndex));
+    updateHeroControlsAccessibility();
     requestAnimationFrame(() => image.classList.remove('is-changing'));
   };
 
-  if (immediate || !image.src) applyPainting();
+  if (immediate || !image.src || reducedMotionQuery.matches) applyPainting();
   else {
     image.classList.add('is-changing');
     setTimeout(applyPainting, 320);
@@ -1139,6 +1159,7 @@ function showHeroPainting(index, immediate = false) {
 
 function restartHeroRotation() {
   clearInterval(heroRotationTimer);
+  if (reducedMotionQuery.matches) return;
   heroRotationTimer = setInterval(() => showHeroPainting(heroPaintingIndex + 1), 5500);
 }
 
@@ -1149,7 +1170,8 @@ function initHeroRotation() {
   if (!heroPaintings.length) heroPaintings = allPaintings.filter(painting => painting.image_url && !painting.flag_hidden).slice(0, 6);
 
   const dots = document.getElementById('hero-art-dots');
-  dots.innerHTML = heroPaintings.map((_, index) => `<button class="hero-art-dot" type="button" data-hero-index="${index}" tabindex="-1"></button>`).join('');
+  dots.innerHTML = heroPaintings.map((_, index) => `<button class="hero-art-dot" type="button" data-hero-index="${index}"></button>`).join('');
+  updateHeroControlsAccessibility();
   dots.querySelectorAll('.hero-art-dot').forEach(dot => dot.addEventListener('click', event => {
     event.stopPropagation();
     showHeroPainting(Number(dot.dataset.heroIndex));
@@ -1157,20 +1179,26 @@ function initHeroRotation() {
   }));
 
   const heroArt = document.getElementById('hero-art');
+  const heroTitle = document.getElementById('hero-art-title');
   document.getElementById('hero-art-image').addEventListener('error', event => {
     event.currentTarget.style.visibility = 'hidden';
-    document.getElementById('hero-art-title').textContent = t('common.imageUnavailable');
+    heroTitle.textContent = t('common.imageUnavailable');
   });
   const openCurrent = () => heroPaintings[heroPaintingIndex] && openModal(heroPaintings[heroPaintingIndex].id);
-  heroArt.addEventListener('click', openCurrent);
-  heroArt.addEventListener('keydown', event => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      openCurrent();
-    }
+  heroTitle.addEventListener('click', openCurrent);
+  heroArt.addEventListener('click', event => {
+    if (!event.target.closest('button')) openCurrent();
   });
   heroArt.addEventListener('mouseenter', () => clearInterval(heroRotationTimer));
   heroArt.addEventListener('mouseleave', restartHeroRotation);
+  heroArt.addEventListener('focusin', () => clearInterval(heroRotationTimer));
+  heroArt.addEventListener('focusout', event => {
+    if (!heroArt.contains(event.relatedTarget)) restartHeroRotation();
+  });
+  reducedMotionQuery.addEventListener('change', event => {
+    if (event.matches) clearInterval(heroRotationTimer);
+    else restartHeroRotation();
+  });
   showHeroPainting(0, true);
   restartHeroRotation();
 }
