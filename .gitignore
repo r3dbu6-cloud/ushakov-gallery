@@ -1,0 +1,12 @@
+.DS_Store
+.planning/
+.netlify/
+.supabase/
+dist/
+supabase/.temp/
+
+# Existing migrations belong to the shared remote Supabase project and include
+# schemas/data outside this gallery. Keep them local after `migration fetch`.
+supabase/migrations/202603*.sql
+supabase/migrations/202604*.sql
+supabase/migrations/202605*.sql
