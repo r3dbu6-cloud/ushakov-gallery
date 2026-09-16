@@ -617,6 +617,7 @@ let currentSearch = '';
 let currentModalPainting = null;
 let catalogConfig = createEmptyCatalogConfig();
 let publishedCatalogConfig = createEmptyCatalogConfig();
+let remoteCatalogConfigExists = false;
 let catalogUndoStack = [];
 let adminMode = false;
 let catalogConfigDirty = false;
@@ -923,6 +924,7 @@ function resetCatalogChanges() {
 }
 
 async function loadCatalogConfig() {
+  remoteCatalogConfigExists = false;
   try {
     const { data, error } = await supabaseClient
       .from('catalog_config')
@@ -932,6 +934,7 @@ async function loadCatalogConfig() {
 
     if (error) throw error;
     if (data?.config) {
+      remoteCatalogConfigExists = true;
       catalogConfig = normalizeCatalogConfig({
         ...data.config,
         updatedAt: data.updated_at || data.config.updatedAt
@@ -982,8 +985,11 @@ async function saveCatalogConfig() {
       .eq('id', 'main')
       .maybeSingle();
     if (currentError) throw currentError;
+    const currentRemoteExists = Boolean(currentData);
     const remoteUpdatedAt = currentData?.updated_at || null;
-    if (remoteUpdatedAt !== publishedCatalogConfig.updatedAt) {
+    const remoteStateChanged = currentRemoteExists !== remoteCatalogConfigExists ||
+      (currentRemoteExists && remoteUpdatedAt !== publishedCatalogConfig.updatedAt);
+    if (remoteStateChanged) {
       throw new Error(t('admin.remoteChanged'));
     }
 
@@ -1000,6 +1006,7 @@ async function saveCatalogConfig() {
     if (error) throw error;
     catalogConfig = payload;
     publishedCatalogConfig = cloneCatalogConfig(payload);
+    remoteCatalogConfigExists = true;
     setConfigClean(t('admin.remoteSaved'));
   } catch (err) {
     setConfigDirty(err.message || t('catalog.connectionError'));
