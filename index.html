@@ -217,8 +217,14 @@
   .card-drag-handle:hover { border-color:var(--ink); color:var(--ink); }
   .card-drag-handle:active { cursor:grabbing; }
   .card-admin-field { display:block; margin-bottom:10px; }
-  .card-admin-field span { display:block; margin-bottom:6px; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--sepia); }
+  .card-admin-field > span,
+  .card-admin-field-label { display:block; margin-bottom:6px; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--sepia); }
+  .card-title-row { display:flex; gap:6px; }
+  .card-title-input,
   .card-section-select { width:100%; background:#fff; border:1px solid rgba(139,111,71,.3); color:var(--ink); padding:9px 12px; font-size:12px; font-family:'Jost',sans-serif; outline:none; }
+  .card-title-input { min-width:0; }
+  .card-title-apply { flex:0 0 auto; padding-inline:12px; }
+  .card-title-input:focus,
   .card-section-select:focus { border-color:var(--sepia); }
   .card-admin-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
   .card-order-btn { flex:1; background:transparent; border:1px solid rgba(139,111,71,.35); color:var(--sepia); padding:8px 10px; font-size:11px; font-family:'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; transition:all .2s; }
@@ -504,6 +510,8 @@ const I18N = {
     'admin.authRequired': 'Сессия автора завершена. Войдите снова.',
     'admin.orderChanged': 'Порядок изменён. Нажмите «Сохранить каталог».',
     'admin.sectionChanged': 'Раздел изменён. Нажмите «Сохранить каталог».',
+    'admin.titleChanged': 'Название изменено. Нажмите «Сохранить каталог».',
+    'admin.titleRequired': 'Название работы не может быть пустым.',
     'admin.visibilityChanged': 'Видимость изменена. Нажмите «Сохранить каталог».',
     'admin.dragChanged': 'Порядок изменён перетаскиванием. Нажмите «Сохранить каталог».',
     'admin.undoDone': 'Последнее изменение отменено.', 'admin.resetDone': 'Восстановлена опубликованная версия.',
@@ -531,7 +539,7 @@ const I18N = {
     'common.image': 'Изображение', 'common.imageUnavailable': 'Изображение недоступно',
     'modal.buy': 'Купить эту работу', 'modal.sold': 'Работа продана',
     'card.buy': 'Купить', 'card.sold': 'Продано', 'card.details': 'Подробнее', 'card.management': 'Управление каталогом',
-    'card.position': 'Позиция {position} из {total}', 'card.section': 'Раздел',
+    'card.position': 'Позиция {position} из {total}', 'card.title': 'Название', 'card.applyTitle': 'Применить', 'card.section': 'Раздел',
     'card.previous': 'Раньше', 'card.next': 'Позже', 'card.drag': 'Перетащить работу',
     'card.visibleOnSite': 'Показывается на сайте', 'card.hiddenFromSite': 'Скрыта с сайта',
     'card.showOnSite': 'Показать на сайте', 'card.hideFromSite': 'Скрыть с сайта',
@@ -561,6 +569,8 @@ const I18N = {
     'admin.authRequired': 'Your author session has expired. Sign in again.',
     'admin.orderChanged': 'Order changed. Click “Save catalogue”.',
     'admin.sectionChanged': 'Section changed. Click “Save catalogue”.',
+    'admin.titleChanged': 'Title changed. Click “Save catalogue”.',
+    'admin.titleRequired': 'The artwork title cannot be empty.',
     'admin.visibilityChanged': 'Visibility changed. Click “Save catalogue”.',
     'admin.dragChanged': 'Order changed by dragging. Click “Save catalogue”.',
     'admin.undoDone': 'The last change was undone.', 'admin.resetDone': 'The published version was restored.',
@@ -588,7 +598,7 @@ const I18N = {
     'common.image': 'Image', 'common.imageUnavailable': 'Image unavailable',
     'modal.buy': 'Buy this artwork', 'modal.sold': 'Artwork sold',
     'card.buy': 'Buy', 'card.sold': 'Sold', 'card.details': 'Details', 'card.management': 'Catalogue controls',
-    'card.position': 'Position {position} of {total}', 'card.section': 'Section',
+    'card.position': 'Position {position} of {total}', 'card.title': 'Title', 'card.applyTitle': 'Apply', 'card.section': 'Section',
     'card.previous': 'Earlier', 'card.next': 'Later', 'card.drag': 'Drag artwork',
     'card.visibleOnSite': 'Visible on the site', 'card.hiddenFromSite': 'Hidden from the site',
     'card.showOnSite': 'Show on the site', 'card.hideFromSite': 'Hide from the site',
@@ -1135,6 +1145,33 @@ function changePaintingSection(id, sectionKey) {
   setConfigDirty(t('admin.sectionChanged'));
 }
 
+function changePaintingTitle(id, value) {
+  const painting = allPaintings.find(item => item.id === id);
+  if (!painting) return;
+
+  const title = String(value || '').trim();
+  if (!title) {
+    setAdminStatus(t('admin.titleRequired'));
+    renderGrid();
+    return;
+  }
+  if (title === painting.title) {
+    renderGrid();
+    return;
+  }
+
+  pushCatalogUndoState();
+  const key = String(id);
+  if (title === painting.source_title) delete catalogConfig.titleById[key];
+  else catalogConfig.titleById[key] = title;
+
+  applyCatalogConfigToPaintings();
+  populateSelect();
+  refreshHeroRotation();
+  setCurrentSort('default');
+  setConfigDirty(t('admin.titleChanged'));
+}
+
 function togglePaintingVisibility(id) {
   const painting = allPaintings.find(item => item.id === id);
   if (!painting) return;
@@ -1279,7 +1316,7 @@ async function loadPaintings() {
       .filter(painting => !excludedPaintingIds.has(painting.id))
       .map(painting => ({
         ...painting,
-        source_title: painting.title,
+        source_title: String(painting.title || '').trim(),
         source_flag_hidden: Boolean(painting.flag_hidden)
       }));
     applyCatalogConfigToPaintings();
@@ -1329,6 +1366,13 @@ function cardAdminHTML(painting, sectionKey, index, total) {
         <span class="card-admin-visibility ${hidden ? 'is-hidden' : ''}">${t(hidden ? 'card.hiddenFromSite' : 'card.visibleOnSite')}</span>
       </div>
       <span class="card-admin-position">${t('card.position', { position: index + 1, total })}</span>
+    </div>
+    <div class="card-admin-field">
+      <label class="card-admin-field-label" for="card-title-${painting.id}">${t('card.title')}</label>
+      <div class="card-title-row">
+        <input class="card-title-input" id="card-title-${painting.id}" type="text" maxlength="180" value="${escapeHTML(painting.title)}" data-role="title-input" data-id="${painting.id}">
+        <button class="card-order-btn card-title-apply" type="button" data-role="apply-title" data-id="${painting.id}">${t('card.applyTitle')}</button>
+      </div>
     </div>
     <label class="card-admin-field">
       <span>${t('card.section')}</span>
@@ -1452,6 +1496,28 @@ function bindCatalogAdminControls(container) {
     });
   });
 
+  container.querySelectorAll('[data-role="title-input"]').forEach(input => {
+    input.addEventListener('click', event => event.stopPropagation());
+    input.addEventListener('keydown', event => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        changePaintingTitle(Number(input.dataset.id), input.value);
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+        const painting = allPaintings.find(item => item.id === Number(input.dataset.id));
+        input.value = painting?.title || '';
+      }
+    });
+  });
+
+  container.querySelectorAll('[data-role="apply-title"]').forEach(button => {
+    button.addEventListener('click', event => {
+      event.stopPropagation();
+      const input = container.querySelector(`[data-role="title-input"][data-id="${button.dataset.id}"]`);
+      changePaintingTitle(Number(button.dataset.id), input?.value);
+    });
+  });
+
   container.querySelectorAll('[data-role="toggle-visibility"]').forEach(button => {
     button.addEventListener('click', event => {
       event.stopPropagation();
@@ -1483,7 +1549,7 @@ function renderGrid() {
   container.querySelectorAll('.card').forEach(card => {
     card.addEventListener('click', event => {
       if (dragJustFinished) return;
-      if (event.target.closest('.card-buy-btn,.overlay-btn,.card-order-btn,.card-section-select,.card-drag-handle')) return;
+      if (event.target.closest('.card-buy-btn,.overlay-btn,.card-order-btn,.card-title-input,.card-section-select,.card-drag-handle')) return;
       openModal(Number(card.dataset.id));
     });
   });
