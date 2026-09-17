@@ -117,6 +117,8 @@
   .search-bar input::placeholder { color:var(--sepia); opacity:.6; }
   .search-bar input:focus { border-color:var(--sepia); }
   .search-bar svg { position:absolute; right:10px; top:50%; transform:translateY(-50%); width:15px; height:15px; stroke:var(--sepia); fill:none; pointer-events:none; }
+  .admin-catalog-filters { display:none; align-items:center; flex-wrap:wrap; gap:6px; }
+  .admin-mode .admin-catalog-filters { display:flex; }
   .sort-row { display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
   .sort-label { font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--sepia); }
   .sort-btn { background:transparent; border:none; font-size:12px; font-family:'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; color:var(--sepia); cursor:pointer; padding:4px 8px; border-bottom:1px solid transparent; transition:all .2s; }
@@ -306,6 +308,7 @@
     .catalog-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 20px;}
     .catalog-toolbar{align-items:flex-start;flex-direction:column;gap:18px;margin-bottom:36px;}
     .filters,.search-bar,.search-bar input{width:100%;}
+    .admin-catalog-filters{width:100%;}
     #catalog{padding:50px 20px;}
     .admin-banner{padding:10px 20px;}
     .admin-banner{align-items:flex-start;gap:12px;flex-direction:column;}
@@ -421,6 +424,15 @@
       <div class="search-bar">
         <input type="text" id="search-input" placeholder="Поиск по названию…" data-i18n-placeholder="catalog.search">
         <svg viewBox="0 0 24 24" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </div>
+      <div class="admin-catalog-filters" id="admin-catalog-filters" aria-label="Фильтры режима автора" data-i18n-aria-label="admin.filtersLabel">
+        <span class="filter-label" data-i18n="admin.filters">Показать:</span>
+        <button class="filter-btn active" type="button" data-admin-filter="all" data-i18n="admin.filterAll" aria-pressed="true">Все</button>
+        <button class="filter-btn" type="button" data-admin-filter="visible" data-i18n="admin.filterVisible" aria-pressed="false">На сайте</button>
+        <button class="filter-btn" type="button" data-admin-filter="hidden" data-i18n="admin.filterHidden" aria-pressed="false">Скрытые</button>
+        <button class="filter-btn" type="button" data-admin-filter="available" data-i18n="admin.filterAvailable" aria-pressed="false">В наличии</button>
+        <button class="filter-btn" type="button" data-admin-filter="sold" data-i18n="admin.filterSold" aria-pressed="false">Проданные</button>
+        <button class="filter-btn" type="button" data-admin-filter="featured" data-i18n="admin.filterFeatured" aria-pressed="false">На главной</button>
       </div>
     </div>
   </div>
@@ -552,6 +564,9 @@ const I18N = {
     'admin.imageUnreadable': 'Не удалось прочитать изображение. Выберите другой файл.',
     'admin.imageDimensions': 'Размер изображения не должен превышать 12 000 × 12 000 пикселей.',
     'admin.imageUploadFailed': 'Не удалось загрузить изображение. Повторите попытку.',
+    'admin.filters': 'Показать:', 'admin.filtersLabel': 'Фильтры режима автора',
+    'admin.filterAll': 'Все', 'admin.filterVisible': 'На сайте', 'admin.filterHidden': 'Скрытые',
+    'admin.filterAvailable': 'В наличии', 'admin.filterSold': 'Проданные', 'admin.filterFeatured': 'На главной',
     'admin.visibilityChanged': 'Видимость изменена. Нажмите «Сохранить каталог».',
     'admin.dragChanged': 'Порядок изменён перетаскиванием. Нажмите «Сохранить каталог».',
     'admin.undoDone': 'Последнее изменение отменено.', 'admin.resetDone': 'Восстановлена опубликованная версия.',
@@ -562,7 +577,7 @@ const I18N = {
     'admin.saved': 'Сохранено {date}',
     'catalog.title': 'Каталог работ', 'catalog.loading': 'Загрузка…', 'catalog.sort': 'Сортировка:',
     'catalog.default': 'По умолчанию', 'catalog.priceAsc': 'Цена ↑', 'catalog.priceDesc': 'Цена ↓',
-    'catalog.newer': 'Новее', 'catalog.older': 'Старее', 'catalog.search': 'Поиск по названию…',
+    'catalog.newer': 'Новее', 'catalog.older': 'Старее', 'catalog.search': 'Поиск по названию или ID…',
     'catalog.noResults': 'Нет работ по запросу', 'catalog.empty': 'Раздел скоро пополнится',
     'catalog.networkError': 'Ошибка сети', 'catalog.connectionError': 'Ошибка подключения',
     'contact.title': 'Купить<br><em>работу</em>',
@@ -579,7 +594,7 @@ const I18N = {
     'common.image': 'Изображение', 'common.imageUnavailable': 'Изображение недоступно',
     'modal.buy': 'Купить эту работу', 'modal.sold': 'Работа продана',
     'card.buy': 'Купить', 'card.sold': 'Продано', 'card.details': 'Подробнее', 'card.management': 'Управление каталогом',
-    'card.position': 'Позиция {position} из {total}', 'card.title': 'Название', 'card.applyTitle': 'Применить', 'card.priceAndAvailability': 'Цена и доступность', 'card.priceRub': 'Цена, ₽', 'card.available': 'В наличии', 'card.section': 'Раздел',
+    'card.position': 'ID {id} · позиция {position} из {total}', 'card.title': 'Название', 'card.applyTitle': 'Применить', 'card.priceAndAvailability': 'Цена и доступность', 'card.priceRub': 'Цена, ₽', 'card.available': 'В наличии', 'card.section': 'Раздел',
     'card.featuredPosition': 'На главной {position} из {total}', 'card.addFeatured': 'Добавить на главную', 'card.removeFeatured': 'Убрать', 'card.featuredEarlier': 'Раньше', 'card.featuredLater': 'Позже',
     'card.artworkDetails': 'Параметры работы', 'card.year': 'Год', 'card.widthCm': 'Ширина, см', 'card.heightCm': 'Высота, см', 'card.material': 'Материал',
     'card.imageReplacement': 'Изображение работы', 'card.uploadImage': 'Загрузить',
@@ -631,6 +646,9 @@ const I18N = {
     'admin.imageUnreadable': 'The image could not be read. Choose another file.',
     'admin.imageDimensions': 'The image must not exceed 12,000 × 12,000 pixels.',
     'admin.imageUploadFailed': 'The image could not be uploaded. Try again.',
+    'admin.filters': 'Show:', 'admin.filtersLabel': 'Artist mode filters',
+    'admin.filterAll': 'All', 'admin.filterVisible': 'On site', 'admin.filterHidden': 'Hidden',
+    'admin.filterAvailable': 'Available', 'admin.filterSold': 'Sold', 'admin.filterFeatured': 'Featured',
     'admin.visibilityChanged': 'Visibility changed. Click “Save catalogue”.',
     'admin.dragChanged': 'Order changed by dragging. Click “Save catalogue”.',
     'admin.undoDone': 'The last change was undone.', 'admin.resetDone': 'The published version was restored.',
@@ -641,7 +659,7 @@ const I18N = {
     'admin.saved': 'Saved {date}',
     'catalog.title': 'Art catalogue', 'catalog.loading': 'Loading…', 'catalog.sort': 'Sort:',
     'catalog.default': 'Default', 'catalog.priceAsc': 'Price ↑', 'catalog.priceDesc': 'Price ↓',
-    'catalog.newer': 'Newest', 'catalog.older': 'Oldest', 'catalog.search': 'Search by title…',
+    'catalog.newer': 'Newest', 'catalog.older': 'Oldest', 'catalog.search': 'Search by title or ID…',
     'catalog.noResults': 'No artworks found', 'catalog.empty': 'More works coming soon',
     'catalog.networkError': 'Network error', 'catalog.connectionError': 'Connection error',
     'contact.title': 'Buy an<br><em>artwork</em>',
@@ -658,7 +676,7 @@ const I18N = {
     'common.image': 'Image', 'common.imageUnavailable': 'Image unavailable',
     'modal.buy': 'Buy this artwork', 'modal.sold': 'Artwork sold',
     'card.buy': 'Buy', 'card.sold': 'Sold', 'card.details': 'Details', 'card.management': 'Catalogue controls',
-    'card.position': 'Position {position} of {total}', 'card.title': 'Title', 'card.applyTitle': 'Apply', 'card.priceAndAvailability': 'Price and availability', 'card.priceRub': 'Price, ₽', 'card.available': 'Available', 'card.section': 'Section',
+    'card.position': 'ID {id} · position {position} of {total}', 'card.title': 'Title', 'card.applyTitle': 'Apply', 'card.priceAndAvailability': 'Price and availability', 'card.priceRub': 'Price, ₽', 'card.available': 'Available', 'card.section': 'Section',
     'card.featuredPosition': 'Featured {position} of {total}', 'card.addFeatured': 'Add to home page', 'card.removeFeatured': 'Remove', 'card.featuredEarlier': 'Earlier', 'card.featuredLater': 'Later',
     'card.artworkDetails': 'Artwork details', 'card.year': 'Year', 'card.widthCm': 'Width, cm', 'card.heightCm': 'Height, cm', 'card.material': 'Material',
     'card.imageReplacement': 'Artwork image', 'card.uploadImage': 'Upload',
@@ -698,6 +716,7 @@ async function sbSelect(table, query = '') {
 let allPaintings = [];
 let currentSort = 'default';
 let currentSearch = '';
+let currentAdminFilter = 'all';
 let currentModalPainting = null;
 let catalogConfig = createEmptyCatalogConfig();
 let publishedCatalogConfig = createEmptyCatalogConfig();
@@ -765,6 +784,9 @@ function applyLanguage(language = currentLanguage) {
   });
   document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
     element.placeholder = t(element.dataset.i18nPlaceholder);
+  });
+  document.querySelectorAll('[data-i18n-aria-label]').forEach(element => {
+    element.setAttribute('aria-label', t(element.dataset.i18nAriaLabel));
   });
   document.querySelectorAll('.language-btn').forEach(button => {
     const active = button.dataset.language === currentLanguage;
@@ -1231,6 +1253,7 @@ function setCurrentSort(sort) {
 
 function updateAdminModeState(enabled) {
   adminMode = Boolean(enabled && currentAuthor?.app_metadata?.role === 'author');
+  if (!adminMode) currentAdminFilter = 'all';
   document.body.classList.toggle('admin-mode', adminMode);
   document.getElementById('admin-banner')?.classList.toggle('show', adminMode);
   const emailEl = document.getElementById('admin-user-email');
@@ -1695,10 +1718,21 @@ function getVisible() {
   if (currentSearch) {
     const query = currentSearch.toLowerCase();
     items = items.filter(painting =>
+      String(painting.id).includes(query) ||
       painting.title.toLowerCase().includes(query) ||
       (painting.material || '').toLowerCase().includes(query) ||
       translateMaterial(painting.material).toLowerCase().includes(query)
     );
+  }
+  if (adminMode && currentAdminFilter !== 'all') {
+    items = items.filter(painting => {
+      if (currentAdminFilter === 'visible') return !painting.flag_hidden;
+      if (currentAdminFilter === 'hidden') return Boolean(painting.flag_hidden);
+      if (currentAdminFilter === 'available') return Boolean(painting.in_stock);
+      if (currentAdminFilter === 'sold') return !painting.in_stock;
+      if (currentAdminFilter === 'featured') return catalogConfig.featuredPaintingIds.includes(painting.id);
+      return true;
+    });
   }
   return items;
 }
@@ -1716,7 +1750,7 @@ function cardAdminHTML(painting, sectionKey, index, total) {
         <span class="card-admin-visibility ${hidden ? 'is-hidden' : ''}">${t(hidden ? 'card.hiddenFromSite' : 'card.visibleOnSite')}</span>
         ${featured ? `<span class="card-admin-featured">${t('card.featuredPosition', { position: featuredIndex + 1, total: catalogConfig.featuredPaintingIds.length })}</span>` : ''}
       </div>
-      <span class="card-admin-position">${t('card.position', { position: index + 1, total })}</span>
+      <span class="card-admin-position">${t('card.position', { id: painting.id, position: index + 1, total })}</span>
     </div>
     <div class="card-admin-field">
       <label class="card-admin-field-label" for="card-title-${painting.id}">${t('card.title')}</label>
@@ -2020,9 +2054,11 @@ function renderGrid() {
   const container = document.getElementById('tech-sections');
   const visible = getVisible();
   document.getElementById('count-label').textContent = formatWorksCount(visible.length);
+  const filtering = Boolean(currentSearch || (adminMode && currentAdminFilter !== 'all'));
 
-  container.innerHTML = TECH_GROUPS.map(group => {
+  const sectionsHTML = TECH_GROUPS.map(group => {
     const items = sortSectionItems(visible.filter(painting => getPaintingSection(painting) === group.key), group.key);
+    if (filtering && !items.length) return '';
     const body = items.length
       ? `<div class="catalog-grid">${items.map((painting, index) => cardHTML(painting, index, group.key, items.length)).join('')}</div>`
       : `<div class="tech-group-empty">${currentSearch ? t('catalog.noResults') : t('catalog.empty')}</div>`;
@@ -2035,6 +2071,7 @@ function renderGrid() {
       ${body}
     </div>`;
   }).join('');
+  container.innerHTML = sectionsHTML || `<div class="no-results"><p>${t('catalog.noResults')}</p></div>`;
 
   container.querySelectorAll('.card').forEach(card => {
     card.addEventListener('click', event => {
@@ -2164,6 +2201,15 @@ document.getElementById('search-input').addEventListener('input', event => {
   currentSearch = event.target.value.trim();
   renderGrid();
 });
+document.querySelectorAll('[data-admin-filter]').forEach(button => button.addEventListener('click', () => {
+  currentAdminFilter = button.dataset.adminFilter;
+  document.querySelectorAll('[data-admin-filter]').forEach(filterButton => {
+    const active = filterButton.dataset.adminFilter === currentAdminFilter;
+    filterButton.classList.toggle('active', active);
+    filterButton.setAttribute('aria-pressed', String(active));
+  });
+  renderGrid();
+}));
 
 // ─── FORM ───────────────────────────────────────────────────────
 const CONTACT_EMAIL_PATTERN = /^[a-z0-9!#$%&'*+/=?^_`{|}~.-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i;
