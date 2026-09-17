@@ -40,6 +40,18 @@ const checks = [
     expected: [401, 403]
   },
   {
+    name: 'anonymous painting creation blocked',
+    request: () => fetch(`${url}/rest/v1/rpc/create_catalog_painting`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        p_title: 'RLS probe', p_price: 0, p_material: 'probe', p_year: 2026,
+        p_technique: 'графика', p_width_cm: 1, p_height_cm: 1, p_in_stock: false
+      })
+    }),
+    expected: [401, 403, 404]
+  },
+  {
     name: 'anonymous catalogue image upload blocked',
     request: () => fetch(`${url}/storage/v1/object/paintings-images/author/999999/rls-probe.jpg`, {
       method: 'POST',

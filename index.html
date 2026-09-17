@@ -206,6 +206,25 @@
   .btn-save-layout:hover { background:#d9b85c; border-color:#d9b85c; color:var(--ink); }
   .admin-banner-actions button:disabled { opacity:.4; cursor:not-allowed; }
 
+  /* ── NEW ARTWORK DIALOG ── */
+  .author-dialog-backdrop { position:fixed; inset:0; z-index:350; display:none; align-items:center; justify-content:center; padding:24px; background:rgba(26,20,16,.78); }
+  .author-dialog-backdrop.show { display:flex; }
+  .author-dialog { width:min(720px,100%); max-height:calc(100vh - 48px); overflow:auto; background:var(--paper); color:var(--ink); padding:28px; box-shadow:0 24px 80px rgba(0,0,0,.35); }
+  .author-dialog-header { display:flex; align-items:flex-start; justify-content:space-between; gap:18px; margin-bottom:24px; }
+  .author-dialog-title { font-family:'Cormorant Garamond',serif; font-size:34px; font-weight:400; }
+  .author-dialog-description { margin-top:5px; color:var(--sepia); font-size:13px; line-height:1.5; }
+  .author-dialog-close { border:0; background:transparent; color:var(--sepia); font-size:27px; line-height:1; cursor:pointer; }
+  .new-artwork-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+  .new-artwork-field { display:flex; flex-direction:column; gap:6px; min-width:0; }
+  .new-artwork-field.is-wide { grid-column:1 / -1; }
+  .new-artwork-field label { color:var(--sepia); font-size:10px; letter-spacing:.14em; text-transform:uppercase; }
+  .new-artwork-field input,.new-artwork-field select { width:100%; min-width:0; padding:11px 12px; border:1px solid rgba(139,111,71,.35); background:#fff; color:var(--ink); font:13px 'Jost',sans-serif; outline:none; }
+  .new-artwork-field input:focus,.new-artwork-field select:focus { border-color:var(--sepia); }
+  .new-artwork-help { color:var(--sepia); font-size:11px; line-height:1.5; }
+  .new-artwork-status { min-height:20px; margin-top:14px; color:var(--rust); font-size:12px; }
+  .new-artwork-actions { display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap; margin-top:18px; }
+  .new-artwork-actions button { flex:0 0 auto; }
+
   /* ── CARD ADMIN CONTROLS ── */
   .card-admin { display:none; padding:12px 16px 16px; border-top:1px solid rgba(139,111,71,.12); background:#fbf7f0; }
   .admin-mode .card-admin { display:block; }
@@ -324,6 +343,8 @@
     .card-admin-actions{grid-template-columns:1fr;}
     .card-admin-top{align-items:flex-start;flex-direction:column;}
     .card-admin-tools{width:100%;justify-content:space-between;}
+    .new-artwork-grid{grid-template-columns:1fr;}
+    .new-artwork-field.is-wide{grid-column:auto;}
   }
   @media(max-width:600px){
     .hero-art{width:min(100%,380px);}
@@ -401,10 +422,73 @@
     <span class="admin-status" id="admin-status">Перетаскивайте карточки мышью или используйте кнопки.</span>
   </div>
   <div class="admin-banner-actions">
+    <button class="btn-exit-admin" id="btn-new-artwork" type="button" data-i18n="admin.addArtwork">+ Добавить работу</button>
     <button class="btn-exit-admin" id="btn-undo-layout" type="button" data-i18n="admin.undo" disabled>Отменить</button>
     <button class="btn-exit-admin" id="btn-reset-layout" type="button" data-i18n="admin.reset" disabled>Сбросить</button>
     <button class="btn-exit-admin btn-save-layout" id="btn-save-layout" type="button" data-i18n="admin.save" disabled>Сохранить каталог</button>
     <button class="btn-exit-admin" id="btn-exit-admin" type="button" data-i18n="admin.exit">Выйти</button>
+  </div>
+</div>
+
+<div class="author-dialog-backdrop" id="new-artwork-dialog" role="dialog" aria-modal="true" aria-labelledby="new-artwork-title">
+  <div class="author-dialog">
+    <div class="author-dialog-header">
+      <div>
+        <h2 class="author-dialog-title" id="new-artwork-title" data-i18n="newArtwork.title">Новая работа</h2>
+        <p class="author-dialog-description" data-i18n="newArtwork.description">Черновик останется скрытым, пока вы не опубликуете работу.</p>
+      </div>
+      <button class="author-dialog-close" id="new-artwork-close" type="button" aria-label="Закрыть" data-i18n-aria-label="common.close">×</button>
+    </div>
+    <form id="new-artwork-form">
+      <div class="new-artwork-grid">
+        <div class="new-artwork-field is-wide">
+          <label for="new-artwork-name" data-i18n="card.title">Название</label>
+          <input id="new-artwork-name" name="title" type="text" maxlength="180" required>
+        </div>
+        <div class="new-artwork-field">
+          <label for="new-artwork-section" data-i18n="card.section">Раздел</label>
+          <select id="new-artwork-section" name="technique" required></select>
+        </div>
+        <div class="new-artwork-field">
+          <label for="new-artwork-material" data-i18n="card.material">Материал</label>
+          <input id="new-artwork-material" name="material" type="text" maxlength="250" required>
+        </div>
+        <div class="new-artwork-field">
+          <label for="new-artwork-year" data-i18n="card.year">Год</label>
+          <input id="new-artwork-year" name="year" type="number" min="1000" step="1" required>
+        </div>
+        <div class="new-artwork-field">
+          <label for="new-artwork-price" data-i18n="card.priceRub">Цена, ₽</label>
+          <input id="new-artwork-price" name="price" type="number" min="0" max="1000000000" step="1" required>
+        </div>
+        <div class="new-artwork-field">
+          <label for="new-artwork-width" data-i18n="card.widthCm">Ширина, см</label>
+          <input id="new-artwork-width" name="width" type="number" min="0.1" max="10000" step="any" required>
+        </div>
+        <div class="new-artwork-field">
+          <label for="new-artwork-height" data-i18n="card.heightCm">Высота, см</label>
+          <input id="new-artwork-height" name="height" type="number" min="0.1" max="10000" step="any" required>
+        </div>
+        <div class="new-artwork-field">
+          <label for="new-artwork-stock" data-i18n="details.availability">Наличие</label>
+          <select id="new-artwork-stock" name="stock">
+            <option value="available" data-i18n="card.available">В наличии</option>
+            <option value="sold" data-i18n="card.sold">Продано</option>
+          </select>
+        </div>
+        <div class="new-artwork-field">
+          <label for="new-artwork-image" data-i18n="card.imageReplacement">Изображение работы</label>
+          <input id="new-artwork-image" name="image" type="file" accept="image/jpeg,image/png,image/webp">
+        </div>
+        <p class="new-artwork-help is-wide" data-i18n="newArtwork.imageHelp">Для публикации изображение обязательно. Черновик можно сохранить без изображения.</p>
+      </div>
+      <div class="new-artwork-status" id="new-artwork-status" role="status" aria-live="polite"></div>
+      <div class="new-artwork-actions">
+        <button class="card-order-btn" id="new-artwork-cancel" type="button" data-i18n="common.cancel">Отмена</button>
+        <button class="card-order-btn" type="submit" data-create-mode="draft" data-i18n="newArtwork.saveDraft">Сохранить черновик</button>
+        <button class="card-order-btn btn-save-layout" type="submit" data-create-mode="publish" data-i18n="newArtwork.publish">Опубликовать</button>
+      </div>
+    </form>
   </div>
 </div>
 
@@ -542,7 +626,7 @@ const I18N = {
     'hero.galleryName': 'Галерея Святослава Ушакова', 'hero.works': 'работ', 'hero.sections': '9 разделов',
     'hero.openFeatured': 'Открыть избранную работу', 'hero.region': 'Избранные работы',
     'hero.controls': 'Выбор избранной работы', 'hero.slide': 'Показать работу {position}: {title}',
-    'admin.mode': 'Режим автора', 'admin.save': 'Сохранить каталог', 'admin.undo': 'Отменить', 'admin.reset': 'Сбросить', 'admin.exit': 'Выйти',
+    'admin.mode': 'Режим автора', 'admin.save': 'Сохранить каталог', 'admin.undo': 'Отменить', 'admin.reset': 'Сбросить', 'admin.exit': 'Выйти', 'admin.addArtwork': '+ Добавить работу',
     'admin.help': 'Перетаскивайте карточки мышью или используйте кнопки.',
     'admin.unsaved': 'Есть несохранённые изменения.', 'admin.saving': 'Сохраняем…',
     'admin.remoteSaved': 'Каталог сохранён и опубликован.',
@@ -571,6 +655,14 @@ const I18N = {
     'admin.filters': 'Показать:', 'admin.filtersLabel': 'Фильтры режима автора',
     'admin.filterAll': 'Все', 'admin.filterVisible': 'На сайте', 'admin.filterHidden': 'Скрытые',
     'admin.filterAvailable': 'В наличии', 'admin.filterSold': 'Проданные', 'admin.filterFeatured': 'На главной',
+    'newArtwork.title': 'Новая работа', 'newArtwork.description': 'Черновик останется скрытым, пока вы не опубликуете работу.',
+    'newArtwork.imageHelp': 'Для публикации изображение обязательно. Черновик можно сохранить без изображения.',
+    'newArtwork.saveDraft': 'Сохранить черновик', 'newArtwork.publish': 'Опубликовать',
+    'newArtwork.creating': 'Создаём работу…', 'newArtwork.imageRequired': 'Добавьте изображение перед публикацией.',
+    'newArtwork.createdDraft': 'Черновик создан и доступен среди скрытых работ.',
+    'newArtwork.published': 'Работа создана и опубликована.',
+    'newArtwork.uploadFailed': 'Черновик создан, но изображение не загрузилось. Его можно добавить из карточки работы.',
+    'newArtwork.createFailed': 'Не удалось создать работу. Проверьте поля и повторите попытку.',
     'admin.visibilityChanged': 'Видимость изменена. Нажмите «Сохранить каталог».',
     'admin.dragChanged': 'Порядок изменён перетаскиванием. Нажмите «Сохранить каталог».',
     'admin.undoDone': 'Последнее изменение отменено.', 'admin.resetDone': 'Восстановлена опубликованная версия.',
@@ -625,7 +717,7 @@ const I18N = {
     'hero.galleryName': 'Slava Ushakov Gallery', 'hero.works': 'works', 'hero.sections': '9 sections',
     'hero.openFeatured': 'Open featured artwork', 'hero.region': 'Featured artworks',
     'hero.controls': 'Choose a featured artwork', 'hero.slide': 'Show artwork {position}: {title}',
-    'admin.mode': 'Artist mode', 'admin.save': 'Save catalogue', 'admin.undo': 'Undo', 'admin.reset': 'Reset', 'admin.exit': 'Sign out',
+    'admin.mode': 'Artist mode', 'admin.save': 'Save catalogue', 'admin.undo': 'Undo', 'admin.reset': 'Reset', 'admin.exit': 'Sign out', 'admin.addArtwork': '+ Add artwork',
     'admin.help': 'Drag cards with the mouse or use the buttons.',
     'admin.unsaved': 'There are unsaved changes.', 'admin.saving': 'Saving…',
     'admin.remoteSaved': 'Catalogue saved and published.',
@@ -654,6 +746,14 @@ const I18N = {
     'admin.filters': 'Show:', 'admin.filtersLabel': 'Artist mode filters',
     'admin.filterAll': 'All', 'admin.filterVisible': 'On site', 'admin.filterHidden': 'Hidden',
     'admin.filterAvailable': 'Available', 'admin.filterSold': 'Sold', 'admin.filterFeatured': 'Featured',
+    'newArtwork.title': 'New artwork', 'newArtwork.description': 'The draft stays hidden until you publish it.',
+    'newArtwork.imageHelp': 'An image is required to publish. A draft can be saved without one.',
+    'newArtwork.saveDraft': 'Save draft', 'newArtwork.publish': 'Publish',
+    'newArtwork.creating': 'Creating artwork…', 'newArtwork.imageRequired': 'Add an image before publishing.',
+    'newArtwork.createdDraft': 'The draft was created and is available among hidden artworks.',
+    'newArtwork.published': 'The artwork was created and published.',
+    'newArtwork.uploadFailed': 'The draft was created, but the image upload failed. You can add it from the artwork card.',
+    'newArtwork.createFailed': 'The artwork could not be created. Check the fields and try again.',
     'admin.visibilityChanged': 'Visibility changed. Click “Save catalogue”.',
     'admin.dragChanged': 'Order changed by dragging. Click “Save catalogue”.',
     'admin.undoDone': 'The last change was undone.', 'admin.resetDone': 'The published version was restored.',
@@ -739,6 +839,8 @@ let heroPaintingIndex = 0;
 let heroRotationTimer = null;
 let currentAuthor = null;
 let allowAdminNavigation = false;
+let newArtworkBusy = false;
+let newArtworkReturnFocus = null;
 const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 // ─── TECHNIQUE GROUPS (display order) ───────────────────────────
@@ -754,6 +856,15 @@ const TECH_GROUPS = [
   { key: 'принт', anchor: 'tech-print', label: 'Принт' }
 ];
 const TECH_LABEL_MAP = Object.fromEntries(TECH_GROUPS.map(g => [g.key, g.label]));
+
+function populateNewArtworkSectionSelect() {
+  const select = document.getElementById('new-artwork-section');
+  if (!select) return;
+  const selected = select.value || TECH_GROUPS[0].key;
+  select.innerHTML = TECH_GROUPS.map(group =>
+    `<option value="${group.key}" ${group.key === selected ? 'selected' : ''}>${techLabel(group.key)}</option>`
+  ).join('');
+}
 
 // ─── UTILS ──────────────────────────────────────────────────────
 const fmt = n => n.toLocaleString(currentLanguage === 'en' ? 'en-US' : 'ru-RU');
@@ -800,6 +911,7 @@ function applyLanguage(language = currentLanguage) {
     button.classList.toggle('active', active);
     button.setAttribute('aria-pressed', String(active));
   });
+  populateNewArtworkSectionSelect();
 
   document.getElementById('hero-art')?.setAttribute('aria-label', t('hero.region'));
   document.getElementById('hero-art-dots')?.setAttribute('aria-label', t('hero.controls'));
@@ -1196,8 +1308,9 @@ function buildCatalogConfigPayload() {
 }
 
 async function saveCatalogConfig() {
-  if (savingCatalogConfig || !catalogConfigDirty) return;
+  if (savingCatalogConfig || !catalogConfigDirty) return false;
   savingCatalogConfig = true;
+  let saved = false;
 
   const btn = document.getElementById('btn-save-layout');
   const initialText = btn ? btn.textContent : '';
@@ -1242,6 +1355,7 @@ async function saveCatalogConfig() {
     publishedCatalogConfig = cloneCatalogConfig(payload);
     remoteCatalogConfigExists = true;
     setConfigClean(t('admin.remoteSaved'));
+    saved = true;
   } catch (err) {
     setConfigDirty(err.message || t('catalog.connectionError'));
     console.error('Catalog config save error:', err);
@@ -1250,6 +1364,7 @@ async function saveCatalogConfig() {
     if (btn) btn.textContent = initialText || t('admin.save');
     updateAdminActionState();
   }
+  return saved;
 }
 
 function setCurrentSort(sort) {
@@ -1455,6 +1570,20 @@ async function validateArtworkImage(file) {
   }
 }
 
+async function uploadArtworkImageFile(id, file) {
+  await validateArtworkImage(file);
+  const extensionByType = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' };
+  const uniqueName = crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  const path = `author/${id}/${uniqueName}.${extensionByType[file.type]}`;
+  const { error } = await supabaseClient.storage.from(BUCKET).upload(path, file, {
+    cacheControl: '31536000',
+    contentType: file.type,
+    upsert: false
+  });
+  if (error) throw new Error(t('admin.imageUploadFailed'));
+  return path;
+}
+
 async function uploadPaintingImage(id, file, button) {
   const painting = allPaintings.find(item => item.id === id);
   if (!painting || !file || button?.disabled) return;
@@ -1468,17 +1597,7 @@ async function uploadPaintingImage(id, file, button) {
     const { data: userData, error: userError } = await supabaseClient.auth.getUser();
     const user = userData?.user;
     if (userError || !user || user.app_metadata?.role !== 'author') throw new Error(t('admin.authRequired'));
-    await validateArtworkImage(file);
-
-    const extensionByType = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' };
-    const uniqueName = crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-    const path = `author/${id}/${uniqueName}.${extensionByType[file.type]}`;
-    const { error } = await supabaseClient.storage.from(BUCKET).upload(path, file, {
-      cacheControl: '31536000',
-      contentType: file.type,
-      upsert: false
-    });
-    if (error) throw new Error(t('admin.imageUploadFailed'));
+    const path = await uploadArtworkImageFile(id, file);
 
     pushCatalogUndoState();
     catalogConfig.imageById[String(id)] = path;
@@ -1490,6 +1609,143 @@ async function uploadPaintingImage(id, file, button) {
     setAdminStatus(error?.message || t('admin.imageUploadFailed'));
     button.disabled = false;
     button.textContent = initialText || t('card.uploadImage');
+  }
+}
+
+function setNewArtworkBusy(busy) {
+  newArtworkBusy = busy;
+  document.querySelectorAll('#new-artwork-form input,#new-artwork-form select,#new-artwork-form button').forEach(control => {
+    control.disabled = busy;
+  });
+}
+
+function openNewArtworkDialog() {
+  if (!adminMode || newArtworkBusy) return;
+  const dialog = document.getElementById('new-artwork-dialog');
+  const form = document.getElementById('new-artwork-form');
+  if (!dialog || !form) return;
+  newArtworkReturnFocus = document.activeElement;
+  form.reset();
+  populateNewArtworkSectionSelect();
+  const maxYear = new Date().getFullYear() + 1;
+  const yearInput = document.getElementById('new-artwork-year');
+  yearInput.max = String(maxYear);
+  yearInput.value = String(new Date().getFullYear());
+  document.getElementById('new-artwork-status').textContent = '';
+  dialog.classList.add('show');
+  document.body.style.overflow = 'hidden';
+  requestAnimationFrame(() => document.getElementById('new-artwork-name')?.focus());
+}
+
+function closeNewArtworkDialog(force = false) {
+  if (newArtworkBusy && !force) return;
+  const dialog = document.getElementById('new-artwork-dialog');
+  if (!dialog?.classList.contains('show')) return;
+  dialog.classList.remove('show');
+  document.body.style.overflow = '';
+  newArtworkReturnFocus?.focus?.();
+  newArtworkReturnFocus = null;
+}
+
+function showNewArtworkInCatalog(id) {
+  currentSearch = '';
+  currentAdminFilter = 'all';
+  const searchInput = document.getElementById('search-input');
+  if (searchInput) searchInput.value = '';
+  document.querySelectorAll('[data-admin-filter]').forEach(button => {
+    const active = button.dataset.adminFilter === 'all';
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
+  expandedAdminCards.add(id);
+  setCurrentSort('default');
+}
+
+async function createNewArtwork(event) {
+  event.preventDefault();
+  if (!adminMode || newArtworkBusy) return;
+  const form = event.currentTarget;
+  const mode = event.submitter?.dataset.createMode === 'publish' ? 'publish' : 'draft';
+  const status = document.getElementById('new-artwork-status');
+  const imageFile = document.getElementById('new-artwork-image').files?.[0] || null;
+  if (mode === 'publish' && !imageFile) {
+    status.textContent = t('newArtwork.imageRequired');
+    document.getElementById('new-artwork-image').focus();
+    return;
+  }
+  if (!form.reportValidity()) return;
+
+  const values = {
+    title: document.getElementById('new-artwork-name').value.trim(),
+    technique: document.getElementById('new-artwork-section').value,
+    material: document.getElementById('new-artwork-material').value.trim(),
+    year: Number(document.getElementById('new-artwork-year').value),
+    price: Number(document.getElementById('new-artwork-price').value),
+    width: Number(String(document.getElementById('new-artwork-width').value).replace(',', '.')),
+    height: Number(String(document.getElementById('new-artwork-height').value).replace(',', '.')),
+    inStock: document.getElementById('new-artwork-stock').value === 'available'
+  };
+
+  setNewArtworkBusy(true);
+  status.textContent = t('newArtwork.creating');
+  let createdPainting = null;
+  try {
+    const { data: userData, error: userError } = await supabaseClient.auth.getUser();
+    const user = userData?.user;
+    if (userError || !user || user.app_metadata?.role !== 'author') throw new Error(t('admin.authRequired'));
+    if (imageFile) await validateArtworkImage(imageFile);
+
+    const { data, error } = await supabaseClient.rpc('create_catalog_painting', {
+      p_title: values.title,
+      p_price: values.price,
+      p_material: values.material,
+      p_year: values.year,
+      p_technique: values.technique,
+      p_width_cm: values.width,
+      p_height_cm: values.height,
+      p_in_stock: values.inStock
+    });
+    if (error || !data?.id) throw new Error(t('newArtwork.createFailed'));
+
+    createdPainting = normalizePaintingRecord(data);
+    allPaintings.push(createdPainting);
+    let imagePath = null;
+    if (imageFile) {
+      try {
+        imagePath = await uploadArtworkImageFile(createdPainting.id, imageFile);
+      } catch {
+        showNewArtworkInCatalog(createdPainting.id);
+        closeNewArtworkDialog(true);
+        setAdminStatus(t('newArtwork.uploadFailed'));
+        return;
+      }
+    }
+
+    if (imagePath || mode === 'publish') {
+      pushCatalogUndoState();
+      syncSectionOrder(values.technique);
+      if (imagePath) catalogConfig.imageById[String(createdPainting.id)] = imagePath;
+      if (mode === 'publish') catalogConfig.hiddenById[String(createdPainting.id)] = false;
+      applyCatalogConfigToPaintings();
+      refreshHeroRotation();
+      populateSelect();
+      setConfigDirty(mode === 'publish' ? t('newArtwork.published') : t('newArtwork.createdDraft'));
+      const saved = await saveCatalogConfig();
+      if (!saved) throw new Error(t('catalog.connectionError'));
+    }
+
+    showNewArtworkInCatalog(createdPainting.id);
+    closeNewArtworkDialog(true);
+    setAdminStatus(t(mode === 'publish' ? 'newArtwork.published' : 'newArtwork.createdDraft'));
+  } catch (error) {
+    status.textContent = error?.message || t('newArtwork.createFailed');
+    if (createdPainting) {
+      showNewArtworkInCatalog(createdPainting.id);
+      closeNewArtworkDialog(true);
+      setAdminStatus(error?.message || t('newArtwork.createdDraft'));
+    }
+  } finally {
+    setNewArtworkBusy(false);
   }
 }
 
@@ -1676,6 +1932,28 @@ function initHeroRotation() {
 }
 
 // ─── LOAD DATA ──────────────────────────────────────────────────
+function normalizePaintingRecord(painting) {
+  return {
+    ...painting,
+    id: Number(painting.id),
+    price: Number(painting.price),
+    year: Number(painting.year),
+    width_cm: Number(painting.width_cm),
+    height_cm: Number(painting.height_cm),
+    in_stock: Boolean(painting.in_stock),
+    flag_hidden: Boolean(painting.flag_hidden),
+    source_title: String(painting.title || '').trim(),
+    source_flag_hidden: Boolean(painting.flag_hidden),
+    source_price: Number(painting.price),
+    source_in_stock: Boolean(painting.in_stock),
+    source_year: Number(painting.year),
+    source_width_cm: Number(painting.width_cm),
+    source_height_cm: Number(painting.height_cm),
+    source_material: String(painting.material || '').trim(),
+    source_image_url: String(painting.image_url || '').trim()
+  };
+}
+
 async function loadPaintings() {
   document.getElementById('count-label').textContent = t('catalog.loading');
   try {
@@ -1684,18 +1962,7 @@ async function loadPaintings() {
     const excludedPaintingIds = new Set(catalogConfig.excludedPaintingIds);
     allPaintings = (data || [])
       .filter(painting => !excludedPaintingIds.has(painting.id))
-      .map(painting => ({
-        ...painting,
-        source_title: String(painting.title || '').trim(),
-        source_flag_hidden: Boolean(painting.flag_hidden),
-        source_price: Number(painting.price),
-        source_in_stock: Boolean(painting.in_stock),
-        source_year: Number(painting.year),
-        source_width_cm: Number(painting.width_cm),
-        source_height_cm: Number(painting.height_cm),
-        source_material: String(painting.material || '').trim(),
-        source_image_url: String(painting.image_url || '').trim()
-      }));
+      .map(normalizePaintingRecord);
     applyCatalogConfigToPaintings();
     sanitizeFeaturedPaintingIds();
     document.getElementById('stat-total').textContent = getPublicPaintings().length + '+';
@@ -2209,6 +2476,13 @@ function buyPainting(id) {
 }
 
 // ─── MODAL EVENTS ───────────────────────────────────────────────
+document.getElementById('btn-new-artwork').addEventListener('click', openNewArtworkDialog);
+document.getElementById('new-artwork-close').addEventListener('click', () => closeNewArtworkDialog());
+document.getElementById('new-artwork-cancel').addEventListener('click', () => closeNewArtworkDialog());
+document.getElementById('new-artwork-form').addEventListener('submit', createNewArtwork);
+document.getElementById('new-artwork-dialog').addEventListener('click', event => {
+  if (event.target === event.currentTarget) closeNewArtworkDialog();
+});
 document.getElementById('modal-close').addEventListener('click', closeModal);
 document.getElementById('modal-close-secondary').addEventListener('click', closeModal);
 document.getElementById('modal-buy').addEventListener('click', goToBuy);
@@ -2217,6 +2491,7 @@ document.getElementById('modal').addEventListener('click', event => {
 });
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape') {
+    closeNewArtworkDialog();
     closeModal();
   }
 });
