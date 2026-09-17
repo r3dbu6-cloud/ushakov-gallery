@@ -44,6 +44,7 @@ if (
   !config.widthById ||
   !config.heightById ||
   !config.materialById ||
+  !config.imageById ||
   !Array.isArray(config.excludedPaintingIds) ||
   !Array.isArray(config.featuredPaintingIds) ||
   !Array.isArray(config.appliedMigrations)

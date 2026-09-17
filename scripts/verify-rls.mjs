@@ -40,6 +40,20 @@ const checks = [
     expected: [401, 403]
   },
   {
+    name: 'anonymous catalogue image upload blocked',
+    request: () => fetch(`${url}/storage/v1/object/paintings-images/author/999999/rls-probe.jpg`, {
+      method: 'POST',
+      headers: {
+        apikey: key,
+        Authorization: `Bearer ${key}`,
+        'Content-Type': 'image/jpeg',
+        'x-upsert': 'false'
+      },
+      body: new Uint8Array([0xff, 0xd8, 0xff, 0xd9])
+    }),
+    expected: [400, 401, 403]
+  },
+  {
     name: 'invalid order emails blocked',
     request: async () => {
       const invalidEmails = ['not-an-email', 'olegkaraev@gmail.21132', '.name@example.com', 'name..test@example.com'];

@@ -620,6 +620,7 @@
   "widthById": {},
   "heightById": {},
   "materialById": {},
+  "imageById": {},
   "excludedPaintingIds": [
     11,
     14,
