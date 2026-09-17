@@ -30,8 +30,37 @@ if (/localhost(?::\d+)?/i.test(authorHtml)) {
 }
 
 const config = JSON.parse(await readFile(resolve(root, 'catalog-config.json'), 'utf8'));
-if (!config.sectionById || !config.orderBySection) {
+if (
+  config.catalogSchemaVersion !== 2 ||
+  !config.sectionById ||
+  !config.orderBySection ||
+  !config.titleById ||
+  !config.hiddenById ||
+  !Array.isArray(config.excludedPaintingIds) ||
+  !Array.isArray(config.featuredPaintingIds) ||
+  !Array.isArray(config.appliedMigrations)
+) {
   throw new Error('catalog-config.json has an invalid shape');
+}
+
+const indexHtml = await readFile(resolve(root, 'index.html'), 'utf8');
+const embeddedMatch = indexHtml.match(/^const DEFAULT_CATALOG_CONFIG = (.*);$/m);
+if (!embeddedMatch || JSON.stringify(JSON.parse(embeddedMatch[1])) !== JSON.stringify(config)) {
+  throw new Error('Embedded catalogue fallback does not match catalog-config.json');
+}
+
+const legacyConstants = [
+  'MYTHOLOGY_PAINTING_IDS',
+  'AVIATION_PAINTING_IDS',
+  'ANIMATION_PAINTING_IDS',
+  'FEATURED_PAINTING_IDS',
+  'EXCLUDED_DUPLICATE_PAINTING_IDS',
+  'REPLACED_PAINTING_IDS',
+  'RESTORED_PAINTING_IDS',
+  'PAINTING_TITLE_OVERRIDES'
+];
+if (legacyConstants.some(name => indexHtml.includes(name))) {
+  throw new Error('Legacy hard-coded catalogue metadata is still present in index.html');
 }
 
 console.log('Static checks passed.');
