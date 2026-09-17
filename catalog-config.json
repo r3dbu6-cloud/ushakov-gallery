@@ -614,6 +614,8 @@
   "hiddenById": {
     "735": false
   },
+  "priceById": {},
+  "stockById": {},
   "excludedPaintingIds": [
     11,
     14,

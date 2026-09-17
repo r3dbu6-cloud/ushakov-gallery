@@ -38,6 +38,8 @@ if (
   !config.orderBySection ||
   !config.titleById ||
   !config.hiddenById ||
+  !config.priceById ||
+  !config.stockById ||
   !Array.isArray(config.excludedPaintingIds) ||
   !Array.isArray(config.featuredPaintingIds) ||
   !Array.isArray(config.appliedMigrations)
