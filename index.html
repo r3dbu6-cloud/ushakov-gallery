@@ -211,6 +211,8 @@
   .admin-mode .card-admin { display:block; }
   .card-admin-top { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
   .card-admin-heading { display:flex; align-items:center; gap:8px; min-width:0; flex-wrap:wrap; }
+  .card-admin-tools { display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-wrap:wrap; }
+  .card-admin-edit-toggle { flex:0 0 auto; }
   .card-admin-label { font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--sepia); }
   .card-admin-position { font-size:11px; color:var(--ink); }
   .card-admin-visibility { font-size:10px; letter-spacing:.08em; color:#4f6b43; }
@@ -320,6 +322,8 @@
     footer{padding:20px;flex-direction:column;gap:8px;}
     .form-row{grid-template-columns:1fr;}
     .card-admin-actions{grid-template-columns:1fr;}
+    .card-admin-top{align-items:flex-start;flex-direction:column;}
+    .card-admin-tools{width:100%;justify-content:space-between;}
   }
   @media(max-width:600px){
     .hero-art{width:min(100%,380px);}
@@ -598,6 +602,7 @@ const I18N = {
     'card.featuredPosition': 'На главной {position} из {total}', 'card.addFeatured': 'Добавить на главную', 'card.removeFeatured': 'Убрать', 'card.featuredEarlier': 'Раньше', 'card.featuredLater': 'Позже',
     'card.artworkDetails': 'Параметры работы', 'card.year': 'Год', 'card.widthCm': 'Ширина, см', 'card.heightCm': 'Высота, см', 'card.material': 'Материал',
     'card.imageReplacement': 'Изображение работы', 'card.uploadImage': 'Загрузить',
+    'card.edit': 'Редактировать', 'card.closeEditor': 'Свернуть',
     'card.previous': 'Раньше', 'card.next': 'Позже', 'card.drag': 'Перетащить работу',
     'card.visibleOnSite': 'Показывается на сайте', 'card.hiddenFromSite': 'Скрыта с сайта',
     'card.showOnSite': 'Показать на сайте', 'card.hideFromSite': 'Скрыть с сайта',
@@ -680,6 +685,7 @@ const I18N = {
     'card.featuredPosition': 'Featured {position} of {total}', 'card.addFeatured': 'Add to home page', 'card.removeFeatured': 'Remove', 'card.featuredEarlier': 'Earlier', 'card.featuredLater': 'Later',
     'card.artworkDetails': 'Artwork details', 'card.year': 'Year', 'card.widthCm': 'Width, cm', 'card.heightCm': 'Height, cm', 'card.material': 'Material',
     'card.imageReplacement': 'Artwork image', 'card.uploadImage': 'Upload',
+    'card.edit': 'Edit', 'card.closeEditor': 'Collapse',
     'card.previous': 'Earlier', 'card.next': 'Later', 'card.drag': 'Drag artwork',
     'card.visibleOnSite': 'Visible on the site', 'card.hiddenFromSite': 'Hidden from the site',
     'card.showOnSite': 'Show on the site', 'card.hideFromSite': 'Hide from the site',
@@ -717,6 +723,7 @@ let allPaintings = [];
 let currentSort = 'default';
 let currentSearch = '';
 let currentAdminFilter = 'all';
+const expandedAdminCards = new Set();
 let currentModalPainting = null;
 let catalogConfig = createEmptyCatalogConfig();
 let publishedCatalogConfig = createEmptyCatalogConfig();
@@ -1742,6 +1749,7 @@ function cardAdminHTML(painting, sectionKey, index, total) {
   const hidden = Boolean(painting.flag_hidden);
   const featuredIndex = catalogConfig.featuredPaintingIds.indexOf(painting.id);
   const featured = featuredIndex >= 0;
+  const editorExpanded = expandedAdminCards.has(painting.id);
   return `<div class="card-admin">
     <div class="card-admin-top">
       <div class="card-admin-heading">
@@ -1750,8 +1758,12 @@ function cardAdminHTML(painting, sectionKey, index, total) {
         <span class="card-admin-visibility ${hidden ? 'is-hidden' : ''}">${t(hidden ? 'card.hiddenFromSite' : 'card.visibleOnSite')}</span>
         ${featured ? `<span class="card-admin-featured">${t('card.featuredPosition', { position: featuredIndex + 1, total: catalogConfig.featuredPaintingIds.length })}</span>` : ''}
       </div>
-      <span class="card-admin-position">${t('card.position', { id: painting.id, position: index + 1, total })}</span>
+      <div class="card-admin-tools">
+        <span class="card-admin-position">${t('card.position', { id: painting.id, position: index + 1, total })}</span>
+        <button class="card-order-btn card-admin-edit-toggle" type="button" data-role="toggle-editor" data-id="${painting.id}" aria-expanded="${editorExpanded}" aria-controls="card-admin-editor-${painting.id}">${t(editorExpanded ? 'card.closeEditor' : 'card.edit')}</button>
+      </div>
     </div>
+    <div id="card-admin-editor-${painting.id}" ${editorExpanded ? '' : 'hidden'}>
     <div class="card-admin-field">
       <label class="card-admin-field-label" for="card-title-${painting.id}">${t('card.title')}</label>
       <div class="card-title-row">
@@ -1805,6 +1817,7 @@ function cardAdminHTML(painting, sectionKey, index, total) {
       <button class="card-order-btn" type="button" data-role="move-next" data-id="${painting.id}" ${index === total - 1 ? 'disabled' : ''}>${t('card.next')} →</button>
       <button class="card-order-btn card-visibility-btn" type="button" data-role="toggle-visibility" data-id="${painting.id}">${t(hidden ? 'card.showOnSite' : 'card.hideFromSite')}</button>
     </div>
+    </div>
   </div>`;
 }
 
@@ -1848,6 +1861,21 @@ function cardHTML(painting, index, sectionKey, total) {
 }
 
 function bindCatalogAdminControls(container) {
+  container.querySelectorAll('[data-role="toggle-editor"]').forEach(button => {
+    button.addEventListener('click', event => {
+      event.stopPropagation();
+      const id = Number(button.dataset.id);
+      const editor = container.querySelector(`#card-admin-editor-${id}`);
+      if (!editor) return;
+      const expanded = editor.hidden;
+      editor.hidden = !expanded;
+      button.setAttribute('aria-expanded', String(expanded));
+      button.textContent = t(expanded ? 'card.closeEditor' : 'card.edit');
+      if (expanded) expandedAdminCards.add(id);
+      else expandedAdminCards.delete(id);
+    });
+  });
+
   if (adminMode) {
     container.querySelectorAll('.card').forEach(card => {
       card.addEventListener('dragstart', event => {
