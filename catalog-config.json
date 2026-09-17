@@ -616,6 +616,10 @@
   },
   "priceById": {},
   "stockById": {},
+  "yearById": {},
+  "widthById": {},
+  "heightById": {},
+  "materialById": {},
   "excludedPaintingIds": [
     11,
     14,

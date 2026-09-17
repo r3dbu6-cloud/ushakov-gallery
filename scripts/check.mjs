@@ -40,6 +40,10 @@ if (
   !config.hiddenById ||
   !config.priceById ||
   !config.stockById ||
+  !config.yearById ||
+  !config.widthById ||
+  !config.heightById ||
+  !config.materialById ||
   !Array.isArray(config.excludedPaintingIds) ||
   !Array.isArray(config.featuredPaintingIds) ||
   !Array.isArray(config.appliedMigrations)
