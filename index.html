@@ -208,9 +208,11 @@
   .card-admin { display:none; padding:12px 16px 16px; border-top:1px solid rgba(139,111,71,.12); background:#fbf7f0; }
   .admin-mode .card-admin { display:block; }
   .card-admin-top { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
-  .card-admin-heading { display:flex; align-items:center; gap:8px; min-width:0; }
+  .card-admin-heading { display:flex; align-items:center; gap:8px; min-width:0; flex-wrap:wrap; }
   .card-admin-label { font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--sepia); }
   .card-admin-position { font-size:11px; color:var(--ink); }
+  .card-admin-visibility { font-size:10px; letter-spacing:.08em; color:#4f6b43; }
+  .card-admin-visibility.is-hidden { color:var(--rust); }
   .card-drag-handle { display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; flex:0 0 30px; padding:0; border:1px solid rgba(139,111,71,.35); background:#fff; color:var(--sepia); cursor:grab; font-size:17px; line-height:1; touch-action:none; }
   .card-drag-handle:hover { border-color:var(--ink); color:var(--ink); }
   .card-drag-handle:active { cursor:grabbing; }
@@ -222,6 +224,9 @@
   .card-order-btn { flex:1; background:transparent; border:1px solid rgba(139,111,71,.35); color:var(--sepia); padding:8px 10px; font-size:11px; font-family:'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; transition:all .2s; }
   .card-order-btn:hover:not(:disabled) { border-color:var(--ink); color:var(--ink); }
   .card-order-btn:disabled { opacity:.35; cursor:not-allowed; }
+  .card-visibility-btn { grid-column:1 / -1; }
+  .admin-mode .card.is-catalog-hidden { opacity:.72; outline:1px dashed rgba(154,74,47,.55); outline-offset:-1px; }
+  .admin-mode .card.is-catalog-hidden .card-image img { filter:grayscale(.85); }
   .admin-mode .card.dragging { opacity:.35; transform:scale(.98); box-shadow:none; }
   .admin-mode .card.drag-before::before,
   .admin-mode .card.drag-after::after { content:attr(data-drop-label); position:absolute; z-index:12; top:10px; width:max-content; max-width:150px; background:var(--rust); color:#fff; padding:6px 9px; font-size:10px; line-height:1.2; letter-spacing:.08em; text-transform:uppercase; pointer-events:none; box-shadow:0 4px 14px rgba(26,20,16,.22); }
@@ -499,6 +504,7 @@ const I18N = {
     'admin.authRequired': 'Сессия автора завершена. Войдите снова.',
     'admin.orderChanged': 'Порядок изменён. Нажмите «Сохранить каталог».',
     'admin.sectionChanged': 'Раздел изменён. Нажмите «Сохранить каталог».',
+    'admin.visibilityChanged': 'Видимость изменена. Нажмите «Сохранить каталог».',
     'admin.dragChanged': 'Порядок изменён перетаскиванием. Нажмите «Сохранить каталог».',
     'admin.undoDone': 'Последнее изменение отменено.', 'admin.resetDone': 'Восстановлена опубликованная версия.',
     'admin.draftRestored': 'Восстановлен локальный черновик. Проверьте и сохраните его.',
@@ -527,6 +533,8 @@ const I18N = {
     'card.buy': 'Купить', 'card.sold': 'Продано', 'card.details': 'Подробнее', 'card.management': 'Управление каталогом',
     'card.position': 'Позиция {position} из {total}', 'card.section': 'Раздел',
     'card.previous': 'Раньше', 'card.next': 'Позже', 'card.drag': 'Перетащить работу',
+    'card.visibleOnSite': 'Показывается на сайте', 'card.hiddenFromSite': 'Скрыта с сайта',
+    'card.showOnSite': 'Показать на сайте', 'card.hideFromSite': 'Скрыть с сайта',
     'card.dropBefore': 'Перед этой работой', 'card.dropAfter': 'После этой работы',
     'details.year': 'Год', 'details.material': 'Материал', 'details.size': 'Размер',
     'details.technique': 'Техника', 'details.availability': 'Наличие',
@@ -553,6 +561,7 @@ const I18N = {
     'admin.authRequired': 'Your author session has expired. Sign in again.',
     'admin.orderChanged': 'Order changed. Click “Save catalogue”.',
     'admin.sectionChanged': 'Section changed. Click “Save catalogue”.',
+    'admin.visibilityChanged': 'Visibility changed. Click “Save catalogue”.',
     'admin.dragChanged': 'Order changed by dragging. Click “Save catalogue”.',
     'admin.undoDone': 'The last change was undone.', 'admin.resetDone': 'The published version was restored.',
     'admin.draftRestored': 'A local draft was restored. Review and save it.',
@@ -581,6 +590,8 @@ const I18N = {
     'card.buy': 'Buy', 'card.sold': 'Sold', 'card.details': 'Details', 'card.management': 'Catalogue controls',
     'card.position': 'Position {position} of {total}', 'card.section': 'Section',
     'card.previous': 'Earlier', 'card.next': 'Later', 'card.drag': 'Drag artwork',
+    'card.visibleOnSite': 'Visible on the site', 'card.hiddenFromSite': 'Hidden from the site',
+    'card.showOnSite': 'Show on the site', 'card.hideFromSite': 'Hide from the site',
     'card.dropBefore': 'Before this artwork', 'card.dropAfter': 'After this artwork',
     'details.year': 'Year', 'details.material': 'Material', 'details.size': 'Size',
     'details.technique': 'Technique', 'details.availability': 'Availability',
@@ -763,6 +774,16 @@ function cloneCatalogConfig(config) {
   return normalizeCatalogConfig(JSON.parse(JSON.stringify(config || {})));
 }
 
+function applyCatalogConfigToPaintings() {
+  allPaintings.forEach(painting => {
+    const id = String(painting.id);
+    painting.title = catalogConfig.titleById[id] || painting.source_title;
+    painting.flag_hidden = Object.prototype.hasOwnProperty.call(catalogConfig.hiddenById, id)
+      ? catalogConfig.hiddenById[id]
+      : painting.source_flag_hidden;
+  });
+}
+
 function catalogConfigFingerprint(config) {
   const normalized = normalizeCatalogConfig(config);
   return JSON.stringify({
@@ -909,6 +930,8 @@ function restoreLocalCatalogDraft() {
     return false;
   }
   catalogConfig = draft.config;
+  applyCatalogConfigToPaintings();
+  refreshHeroRotation();
   catalogConfigDirty = true;
   setAdminStatus(t('admin.draftRestored'));
   updateAdminActionState();
@@ -919,6 +942,9 @@ function undoCatalogChange() {
   const previous = catalogUndoStack.pop();
   if (!previous) return;
   catalogConfig = previous;
+  applyCatalogConfigToPaintings();
+  populateSelect();
+  refreshHeroRotation();
   setCurrentSort('default');
   setConfigDirty(t('admin.undoDone'));
 }
@@ -926,6 +952,9 @@ function undoCatalogChange() {
 function resetCatalogChanges() {
   if (!catalogConfigDirty || !window.confirm(t('admin.confirmReset'))) return;
   catalogConfig = cloneCatalogConfig(publishedCatalogConfig);
+  applyCatalogConfigToPaintings();
+  populateSelect();
+  refreshHeroRotation();
   setCurrentSort('default');
   setConfigClean(t('admin.resetDone'));
 }
@@ -1106,6 +1135,23 @@ function changePaintingSection(id, sectionKey) {
   setConfigDirty(t('admin.sectionChanged'));
 }
 
+function togglePaintingVisibility(id) {
+  const painting = allPaintings.find(item => item.id === id);
+  if (!painting) return;
+
+  pushCatalogUndoState();
+  const hidden = !painting.flag_hidden;
+  const key = String(id);
+  if (hidden === painting.source_flag_hidden) delete catalogConfig.hiddenById[key];
+  else catalogConfig.hiddenById[key] = hidden;
+
+  applyCatalogConfigToPaintings();
+  populateSelect();
+  refreshHeroRotation();
+  setCurrentSort('default');
+  setConfigDirty(t('admin.visibilityChanged'));
+}
+
 function movePaintingByDrag(id, sectionKey, targetId = null, placeAfter = false) {
   const painting = allPaintings.find(item => item.id === id);
   if (!painting || !TECH_LABEL_MAP[sectionKey] || id === targetId) return;
@@ -1177,7 +1223,7 @@ function restartHeroRotation() {
   heroRotationTimer = setInterval(() => showHeroPainting(heroPaintingIndex + 1), 5500);
 }
 
-function initHeroRotation() {
+function refreshHeroRotation() {
   heroPaintings = catalogConfig.featuredPaintingIds
     .map(id => allPaintings.find(painting => painting.id === id && painting.image_url && !painting.flag_hidden))
     .filter(Boolean);
@@ -1191,6 +1237,13 @@ function initHeroRotation() {
     showHeroPainting(Number(dot.dataset.heroIndex));
     restartHeroRotation();
   }));
+
+  showHeroPainting(0, true);
+  restartHeroRotation();
+}
+
+function initHeroRotation() {
+  refreshHeroRotation();
 
   const heroArt = document.getElementById('hero-art');
   const heroTitle = document.getElementById('hero-art-title');
@@ -1213,8 +1266,6 @@ function initHeroRotation() {
     if (event.matches) clearInterval(heroRotationTimer);
     else restartHeroRotation();
   });
-  showHeroPainting(0, true);
-  restartHeroRotation();
 }
 
 // ─── LOAD DATA ──────────────────────────────────────────────────
@@ -1228,11 +1279,10 @@ async function loadPaintings() {
       .filter(painting => !excludedPaintingIds.has(painting.id))
       .map(painting => ({
         ...painting,
-        title: catalogConfig.titleById[String(painting.id)] || painting.title,
-        flag_hidden: Object.prototype.hasOwnProperty.call(catalogConfig.hiddenById, String(painting.id))
-          ? catalogConfig.hiddenById[String(painting.id)]
-          : painting.flag_hidden
+        source_title: painting.title,
+        source_flag_hidden: Boolean(painting.flag_hidden)
       }));
+    applyCatalogConfigToPaintings();
     document.getElementById('stat-total').textContent = getPublicPaintings().length + '+';
     initHeroRotation();
     TECH_GROUPS.forEach(group => syncSectionOrder(group.key));
@@ -1256,7 +1306,7 @@ function getPublicPaintings() {
 }
 
 function getVisible() {
-  let items = getPublicPaintings();
+  let items = adminMode ? allPaintings : getPublicPaintings();
   if (currentSearch) {
     const query = currentSearch.toLowerCase();
     items = items.filter(painting =>
@@ -1270,11 +1320,13 @@ function getVisible() {
 
 function cardAdminHTML(painting, sectionKey, index, total) {
   if (!adminMode) return '';
+  const hidden = Boolean(painting.flag_hidden);
   return `<div class="card-admin">
     <div class="card-admin-top">
       <div class="card-admin-heading">
         <button class="card-drag-handle" type="button" draggable="true" data-role="drag-handle" data-id="${painting.id}" aria-label="${t('card.drag')}" title="${t('card.drag')}">⠿</button>
         <span class="card-admin-label">${t('card.management')}</span>
+        <span class="card-admin-visibility ${hidden ? 'is-hidden' : ''}">${t(hidden ? 'card.hiddenFromSite' : 'card.visibleOnSite')}</span>
       </div>
       <span class="card-admin-position">${t('card.position', { position: index + 1, total })}</span>
     </div>
@@ -1287,6 +1339,7 @@ function cardAdminHTML(painting, sectionKey, index, total) {
     <div class="card-admin-actions">
       <button class="card-order-btn" type="button" data-role="move-previous" data-id="${painting.id}" ${index === 0 ? 'disabled' : ''}>← ${t('card.previous')}</button>
       <button class="card-order-btn" type="button" data-role="move-next" data-id="${painting.id}" ${index === total - 1 ? 'disabled' : ''}>${t('card.next')} →</button>
+      <button class="card-order-btn card-visibility-btn" type="button" data-role="toggle-visibility" data-id="${painting.id}">${t(hidden ? 'card.showOnSite' : 'card.hideFromSite')}</button>
     </div>
   </div>`;
 }
@@ -1299,15 +1352,16 @@ function cardHTML(painting, index, sectionKey, total) {
     ? `<img src="${escapeHTML(url)}" alt="${title}" loading="lazy">`
     : `<div class="card-placeholder">${imagePlaceholderHTML(t('common.imageUnavailable'))}</div>`;
 
-  const purchaseAction = painting.in_stock
+  const purchasable = painting.in_stock && !painting.flag_hidden;
+  const purchaseAction = purchasable
     ? `<button class="card-buy-btn" type="button" data-action="buy" data-id="${painting.id}">${t('card.buy')}</button>`
-    : `<span class="card-sold-status">${t('card.sold')}</span>`;
+    : `<span class="card-sold-status">${t(painting.flag_hidden ? 'card.hiddenFromSite' : 'card.sold')}</span>`;
   const priceRow = `<div class="card-price-row"><div class="card-price">${fmt(painting.price)}<span class="currency">₽</span></div>${purchaseAction}</div>`;
-  const overlayPurchaseAction = painting.in_stock
+  const overlayPurchaseAction = purchasable
     ? `<button class="overlay-btn primary" type="button" data-action="buy" data-id="${painting.id}">${t('card.buy')}</button>`
     : '';
 
-  return `<div class="card" style="animation-delay:${Math.min(index * .04, .5)}s" data-id="${painting.id}" data-section="${sectionKey}">
+  return `<div class="card ${adminMode && painting.flag_hidden ? 'is-catalog-hidden' : ''}" style="animation-delay:${Math.min(index * .04, .5)}s" data-id="${painting.id}" data-section="${sectionKey}">
     <div class="card-image">
       ${imageHTML}
       <div class="card-size-badge">${painting.width_cm}×${painting.height_cm} ${t('details.cm')}</div>
@@ -1397,6 +1451,13 @@ function bindCatalogAdminControls(container) {
       changePaintingSection(Number(select.dataset.id), select.value);
     });
   });
+
+  container.querySelectorAll('[data-role="toggle-visibility"]').forEach(button => {
+    button.addEventListener('click', event => {
+      event.stopPropagation();
+      togglePaintingVisibility(Number(button.dataset.id));
+    });
+  });
 }
 
 function renderGrid() {
@@ -1467,17 +1528,18 @@ function openModal(id) {
   document.getElementById('modal-technique').textContent = techLabel(sectionKey);
   document.getElementById('modal-title').textContent = painting.title;
   document.getElementById('modal-price').innerHTML = `${fmt(painting.price)}<span class="currency">₽</span>`;
+  const purchasable = painting.in_stock && !painting.flag_hidden;
   document.getElementById('modal-details').innerHTML = `
     <div class="modal-detail"><span class="modal-detail-label">${t('details.year')}</span><span>${painting.year}</span></div>
     <div class="modal-detail"><span class="modal-detail-label">${t('details.material')}</span><span>${escapeHTML(translateMaterial(painting.material) || '—')}</span></div>
     <div class="modal-detail"><span class="modal-detail-label">${t('details.size')}</span><span>${painting.width_cm}×${painting.height_cm} ${t('details.cm')}</span></div>
     <div class="modal-detail"><span class="modal-detail-label">${t('details.technique')}</span><span>${techLabel(sectionKey)}</span></div>
-    <div class="modal-detail"><span class="modal-detail-label">${t('details.availability')}</span><span>${painting.in_stock ? t('details.inStock') : t('details.sold')}</span></div>
+    <div class="modal-detail"><span class="modal-detail-label">${t('details.availability')}</span><span>${painting.flag_hidden ? t('card.hiddenFromSite') : painting.in_stock ? t('details.inStock') : t('details.sold')}</span></div>
   `;
 
   const buyButton = document.getElementById('modal-buy');
-  buyButton.disabled = !painting.in_stock;
-  buyButton.textContent = painting.in_stock ? t('modal.buy') : t('modal.sold');
+  buyButton.disabled = !purchasable;
+  buyButton.textContent = purchasable ? t('modal.buy') : painting.flag_hidden ? t('card.hiddenFromSite') : t('modal.sold');
 
   const wrap = document.getElementById('modal-img-wrap');
   const url = painting.image_url ? imgUrl(painting.image_url) : null;
@@ -1496,7 +1558,7 @@ function closeModal() {
 }
 
 function goToBuy() {
-  if (!currentModalPainting?.in_stock) return;
+  if (!currentModalPainting?.in_stock || currentModalPainting.flag_hidden) return;
   if (currentModalPainting) {
     const select = document.getElementById('painting-select');
     for (const option of select.options) {

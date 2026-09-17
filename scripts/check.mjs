@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { Script } from 'node:vm';
 
 const root = resolve(new URL('..', import.meta.url).pathname);
 const files = ['index.html', 'author/index.html'];
@@ -10,6 +11,7 @@ for (const file of files) {
   const html = await readFile(resolve(root, file), 'utf8');
   const scripts = [...html.matchAll(/<script(?![^>]*src)[^>]*>([\s\S]*?)<\/script>/g)];
   if (scripts.length !== 1) throw new Error(`${file}: expected exactly one inline script`);
+  new Script(scripts[0][1], { filename: file });
 
   hashes.push(
     `'sha256-${createHash('sha256').update(scripts[0][1]).digest('base64')}'`
