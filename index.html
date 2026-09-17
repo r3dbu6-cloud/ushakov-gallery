@@ -213,6 +213,7 @@
   .card-admin-position { font-size:11px; color:var(--ink); }
   .card-admin-visibility { font-size:10px; letter-spacing:.08em; color:#4f6b43; }
   .card-admin-visibility.is-hidden { color:var(--rust); }
+  .card-admin-featured { font-size:10px; letter-spacing:.08em; color:#8b6b15; }
   .card-drag-handle { display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; flex:0 0 30px; padding:0; border:1px solid rgba(139,111,71,.35); background:#fff; color:var(--sepia); cursor:grab; font-size:17px; line-height:1; touch-action:none; }
   .card-drag-handle:hover { border-color:var(--ink); color:var(--ink); }
   .card-drag-handle:active { cursor:grabbing; }
@@ -233,6 +234,9 @@
   .card-availability-select:focus,
   .card-section-select:focus { border-color:var(--sepia); }
   .card-admin-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+  .card-featured-actions { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-bottom:8px; }
+  .card-featured-actions.is-single { grid-template-columns:1fr; }
+  .card-featured-toggle.is-featured { border-color:#b28a22; color:#765b12; }
   .card-order-btn { flex:1; background:transparent; border:1px solid rgba(139,111,71,.35); color:var(--sepia); padding:8px 10px; font-size:11px; font-family:'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; transition:all .2s; }
   .card-order-btn:hover:not(:disabled) { border-color:var(--ink); color:var(--ink); }
   .card-order-btn:disabled { opacity:.35; cursor:not-allowed; }
@@ -483,6 +487,7 @@ const BUCKET = 'paintings-images';
 const CATALOG_CONFIG_PATH = 'catalog-config.json';
 const LOCAL_CONFIG_KEY = 'ushakov-catalog-config';
 const LANGUAGE_KEY = 'ushakov-language';
+const MAX_FEATURED_PAINTINGS = 6;
 const AUTHOR_MODE_REQUESTED = new URLSearchParams(window.location.search).get('author') === '1';
 const SB_HEADERS = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json' };
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
@@ -520,6 +525,10 @@ const I18N = {
     'admin.titleRequired': 'Название работы не может быть пустым.',
     'admin.commercialChanged': 'Цена и доступность изменены. Нажмите «Сохранить каталог».',
     'admin.priceInvalid': 'Укажите целую цену от 0 до 1 000 000 000 ₽.',
+    'admin.featuredChanged': 'Избранные работы обновлены. Нажмите «Сохранить каталог».',
+    'admin.featuredLimit': 'На главной можно разместить не более 6 работ.',
+    'admin.featuredMinimum': 'На главной должна остаться хотя бы одна избранная работа.',
+    'admin.featuredUnavailable': 'Для главной нужна видимая работа с изображением.',
     'admin.visibilityChanged': 'Видимость изменена. Нажмите «Сохранить каталог».',
     'admin.dragChanged': 'Порядок изменён перетаскиванием. Нажмите «Сохранить каталог».',
     'admin.undoDone': 'Последнее изменение отменено.', 'admin.resetDone': 'Восстановлена опубликованная версия.',
@@ -548,6 +557,7 @@ const I18N = {
     'modal.buy': 'Купить эту работу', 'modal.sold': 'Работа продана',
     'card.buy': 'Купить', 'card.sold': 'Продано', 'card.details': 'Подробнее', 'card.management': 'Управление каталогом',
     'card.position': 'Позиция {position} из {total}', 'card.title': 'Название', 'card.applyTitle': 'Применить', 'card.priceAndAvailability': 'Цена и доступность', 'card.priceRub': 'Цена, ₽', 'card.available': 'В наличии', 'card.section': 'Раздел',
+    'card.featuredPosition': 'На главной {position} из {total}', 'card.addFeatured': 'Добавить на главную', 'card.removeFeatured': 'Убрать', 'card.featuredEarlier': 'Раньше', 'card.featuredLater': 'Позже',
     'card.previous': 'Раньше', 'card.next': 'Позже', 'card.drag': 'Перетащить работу',
     'card.visibleOnSite': 'Показывается на сайте', 'card.hiddenFromSite': 'Скрыта с сайта',
     'card.showOnSite': 'Показать на сайте', 'card.hideFromSite': 'Скрыть с сайта',
@@ -581,6 +591,10 @@ const I18N = {
     'admin.titleRequired': 'The artwork title cannot be empty.',
     'admin.commercialChanged': 'Price and availability changed. Click “Save catalogue”.',
     'admin.priceInvalid': 'Enter a whole-number price from ₽0 to ₽1,000,000,000.',
+    'admin.featuredChanged': 'Featured artworks updated. Click “Save catalogue”.',
+    'admin.featuredLimit': 'The home page can feature no more than 6 artworks.',
+    'admin.featuredMinimum': 'At least one featured artwork must remain on the home page.',
+    'admin.featuredUnavailable': 'A featured artwork must be visible and have an image.',
     'admin.visibilityChanged': 'Visibility changed. Click “Save catalogue”.',
     'admin.dragChanged': 'Order changed by dragging. Click “Save catalogue”.',
     'admin.undoDone': 'The last change was undone.', 'admin.resetDone': 'The published version was restored.',
@@ -609,6 +623,7 @@ const I18N = {
     'modal.buy': 'Buy this artwork', 'modal.sold': 'Artwork sold',
     'card.buy': 'Buy', 'card.sold': 'Sold', 'card.details': 'Details', 'card.management': 'Catalogue controls',
     'card.position': 'Position {position} of {total}', 'card.title': 'Title', 'card.applyTitle': 'Apply', 'card.priceAndAvailability': 'Price and availability', 'card.priceRub': 'Price, ₽', 'card.available': 'Available', 'card.section': 'Section',
+    'card.featuredPosition': 'Featured {position} of {total}', 'card.addFeatured': 'Add to home page', 'card.removeFeatured': 'Remove', 'card.featuredEarlier': 'Earlier', 'card.featuredLater': 'Later',
     'card.previous': 'Earlier', 'card.next': 'Later', 'card.drag': 'Drag artwork',
     'card.visibleOnSite': 'Visible on the site', 'card.hiddenFromSite': 'Hidden from the site',
     'card.showOnSite': 'Show on the site', 'card.hideFromSite': 'Hide from the site',
@@ -797,7 +812,7 @@ function normalizeCatalogConfig(raw = {}) {
     excludedPaintingIds: [...new Set((Array.isArray(raw.excludedPaintingIds) ? raw.excludedPaintingIds : [])
       .map(Number).filter(Number.isFinite))],
     featuredPaintingIds: [...new Set((Array.isArray(raw.featuredPaintingIds) ? raw.featuredPaintingIds : [])
-      .map(Number).filter(Number.isFinite))],
+      .map(Number).filter(Number.isFinite))].slice(0, MAX_FEATURED_PAINTINGS),
     appliedMigrations: Array.isArray(raw.appliedMigrations)
       ? [...new Set(raw.appliedMigrations.filter(item => typeof item === 'string'))]
       : [],
@@ -823,6 +838,16 @@ function applyCatalogConfigToPaintings() {
       ? catalogConfig.stockById[id]
       : painting.source_in_stock;
   });
+}
+
+function sanitizeFeaturedPaintingIds() {
+  const validIds = new Set(allPaintings
+    .filter(painting => painting.image_url && !painting.flag_hidden)
+    .map(painting => painting.id));
+  catalogConfig.featuredPaintingIds = catalogConfig.featuredPaintingIds.filter(id => validIds.has(id));
+  if (!catalogConfig.featuredPaintingIds.length) {
+    catalogConfig.featuredPaintingIds = [...validIds].slice(0, MAX_FEATURED_PAINTINGS);
+  }
 }
 
 function catalogConfigFingerprint(config) {
@@ -974,6 +999,7 @@ function restoreLocalCatalogDraft() {
   }
   catalogConfig = draft.config;
   applyCatalogConfigToPaintings();
+  sanitizeFeaturedPaintingIds();
   refreshHeroRotation();
   catalogConfigDirty = true;
   setAdminStatus(t('admin.draftRestored'));
@@ -1234,6 +1260,47 @@ function changePaintingCommercialData(id, priceValue, stockValue) {
   setConfigDirty(t('admin.commercialChanged'));
 }
 
+function toggleFeaturedPainting(id) {
+  const painting = allPaintings.find(item => item.id === id);
+  if (!painting) return;
+
+  const featured = catalogConfig.featuredPaintingIds;
+  const index = featured.indexOf(id);
+  if (index >= 0 && featured.length === 1) {
+    setAdminStatus(t('admin.featuredMinimum'));
+    return;
+  }
+  if (index < 0 && (painting.flag_hidden || !painting.image_url)) {
+    setAdminStatus(t('admin.featuredUnavailable'));
+    return;
+  }
+  if (index < 0 && featured.length >= MAX_FEATURED_PAINTINGS) {
+    setAdminStatus(t('admin.featuredLimit'));
+    return;
+  }
+
+  pushCatalogUndoState();
+  catalogConfig.featuredPaintingIds = index >= 0
+    ? featured.filter(itemId => itemId !== id)
+    : [...featured, id];
+  refreshHeroRotation();
+  setCurrentSort('default');
+  setConfigDirty(t('admin.featuredChanged'));
+}
+
+function moveFeaturedPainting(id, delta) {
+  const featured = catalogConfig.featuredPaintingIds;
+  const index = featured.indexOf(id);
+  const nextIndex = index + delta;
+  if (index < 0 || nextIndex < 0 || nextIndex >= featured.length) return;
+
+  pushCatalogUndoState();
+  [featured[index], featured[nextIndex]] = [featured[nextIndex], featured[index]];
+  refreshHeroRotation();
+  setCurrentSort('default');
+  setConfigDirty(t('admin.featuredChanged'));
+}
+
 function togglePaintingVisibility(id) {
   const painting = allPaintings.find(item => item.id === id);
   if (!painting) return;
@@ -1243,6 +1310,14 @@ function togglePaintingVisibility(id) {
   const key = String(id);
   if (hidden === painting.source_flag_hidden) delete catalogConfig.hiddenById[key];
   else catalogConfig.hiddenById[key] = hidden;
+
+  if (hidden && catalogConfig.featuredPaintingIds.includes(id)) {
+    catalogConfig.featuredPaintingIds = catalogConfig.featuredPaintingIds.filter(itemId => itemId !== id);
+    if (!catalogConfig.featuredPaintingIds.length) {
+      const replacement = allPaintings.find(item => item.id !== id && item.image_url && !item.flag_hidden);
+      if (replacement) catalogConfig.featuredPaintingIds = [replacement.id];
+    }
+  }
 
   applyCatalogConfigToPaintings();
   populateSelect();
@@ -1384,6 +1459,7 @@ async function loadPaintings() {
         source_in_stock: Boolean(painting.in_stock)
       }));
     applyCatalogConfigToPaintings();
+    sanitizeFeaturedPaintingIds();
     document.getElementById('stat-total').textContent = getPublicPaintings().length + '+';
     initHeroRotation();
     TECH_GROUPS.forEach(group => syncSectionOrder(group.key));
@@ -1422,12 +1498,15 @@ function getVisible() {
 function cardAdminHTML(painting, sectionKey, index, total) {
   if (!adminMode) return '';
   const hidden = Boolean(painting.flag_hidden);
+  const featuredIndex = catalogConfig.featuredPaintingIds.indexOf(painting.id);
+  const featured = featuredIndex >= 0;
   return `<div class="card-admin">
     <div class="card-admin-top">
       <div class="card-admin-heading">
         <button class="card-drag-handle" type="button" draggable="true" data-role="drag-handle" data-id="${painting.id}" aria-label="${t('card.drag')}" title="${t('card.drag')}">⠿</button>
         <span class="card-admin-label">${t('card.management')}</span>
         <span class="card-admin-visibility ${hidden ? 'is-hidden' : ''}">${t(hidden ? 'card.hiddenFromSite' : 'card.visibleOnSite')}</span>
+        ${featured ? `<span class="card-admin-featured">${t('card.featuredPosition', { position: featuredIndex + 1, total: catalogConfig.featuredPaintingIds.length })}</span>` : ''}
       </div>
       <span class="card-admin-position">${t('card.position', { position: index + 1, total })}</span>
     </div>
@@ -1455,6 +1534,11 @@ function cardAdminHTML(painting, sectionKey, index, total) {
         ${TECH_GROUPS.map(group => `<option value="${group.key}" ${group.key === sectionKey ? 'selected' : ''}>${techLabel(group.key)}</option>`).join('')}
       </select>
     </label>
+    <div class="card-featured-actions ${featured ? '' : 'is-single'}">
+      ${featured ? `<button class="card-order-btn" type="button" data-role="featured-previous" data-id="${painting.id}" ${featuredIndex === 0 ? 'disabled' : ''}>← ${t('card.featuredEarlier')}</button>` : ''}
+      <button class="card-order-btn card-featured-toggle ${featured ? 'is-featured' : ''}" type="button" data-role="toggle-featured" data-id="${painting.id}">${t(featured ? 'card.removeFeatured' : 'card.addFeatured')}</button>
+      ${featured ? `<button class="card-order-btn" type="button" data-role="featured-next" data-id="${painting.id}" ${featuredIndex === catalogConfig.featuredPaintingIds.length - 1 ? 'disabled' : ''}>${t('card.featuredLater')} →</button>` : ''}
+    </div>
     <div class="card-admin-actions">
       <button class="card-order-btn" type="button" data-role="move-previous" data-id="${painting.id}" ${index === 0 ? 'disabled' : ''}>← ${t('card.previous')}</button>
       <button class="card-order-btn" type="button" data-role="move-next" data-id="${painting.id}" ${index === total - 1 ? 'disabled' : ''}>${t('card.next')} →</button>
@@ -1627,6 +1711,27 @@ function bindCatalogAdminControls(container) {
     button.addEventListener('click', event => {
       event.stopPropagation();
       togglePaintingVisibility(Number(button.dataset.id));
+    });
+  });
+
+  container.querySelectorAll('[data-role="toggle-featured"]').forEach(button => {
+    button.addEventListener('click', event => {
+      event.stopPropagation();
+      toggleFeaturedPainting(Number(button.dataset.id));
+    });
+  });
+
+  container.querySelectorAll('[data-role="featured-previous"]').forEach(button => {
+    button.addEventListener('click', event => {
+      event.stopPropagation();
+      moveFeaturedPainting(Number(button.dataset.id), -1);
+    });
+  });
+
+  container.querySelectorAll('[data-role="featured-next"]').forEach(button => {
+    button.addEventListener('click', event => {
+      event.stopPropagation();
+      moveFeaturedPainting(Number(button.dataset.id), 1);
     });
   });
 }
