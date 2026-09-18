@@ -249,6 +249,12 @@
   .save-review-label { color:var(--ink); font-size:13px; }
   .save-review-count { color:var(--rust); font-size:11px; letter-spacing:.08em; }
   .save-review-detail { margin-top:5px; color:var(--sepia); font-size:11px; line-height:1.5; overflow-wrap:anywhere; }
+  .catalog-validation { display:flex; flex-direction:column; gap:9px; margin-bottom:14px; }
+  .catalog-validation[hidden] { display:none; }
+  .catalog-validation-group { padding:12px 14px; border-left:3px solid #ad3f32; background:#fff3f0; }
+  .catalog-validation-group.is-warning { border-left-color:#a97919; background:#fff8e8; }
+  .catalog-validation-title { color:var(--ink); font-size:12px; font-weight:500; }
+  .catalog-validation-list { margin:7px 0 0; padding-left:18px; color:var(--sepia); font-size:11px; line-height:1.55; }
 
   /* ── CARD ADMIN CONTROLS ── */
   .card-admin { display:none; padding:12px 16px 16px; border-top:1px solid rgba(139,111,71,.12); background:#fbf7f0; }
@@ -546,6 +552,7 @@
       </div>
       <button class="author-dialog-close" id="save-review-close" type="button" aria-label="Закрыть" data-i18n-aria-label="common.close">×</button>
     </div>
+    <div class="catalog-validation" id="save-review-validation" hidden></div>
     <div class="save-review-list" id="save-review-list"></div>
     <div class="new-artwork-status" id="save-review-status" role="status" aria-live="polite"></div>
     <div class="new-artwork-actions">
@@ -746,6 +753,14 @@ const I18N = {
     'review.details': 'Параметры работ', 'review.images': 'Изображения', 'review.sections': 'Разделы',
     'review.order': 'Порядок разделов', 'review.featured': 'Работы на главной',
     'review.drafts': 'Черновики', 'review.catalog': 'Состав каталога', 'review.more': 'и ещё {count}',
+    'validation.errorsTitle': 'Нужно исправить перед публикацией',
+    'validation.warningsTitle': 'Стоит проверить',
+    'validation.blocked': 'Публикация заблокирована: исправьте ошибки в видимых работах.',
+    'validation.image': 'нет изображения', 'validation.title': 'нет названия',
+    'validation.material': 'не указан материал', 'validation.year': 'некорректный год',
+    'validation.size': 'некорректные размеры', 'validation.price': 'некорректная цена',
+    'validation.imageBroken': 'изображение помечено как повреждённое',
+    'validation.description': 'описание помечено как требующее проверки',
     'admin.visibilityChanged': 'Видимость изменена. Нажмите «Сохранить каталог».',
     'admin.imageRequiredToPublish': 'Добавьте изображение перед публикацией работы.',
     'admin.dragChanged': 'Порядок изменён перетаскиванием. Нажмите «Сохранить каталог».',
@@ -857,6 +872,14 @@ const I18N = {
     'review.details': 'Artwork details', 'review.images': 'Images', 'review.sections': 'Sections',
     'review.order': 'Section order', 'review.featured': 'Featured artworks',
     'review.drafts': 'Drafts', 'review.catalog': 'Catalogue contents', 'review.more': 'and {count} more',
+    'validation.errorsTitle': 'Fix before publishing',
+    'validation.warningsTitle': 'Worth checking',
+    'validation.blocked': 'Publishing is blocked: fix the errors in visible artworks.',
+    'validation.image': 'missing image', 'validation.title': 'missing title',
+    'validation.material': 'missing material', 'validation.year': 'invalid year',
+    'validation.size': 'invalid dimensions', 'validation.price': 'invalid price',
+    'validation.imageBroken': 'image is marked as broken',
+    'validation.description': 'description is marked for review',
     'admin.visibilityChanged': 'Visibility changed. Click “Save catalogue”.',
     'admin.imageRequiredToPublish': 'Add an image before publishing the artwork.',
     'admin.dragChanged': 'Order changed by dragging. Click “Save catalogue”.',
@@ -1423,6 +1446,11 @@ function buildCatalogConfigPayload() {
 
 async function saveCatalogConfig() {
   if (savingCatalogConfig || !catalogConfigDirty) return false;
+  const validation = validateCatalogForPublishing();
+  if (validation.errors.length) {
+    setAdminStatus(t('validation.blocked'));
+    return false;
+  }
   savingCatalogConfig = true;
   let saved = false;
 
@@ -2098,6 +2126,56 @@ function formatReviewArtworkNames(ids) {
   return names.join(', ');
 }
 
+function validateCatalogForPublishing() {
+  const excludedIds = new Set(catalogConfig.excludedPaintingIds);
+  const maxYear = new Date().getFullYear() + 1;
+  const errors = [];
+  const warnings = [];
+
+  allPaintings.forEach(painting => {
+    if (excludedIds.has(painting.id) || painting.flag_hidden) return;
+    const errorKeys = [];
+    const warningKeys = [];
+    const price = Number(painting.price);
+    const year = Number(painting.year);
+    const width = Number(painting.width_cm);
+    const height = Number(painting.height_cm);
+
+    if (!String(painting.image_url || '').trim()) errorKeys.push('validation.image');
+    if (!String(painting.title || '').trim()) errorKeys.push('validation.title');
+    if (!String(painting.material || '').trim() || String(painting.material).trim().length > 250) errorKeys.push('validation.material');
+    if (!Number.isSafeInteger(year) || year < 1000 || year > maxYear) errorKeys.push('validation.year');
+    if (!Number.isFinite(width) || width < 0.1 || width > 10000 ||
+      !Number.isFinite(height) || height < 0.1 || height > 10000) errorKeys.push('validation.size');
+    if (!Number.isSafeInteger(price) || price < 0 || price > 1000000000) errorKeys.push('validation.price');
+    if (painting.flag_image_broken) warningKeys.push('validation.imageBroken');
+    if (painting.flag_description_error) warningKeys.push('validation.description');
+
+    const title = String(painting.title || '').trim() || `ID ${painting.id}`;
+    if (errorKeys.length) errors.push({ id: painting.id, title, issueKeys: errorKeys });
+    if (warningKeys.length) warnings.push({ id: painting.id, title, issueKeys: warningKeys });
+  });
+
+  return { errors, warnings };
+}
+
+function renderCatalogValidation(validation) {
+  const container = document.getElementById('save-review-validation');
+  if (!container) return;
+  const groups = [
+    { items: validation.errors, titleKey: 'validation.errorsTitle', warning: false },
+    { items: validation.warnings, titleKey: 'validation.warningsTitle', warning: true }
+  ].filter(group => group.items.length);
+
+  container.hidden = !groups.length;
+  container.innerHTML = groups.map(group => `<div class="catalog-validation-group${group.warning ? ' is-warning' : ''}">
+    <div class="catalog-validation-title">${t(group.titleKey)} (${group.items.length})</div>
+    <ul class="catalog-validation-list">${group.items.map(item =>
+      `<li>${escapeHTML(item.title)} (ID ${item.id}): ${escapeHTML(item.issueKeys.map(key => t(key)).join(', '))}</li>`
+    ).join('')}</ul>
+  </div>`).join('');
+}
+
 function closeSaveReviewDialog() {
   if (savingCatalogConfig) return;
   const dialog = document.getElementById('save-review-dialog');
@@ -2114,8 +2192,10 @@ function openSaveReviewDialog() {
   const list = document.getElementById('save-review-list');
   const status = document.getElementById('save-review-status');
   const summary = buildCatalogChangeSummary();
+  const validation = validateCatalogForPublishing();
   saveReviewReturnFocus = document.activeElement;
   status.textContent = '';
+  renderCatalogValidation(validation);
   list.innerHTML = summary.length ? summary.map(item => {
     const detail = item.detail || formatReviewArtworkNames(item.ids || []);
     return `<div class="save-review-item">
@@ -2126,7 +2206,8 @@ function openSaveReviewDialog() {
       ${detail ? `<div class="save-review-detail">${escapeHTML(detail)}</div>` : ''}
     </div>`;
   }).join('') : `<div class="catalog-history-empty">${t('review.empty')}</div>`;
-  document.getElementById('save-review-confirm').disabled = !summary.length;
+  document.getElementById('save-review-confirm').disabled = !summary.length || Boolean(validation.errors.length);
+  if (validation.errors.length) status.textContent = t('validation.blocked');
   dialog.classList.add('show');
   document.body.style.overflow = 'hidden';
 }
@@ -2135,6 +2216,13 @@ async function publishReviewedChanges() {
   if (savingCatalogConfig) return;
   const button = document.getElementById('save-review-confirm');
   const status = document.getElementById('save-review-status');
+  const validation = validateCatalogForPublishing();
+  renderCatalogValidation(validation);
+  if (validation.errors.length) {
+    button.disabled = true;
+    status.textContent = t('validation.blocked');
+    return;
+  }
   const initialText = button.textContent;
   button.disabled = true;
   button.textContent = t('admin.saving');
