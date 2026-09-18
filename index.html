@@ -119,6 +119,12 @@
   .search-bar svg { position:absolute; right:10px; top:50%; transform:translateY(-50%); width:15px; height:15px; stroke:var(--sepia); fill:none; pointer-events:none; }
   .admin-catalog-filters { display:none; align-items:center; flex-wrap:wrap; gap:6px; }
   .admin-mode .admin-catalog-filters { display:flex; }
+  .admin-catalog-dashboard { display:none; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; margin:-14px 0 24px; }
+  .admin-mode .admin-catalog-dashboard { display:grid; }
+  .admin-stat { display:flex; align-items:center; justify-content:space-between; gap:12px; min-width:0; padding:13px 14px; border:1px solid rgba(139,111,71,.25); background:#fff; color:var(--sepia); font:11px 'Jost',sans-serif; text-align:left; cursor:pointer; }
+  .admin-stat:hover,.admin-stat.active { border-color:var(--ink); color:var(--ink); }
+  .admin-stat-count { flex:0 0 auto; color:var(--rust); font-family:'Cormorant Garamond',serif; font-size:24px; line-height:1; }
+  .admin-stat.is-warning .admin-stat-count { color:#a97919; }
   .sort-row { display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
   .sort-label { font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--sepia); }
   .sort-btn { background:transparent; border:none; font-size:12px; font-family:'Jost',sans-serif; letter-spacing:.1em; text-transform:uppercase; color:var(--sepia); cursor:pointer; padding:4px 8px; border-bottom:1px solid transparent; transition:all .2s; }
@@ -279,6 +285,7 @@
   .card-admin-visibility { font-size:10px; letter-spacing:.08em; color:#4f6b43; }
   .card-admin-visibility.is-hidden { color:var(--rust); }
   .card-admin-featured { font-size:10px; letter-spacing:.08em; color:#8b6b15; }
+  .card-admin-issue { color:var(--rust); font-size:10px; letter-spacing:.08em; }
   .card-drag-handle { display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; flex:0 0 30px; padding:0; border:1px solid rgba(139,111,71,.35); background:#fff; color:var(--sepia); cursor:grab; font-size:17px; line-height:1; touch-action:none; }
   .card-drag-handle:hover { border-color:var(--ink); color:var(--ink); }
   .card-drag-handle:active { cursor:grabbing; }
@@ -378,6 +385,7 @@
     .admin-banner-actions{width:100%;justify-content:flex-start;flex-wrap:wrap;}
     .bulk-admin-toolbar{align-items:flex-start;flex-direction:column;}
     .bulk-admin-actions{width:100%;}
+    .admin-catalog-dashboard{grid-template-columns:repeat(2,minmax(0,1fr));width:100%;}
     .contact-inner{grid-template-columns:1fr;gap:36px;}
     #contact{padding:60px 20px;}
     .modal{grid-template-columns:1fr;}
@@ -606,8 +614,27 @@
         <button class="filter-btn" type="button" data-admin-filter="available" data-i18n="admin.filterAvailable" aria-pressed="false">В наличии</button>
         <button class="filter-btn" type="button" data-admin-filter="sold" data-i18n="admin.filterSold" aria-pressed="false">Проданные</button>
         <button class="filter-btn" type="button" data-admin-filter="featured" data-i18n="admin.filterFeatured" aria-pressed="false">На главной</button>
+        <button class="filter-btn" type="button" data-admin-filter="issues" data-i18n="admin.filterIssues" aria-pressed="false">Требуют внимания</button>
       </div>
     </div>
+  </div>
+
+  <div class="admin-catalog-dashboard" id="admin-catalog-dashboard" aria-label="Состояние каталога" data-i18n-aria-label="dashboard.label">
+    <button class="admin-stat" type="button" data-admin-filter="visible">
+      <span data-i18n="dashboard.published">На сайте</span><strong class="admin-stat-count" id="dashboard-visible">0</strong>
+    </button>
+    <button class="admin-stat" type="button" data-admin-filter="drafts">
+      <span data-i18n="dashboard.drafts">Черновики</span><strong class="admin-stat-count" id="dashboard-drafts">0</strong>
+    </button>
+    <button class="admin-stat" type="button" data-admin-filter="archive">
+      <span data-i18n="dashboard.archive">В архиве</span><strong class="admin-stat-count" id="dashboard-archive">0</strong>
+    </button>
+    <button class="admin-stat" type="button" data-admin-filter="sold">
+      <span data-i18n="dashboard.sold">Продано</span><strong class="admin-stat-count" id="dashboard-sold">0</strong>
+    </button>
+    <button class="admin-stat is-warning" type="button" data-admin-filter="issues">
+      <span data-i18n="dashboard.issues">Требуют внимания</span><strong class="admin-stat-count" id="dashboard-issues">0</strong>
+    </button>
   </div>
 
   <div class="bulk-admin-toolbar" id="bulk-admin-toolbar" aria-label="Массовое редактирование" data-i18n-aria-label="bulk.label">
@@ -771,7 +798,10 @@ const I18N = {
     'admin.filters': 'Показать:', 'admin.filtersLabel': 'Фильтры режима автора',
     'admin.filterAll': 'Все', 'admin.filterVisible': 'На сайте', 'admin.filterHidden': 'Скрытые',
     'admin.filterDrafts': 'Черновики', 'admin.filterArchive': 'Архив',
-    'admin.filterAvailable': 'В наличии', 'admin.filterSold': 'Проданные', 'admin.filterFeatured': 'На главной',
+    'admin.filterAvailable': 'В наличии', 'admin.filterSold': 'Проданные', 'admin.filterFeatured': 'На главной', 'admin.filterIssues': 'Требуют внимания',
+    'dashboard.label': 'Состояние каталога', 'dashboard.published': 'На сайте',
+    'dashboard.drafts': 'Черновики', 'dashboard.archive': 'В архиве',
+    'dashboard.sold': 'Продано', 'dashboard.issues': 'Требуют внимания',
     'bulk.label': 'Массовое редактирование', 'bulk.selected': 'Выбрано: {count}',
     'bulk.select': 'Выбрать', 'bulk.selectVisible': 'Выбрать показанные', 'bulk.clear': 'Снять выбор',
     'bulk.section': 'Переместить в раздел', 'bulk.action': 'Действие', 'bulk.apply': 'Применить',
@@ -850,6 +880,7 @@ const I18N = {
     'card.previous': 'Раньше', 'card.next': 'Позже', 'card.drag': 'Перетащить работу',
     'card.visibleOnSite': 'Показывается на сайте', 'card.hiddenFromSite': 'Скрыта с сайта',
     'card.draft': 'Черновик', 'card.archived': 'В архиве',
+    'card.needsAttention': 'Требует внимания',
     'card.showOnSite': 'Восстановить на сайте', 'card.publishDraft': 'Опубликовать', 'card.hideFromSite': 'Переместить в архив',
     'card.dropBefore': 'Перед этой работой', 'card.dropAfter': 'После этой работы',
     'details.year': 'Год', 'details.material': 'Материал', 'details.size': 'Размер',
@@ -899,7 +930,10 @@ const I18N = {
     'admin.filters': 'Show:', 'admin.filtersLabel': 'Artist mode filters',
     'admin.filterAll': 'All', 'admin.filterVisible': 'On site', 'admin.filterHidden': 'Hidden',
     'admin.filterDrafts': 'Drafts', 'admin.filterArchive': 'Archive',
-    'admin.filterAvailable': 'Available', 'admin.filterSold': 'Sold', 'admin.filterFeatured': 'Featured',
+    'admin.filterAvailable': 'Available', 'admin.filterSold': 'Sold', 'admin.filterFeatured': 'Featured', 'admin.filterIssues': 'Needs attention',
+    'dashboard.label': 'Catalogue status', 'dashboard.published': 'On site',
+    'dashboard.drafts': 'Drafts', 'dashboard.archive': 'Archived',
+    'dashboard.sold': 'Sold', 'dashboard.issues': 'Needs attention',
     'bulk.label': 'Bulk editing', 'bulk.selected': 'Selected: {count}',
     'bulk.select': 'Select', 'bulk.selectVisible': 'Select shown', 'bulk.clear': 'Clear selection',
     'bulk.section': 'Move to section', 'bulk.action': 'Action', 'bulk.apply': 'Apply',
@@ -978,6 +1012,7 @@ const I18N = {
     'card.previous': 'Earlier', 'card.next': 'Later', 'card.drag': 'Drag artwork',
     'card.visibleOnSite': 'Visible on the site', 'card.hiddenFromSite': 'Hidden from the site',
     'card.draft': 'Draft', 'card.archived': 'Archived',
+    'card.needsAttention': 'Needs attention',
     'card.showOnSite': 'Restore on site', 'card.publishDraft': 'Publish', 'card.hideFromSite': 'Move to archive',
     'card.dropBefore': 'Before this artwork', 'card.dropAfter': 'After this artwork',
     'details.year': 'Year', 'details.material': 'Material', 'details.size': 'Size',
@@ -1015,6 +1050,7 @@ let currentSearch = '';
 let currentAdminFilter = 'all';
 const expandedAdminCards = new Set();
 const bulkSelectedPaintingIds = new Set();
+let catalogIssueIds = new Set();
 let currentModalPainting = null;
 let catalogConfig = createEmptyCatalogConfig();
 let publishedCatalogConfig = createEmptyCatalogConfig();
@@ -2658,6 +2694,40 @@ function getPublicPaintings() {
   return allPaintings.filter(painting => !painting.flag_hidden);
 }
 
+function getCatalogIssueIds() {
+  const validation = validateCatalogForPublishing();
+  return new Set([...validation.errors, ...validation.warnings].map(item => item.id));
+}
+
+function updateCatalogDashboard() {
+  if (!adminMode) return;
+  const draftIds = new Set(catalogConfig.draftPaintingIds);
+  const values = {
+    visible: allPaintings.filter(painting => !painting.flag_hidden).length,
+    drafts: allPaintings.filter(painting => draftIds.has(painting.id)).length,
+    archive: allPaintings.filter(painting => painting.flag_hidden && !draftIds.has(painting.id)).length,
+    sold: allPaintings.filter(painting => !painting.in_stock).length,
+    issues: 0
+  };
+  catalogIssueIds = getCatalogIssueIds();
+  values.issues = catalogIssueIds.size;
+  Object.entries(values).forEach(([key, value]) => {
+    const element = document.getElementById(`dashboard-${key}`);
+    if (element) element.textContent = String(value);
+  });
+}
+
+function setAdminFilter(filter) {
+  if (!adminMode) return;
+  currentAdminFilter = filter;
+  document.querySelectorAll('[data-admin-filter]').forEach(button => {
+    const active = button.dataset.adminFilter === currentAdminFilter;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
+  renderGrid();
+}
+
 function getVisible() {
   let items = adminMode ? allPaintings : getPublicPaintings();
   if (currentSearch) {
@@ -2670,6 +2740,7 @@ function getVisible() {
     );
   }
   if (adminMode && currentAdminFilter !== 'all') {
+    const issueIds = currentAdminFilter === 'issues' ? getCatalogIssueIds() : null;
     items = items.filter(painting => {
       if (currentAdminFilter === 'visible') return !painting.flag_hidden;
       if (currentAdminFilter === 'hidden') return Boolean(painting.flag_hidden);
@@ -2678,6 +2749,7 @@ function getVisible() {
       if (currentAdminFilter === 'available') return Boolean(painting.in_stock);
       if (currentAdminFilter === 'sold') return !painting.in_stock;
       if (currentAdminFilter === 'featured') return catalogConfig.featuredPaintingIds.includes(painting.id);
+      if (currentAdminFilter === 'issues') return issueIds.has(painting.id);
       return true;
     });
   }
@@ -2701,6 +2773,7 @@ function cardAdminHTML(painting, sectionKey, index, total) {
         <button class="card-drag-handle" type="button" draggable="true" data-role="drag-handle" data-id="${painting.id}" aria-label="${t('card.drag')}" title="${t('card.drag')}">⠿</button>
         <span class="card-admin-label">${t('card.management')}</span>
         <span class="card-admin-visibility ${hidden ? 'is-hidden' : ''}">${t(draft ? 'card.draft' : hidden ? 'card.archived' : 'card.visibleOnSite')}</span>
+        ${catalogIssueIds.has(painting.id) ? `<span class="card-admin-issue">${t('card.needsAttention')}</span>` : ''}
         ${featured ? `<span class="card-admin-featured">${t('card.featuredPosition', { position: featuredIndex + 1, total: catalogConfig.featuredPaintingIds.length })}</span>` : ''}
       </div>
       <div class="card-admin-tools">
@@ -3034,6 +3107,7 @@ function bindCatalogAdminControls(container) {
 
 function renderGrid() {
   const container = document.getElementById('tech-sections');
+  updateCatalogDashboard();
   const visible = getVisible();
   document.getElementById('count-label').textContent = formatWorksCount(visible.length);
   const filtering = Boolean(currentSearch || (adminMode && currentAdminFilter !== 'all'));
@@ -3223,13 +3297,7 @@ document.getElementById('search-input').addEventListener('input', event => {
   renderGrid();
 });
 document.querySelectorAll('[data-admin-filter]').forEach(button => button.addEventListener('click', () => {
-  currentAdminFilter = button.dataset.adminFilter;
-  document.querySelectorAll('[data-admin-filter]').forEach(filterButton => {
-    const active = filterButton.dataset.adminFilter === currentAdminFilter;
-    filterButton.classList.toggle('active', active);
-    filterButton.setAttribute('aria-pressed', String(active));
-  });
-  renderGrid();
+  setAdminFilter(button.dataset.adminFilter);
 }));
 
 // ─── FORM ───────────────────────────────────────────────────────
