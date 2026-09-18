@@ -205,6 +205,14 @@
   .btn-save-layout { background:var(--gold); border:1px solid var(--gold); color:var(--ink); }
   .btn-save-layout:hover { background:#d9b85c; border-color:#d9b85c; color:var(--ink); }
   .admin-banner-actions button:disabled { opacity:.4; cursor:not-allowed; }
+  .bulk-admin-toolbar { display:none; align-items:center; justify-content:space-between; gap:14px; margin:-14px 0 34px; padding:13px 15px; border:1px solid rgba(139,111,71,.3); background:#fff; }
+  .admin-mode .bulk-admin-toolbar { display:flex; }
+  .bulk-admin-summary,.bulk-admin-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .bulk-admin-count { min-width:92px; color:var(--ink); font-size:12px; }
+  .bulk-admin-toolbar select { min-width:170px; padding:8px 10px; border:1px solid rgba(139,111,71,.35); background:#fff; color:var(--ink); font:11px 'Jost',sans-serif; }
+  .bulk-admin-toolbar button { border:1px solid rgba(139,111,71,.35); background:#fff; color:var(--sepia); padding:8px 11px; font:11px 'Jost',sans-serif; cursor:pointer; }
+  .bulk-admin-toolbar button:hover:not(:disabled) { border-color:var(--ink); color:var(--ink); }
+  .bulk-admin-toolbar button:disabled,.bulk-admin-toolbar select:disabled { opacity:.45; cursor:not-allowed; }
 
   /* ── NEW ARTWORK DIALOG ── */
   .author-dialog-backdrop { position:fixed; inset:0; z-index:350; display:none; align-items:center; justify-content:center; padding:24px; background:rgba(26,20,16,.78); }
@@ -261,6 +269,9 @@
   .admin-mode .card-admin { display:block; }
   .card-admin-top { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
   .card-admin-heading { display:flex; align-items:center; gap:8px; min-width:0; flex-wrap:wrap; }
+  .card.is-bulk-selected { outline:2px solid var(--gold); outline-offset:3px; }
+  .card-select-control { display:inline-flex; align-items:center; gap:6px; color:var(--sepia); font-size:10px; letter-spacing:.08em; text-transform:uppercase; cursor:pointer; }
+  .card-select-control input { width:16px; height:16px; accent-color:var(--rust); cursor:pointer; }
   .card-admin-tools { display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-wrap:wrap; }
   .card-admin-edit-toggle { flex:0 0 auto; }
   .card-admin-label { font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--sepia); }
@@ -365,6 +376,8 @@
     .admin-banner{padding:10px 20px;}
     .admin-banner{align-items:flex-start;gap:12px;flex-direction:column;}
     .admin-banner-actions{width:100%;justify-content:flex-start;flex-wrap:wrap;}
+    .bulk-admin-toolbar{align-items:flex-start;flex-direction:column;}
+    .bulk-admin-actions{width:100%;}
     .contact-inner{grid-template-columns:1fr;gap:36px;}
     #contact{padding:60px 20px;}
     .modal{grid-template-columns:1fr;}
@@ -597,6 +610,37 @@
     </div>
   </div>
 
+  <div class="bulk-admin-toolbar" id="bulk-admin-toolbar" aria-label="Массовое редактирование" data-i18n-aria-label="bulk.label">
+    <div class="bulk-admin-summary">
+      <strong class="bulk-admin-count" id="bulk-admin-count">Выбрано: 0</strong>
+      <button id="bulk-select-visible" type="button" data-i18n="bulk.selectVisible">Выбрать показанные</button>
+      <button id="bulk-clear" type="button" data-i18n="bulk.clear" disabled>Снять выбор</button>
+    </div>
+    <div class="bulk-admin-actions">
+      <select id="bulk-section" aria-label="Переместить в раздел" data-i18n-aria-label="bulk.section">
+        <option value="" data-i18n="bulk.section">Переместить в раздел</option>
+        <option value="живопись" data-i18n="section.живопись">Живопись</option>
+        <option value="графика" data-i18n="section.графика">Графика</option>
+        <option value="коллаж" data-i18n="section.коллаж">Коллаж</option>
+        <option value="акварель" data-i18n="section.акварель">Акварель</option>
+        <option value="мифология" data-i18n="section.мифология">Мифология</option>
+        <option value="авиация" data-i18n="section.авиация">Авиация</option>
+        <option value="анимация" data-i18n="section.анимация">Анимационная коллекция</option>
+        <option value="карикатура" data-i18n="section.карикатура">Карикатура</option>
+        <option value="принт" data-i18n="section.принт">Принт</option>
+      </select>
+      <button id="bulk-apply-section" type="button" data-i18n="bulk.apply" disabled>Применить</button>
+      <select id="bulk-action" aria-label="Массовое действие" data-i18n-aria-label="bulk.action">
+        <option value="" data-i18n="bulk.action">Действие</option>
+        <option value="show" data-i18n="bulk.show">Показать на сайте</option>
+        <option value="hide" data-i18n="bulk.hide">Переместить в архив</option>
+        <option value="available" data-i18n="bulk.available">Отметить «В наличии»</option>
+        <option value="sold" data-i18n="bulk.sold">Отметить «Продано»</option>
+      </select>
+      <button id="bulk-apply-action" type="button" data-i18n="bulk.apply" disabled>Применить</button>
+    </div>
+  </div>
+
   <div id="tech-sections"></div>
 </section>
 
@@ -728,6 +772,15 @@ const I18N = {
     'admin.filterAll': 'Все', 'admin.filterVisible': 'На сайте', 'admin.filterHidden': 'Скрытые',
     'admin.filterDrafts': 'Черновики', 'admin.filterArchive': 'Архив',
     'admin.filterAvailable': 'В наличии', 'admin.filterSold': 'Проданные', 'admin.filterFeatured': 'На главной',
+    'bulk.label': 'Массовое редактирование', 'bulk.selected': 'Выбрано: {count}',
+    'bulk.select': 'Выбрать', 'bulk.selectVisible': 'Выбрать показанные', 'bulk.clear': 'Снять выбор',
+    'bulk.section': 'Переместить в раздел', 'bulk.action': 'Действие', 'bulk.apply': 'Применить',
+    'bulk.show': 'Показать на сайте', 'bulk.hide': 'Переместить в архив',
+    'bulk.available': 'Отметить «В наличии»', 'bulk.sold': 'Отметить «Продано»',
+    'bulk.sectionChanged': 'Работы перемещены: {count}. Нажмите «Сохранить каталог».',
+    'bulk.actionDone': 'Работы обновлены: {count}. Нажмите «Сохранить каталог».',
+    'bulk.showSkipped': ' Не опубликованы без изображения: {count}.',
+    'bulk.noChanges': 'Для выбранных работ изменений не требуется.',
     'newArtwork.title': 'Новая работа', 'newArtwork.description': 'Черновик останется скрытым, пока вы не опубликуете работу.',
     'newArtwork.imageHelp': 'Для публикации изображение обязательно. Черновик можно сохранить без изображения.',
     'newArtwork.preview': 'Предпросмотр', 'newArtwork.previewLabel': 'Предпросмотр перед публикацией',
@@ -847,6 +900,15 @@ const I18N = {
     'admin.filterAll': 'All', 'admin.filterVisible': 'On site', 'admin.filterHidden': 'Hidden',
     'admin.filterDrafts': 'Drafts', 'admin.filterArchive': 'Archive',
     'admin.filterAvailable': 'Available', 'admin.filterSold': 'Sold', 'admin.filterFeatured': 'Featured',
+    'bulk.label': 'Bulk editing', 'bulk.selected': 'Selected: {count}',
+    'bulk.select': 'Select', 'bulk.selectVisible': 'Select shown', 'bulk.clear': 'Clear selection',
+    'bulk.section': 'Move to section', 'bulk.action': 'Action', 'bulk.apply': 'Apply',
+    'bulk.show': 'Show on site', 'bulk.hide': 'Move to archive',
+    'bulk.available': 'Mark as available', 'bulk.sold': 'Mark as sold',
+    'bulk.sectionChanged': 'Artworks moved: {count}. Click “Save catalogue”.',
+    'bulk.actionDone': 'Artworks updated: {count}. Click “Save catalogue”.',
+    'bulk.showSkipped': ' Not published without an image: {count}.',
+    'bulk.noChanges': 'No changes are needed for the selected artworks.',
     'newArtwork.title': 'New artwork', 'newArtwork.description': 'The draft stays hidden until you publish it.',
     'newArtwork.imageHelp': 'An image is required to publish. A draft can be saved without one.',
     'newArtwork.preview': 'Preview', 'newArtwork.previewLabel': 'Preview before publishing',
@@ -952,6 +1014,7 @@ let currentSort = 'default';
 let currentSearch = '';
 let currentAdminFilter = 'all';
 const expandedAdminCards = new Set();
+const bulkSelectedPaintingIds = new Set();
 let currentModalPainting = null;
 let catalogConfig = createEmptyCatalogConfig();
 let publishedCatalogConfig = createEmptyCatalogConfig();
@@ -1515,9 +1578,125 @@ function setCurrentSort(sort) {
   renderGrid();
 }
 
+function updateBulkAdminState() {
+  const availableIds = new Set(allPaintings.map(painting => painting.id));
+  bulkSelectedPaintingIds.forEach(id => {
+    if (!availableIds.has(id)) bulkSelectedPaintingIds.delete(id);
+  });
+  const count = bulkSelectedPaintingIds.size;
+  const countElement = document.getElementById('bulk-admin-count');
+  const clearButton = document.getElementById('bulk-clear');
+  const sectionSelect = document.getElementById('bulk-section');
+  const actionSelect = document.getElementById('bulk-action');
+  const sectionButton = document.getElementById('bulk-apply-section');
+  const actionButton = document.getElementById('bulk-apply-action');
+  if (countElement) countElement.textContent = t('bulk.selected', { count });
+  if (clearButton) clearButton.disabled = count === 0;
+  if (sectionSelect) sectionSelect.disabled = count === 0;
+  if (actionSelect) actionSelect.disabled = count === 0;
+  if (sectionButton) sectionButton.disabled = count === 0 || !sectionSelect?.value;
+  if (actionButton) actionButton.disabled = count === 0 || !actionSelect?.value;
+
+  document.querySelectorAll('[data-role="bulk-select"]').forEach(input => {
+    const selected = bulkSelectedPaintingIds.has(Number(input.dataset.id));
+    input.checked = selected;
+    input.closest('.card')?.classList.toggle('is-bulk-selected', selected);
+  });
+}
+
+function toggleBulkPaintingSelection(id, selected) {
+  if (!adminMode || !allPaintings.some(painting => painting.id === id)) return;
+  if (selected) bulkSelectedPaintingIds.add(id);
+  else bulkSelectedPaintingIds.delete(id);
+  updateBulkAdminState();
+}
+
+function applyBulkSectionChange() {
+  const sectionKey = document.getElementById('bulk-section')?.value;
+  if (!TECH_LABEL_MAP[sectionKey]) return;
+  const paintings = allPaintings.filter(painting =>
+    bulkSelectedPaintingIds.has(painting.id) && getPaintingSection(painting) !== sectionKey
+  );
+  if (!paintings.length) {
+    setAdminStatus(t('bulk.noChanges'));
+    return;
+  }
+
+  pushCatalogUndoState();
+  const movedIds = new Set(paintings.map(painting => painting.id));
+  TECH_GROUPS.forEach(group => {
+    catalogConfig.orderBySection[group.key] = (catalogConfig.orderBySection[group.key] || [])
+      .filter(id => !movedIds.has(id));
+  });
+  paintings.forEach(painting => {
+    const key = String(painting.id);
+    if (sectionKey === getDefaultPaintingSection(painting)) delete catalogConfig.sectionById[key];
+    else catalogConfig.sectionById[key] = sectionKey;
+  });
+  catalogConfig.orderBySection[sectionKey] = syncSectionOrder(sectionKey);
+  document.getElementById('bulk-section').value = '';
+  setCurrentSort('default');
+  setConfigDirty(t('bulk.sectionChanged', { count: paintings.length }));
+}
+
+function applyBulkAction() {
+  const action = document.getElementById('bulk-action')?.value;
+  if (!['show', 'hide', 'available', 'sold'].includes(action)) return;
+  const selected = allPaintings.filter(painting => bulkSelectedPaintingIds.has(painting.id));
+  let skipped = 0;
+  const paintings = selected.filter(painting => {
+    if (action === 'show') {
+      if (painting.flag_hidden && !painting.image_url) {
+        skipped += 1;
+        return false;
+      }
+      return painting.flag_hidden;
+    }
+    if (action === 'hide') return !painting.flag_hidden;
+    if (action === 'available') return !painting.in_stock;
+    return painting.in_stock;
+  });
+
+  if (!paintings.length) {
+    setAdminStatus(t('bulk.noChanges') + (skipped ? t('bulk.showSkipped', { count: skipped }) : ''));
+    return;
+  }
+
+  pushCatalogUndoState();
+  if (action === 'show' || action === 'hide') {
+    const hidden = action === 'hide';
+    const changedIds = new Set(paintings.map(painting => painting.id));
+    paintings.forEach(painting => {
+      const key = String(painting.id);
+      if (hidden === painting.source_flag_hidden) delete catalogConfig.hiddenById[key];
+      else catalogConfig.hiddenById[key] = hidden;
+      if (!hidden) catalogConfig.draftPaintingIds = catalogConfig.draftPaintingIds.filter(id => id !== painting.id);
+    });
+    if (hidden) catalogConfig.featuredPaintingIds = catalogConfig.featuredPaintingIds.filter(id => !changedIds.has(id));
+  } else {
+    const inStock = action === 'available';
+    paintings.forEach(painting => {
+      const key = String(painting.id);
+      if (inStock === painting.source_in_stock) delete catalogConfig.stockById[key];
+      else catalogConfig.stockById[key] = inStock;
+    });
+  }
+
+  applyCatalogConfigToPaintings();
+  sanitizeFeaturedPaintingIds();
+  populateSelect();
+  refreshHeroRotation();
+  document.getElementById('bulk-action').value = '';
+  setCurrentSort('default');
+  setConfigDirty(t('bulk.actionDone', { count: paintings.length }) + (skipped ? t('bulk.showSkipped', { count: skipped }) : ''));
+}
+
 function updateAdminModeState(enabled) {
   adminMode = Boolean(enabled && currentAuthor?.app_metadata?.role === 'author');
-  if (!adminMode) currentAdminFilter = 'all';
+  if (!adminMode) {
+    currentAdminFilter = 'all';
+    bulkSelectedPaintingIds.clear();
+  }
   document.body.classList.toggle('admin-mode', adminMode);
   document.getElementById('admin-banner')?.classList.toggle('show', adminMode);
   const emailEl = document.getElementById('admin-user-email');
@@ -2515,6 +2694,10 @@ function cardAdminHTML(painting, sectionKey, index, total) {
   return `<div class="card-admin">
     <div class="card-admin-top">
       <div class="card-admin-heading">
+        <label class="card-select-control">
+          <input type="checkbox" data-role="bulk-select" data-id="${painting.id}" ${bulkSelectedPaintingIds.has(painting.id) ? 'checked' : ''}>
+          <span>${t('bulk.select')}</span>
+        </label>
         <button class="card-drag-handle" type="button" draggable="true" data-role="drag-handle" data-id="${painting.id}" aria-label="${t('card.drag')}" title="${t('card.drag')}">⠿</button>
         <span class="card-admin-label">${t('card.management')}</span>
         <span class="card-admin-visibility ${hidden ? 'is-hidden' : ''}">${t(draft ? 'card.draft' : hidden ? 'card.archived' : 'card.visibleOnSite')}</span>
@@ -2601,7 +2784,7 @@ function cardHTML(painting, index, sectionKey, total) {
     ? `<button class="overlay-btn primary" type="button" data-action="buy" data-id="${painting.id}">${t('card.buy')}</button>`
     : '';
 
-  return `<div class="card ${adminMode && painting.flag_hidden ? 'is-catalog-hidden' : ''}" style="animation-delay:${Math.min(index * .04, .5)}s" data-id="${painting.id}" data-section="${sectionKey}">
+  return `<div class="card ${adminMode && painting.flag_hidden ? 'is-catalog-hidden' : ''} ${adminMode && bulkSelectedPaintingIds.has(painting.id) ? 'is-bulk-selected' : ''}" style="animation-delay:${Math.min(index * .04, .5)}s" data-id="${painting.id}" data-section="${sectionKey}">
     <div class="card-image">
       ${imageHTML}
       <div class="card-size-badge">${painting.width_cm}×${painting.height_cm} ${t('details.cm')}</div>
@@ -2624,6 +2807,14 @@ function cardHTML(painting, index, sectionKey, total) {
 }
 
 function bindCatalogAdminControls(container) {
+  container.querySelectorAll('[data-role="bulk-select"]').forEach(input => {
+    input.addEventListener('click', event => event.stopPropagation());
+    input.addEventListener('change', event => {
+      event.stopPropagation();
+      toggleBulkPaintingSelection(Number(input.dataset.id), input.checked);
+    });
+  });
+
   container.querySelectorAll('[data-role="toggle-editor"]').forEach(button => {
     button.addEventListener('click', event => {
       event.stopPropagation();
@@ -2867,7 +3058,7 @@ function renderGrid() {
   container.querySelectorAll('.card').forEach(card => {
     card.addEventListener('click', event => {
       if (dragJustFinished) return;
-      if (event.target.closest('.card-buy-btn,.overlay-btn,.card-order-btn,.card-title-input,.card-price-input,.card-year-input,.card-dimension-input,.card-material-input,.card-image-input,.card-availability-select,.card-section-select,.card-drag-handle')) return;
+      if (event.target.closest('.card-buy-btn,.overlay-btn,.card-order-btn,.card-title-input,.card-price-input,.card-year-input,.card-dimension-input,.card-material-input,.card-image-input,.card-availability-select,.card-section-select,.card-drag-handle,.card-select-control')) return;
       openModal(Number(card.dataset.id));
     });
   });
@@ -2886,6 +3077,7 @@ function renderGrid() {
   });
 
   bindCatalogAdminControls(container);
+  updateBulkAdminState();
 }
 
 // ─── SELECT ─────────────────────────────────────────────────────
@@ -3010,6 +3202,19 @@ document.addEventListener('keydown', event => {
 });
 
 // ─── SORT / SEARCH ──────────────────────────────────────────────
+document.getElementById('bulk-select-visible').addEventListener('click', () => {
+  if (!adminMode) return;
+  getVisible().forEach(painting => bulkSelectedPaintingIds.add(painting.id));
+  updateBulkAdminState();
+});
+document.getElementById('bulk-clear').addEventListener('click', () => {
+  bulkSelectedPaintingIds.clear();
+  updateBulkAdminState();
+});
+document.getElementById('bulk-section').addEventListener('change', updateBulkAdminState);
+document.getElementById('bulk-action').addEventListener('change', updateBulkAdminState);
+document.getElementById('bulk-apply-section').addEventListener('click', applyBulkSectionChange);
+document.getElementById('bulk-apply-action').addEventListener('click', applyBulkAction);
 document.querySelectorAll('.sort-btn').forEach(button => button.addEventListener('click', () => {
   setCurrentSort(button.dataset.sort);
 }));
