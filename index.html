@@ -243,6 +243,12 @@
   .catalog-history-author { margin-top:3px; color:var(--sepia); font-size:11px; overflow-wrap:anywhere; }
   .catalog-history-current { color:#4f6b43; font-size:10px; letter-spacing:.1em; text-transform:uppercase; }
   .catalog-history-empty { padding:20px 0; color:var(--sepia); font-size:13px; }
+  .save-review-list { display:flex; flex-direction:column; gap:9px; }
+  .save-review-item { padding:12px 14px; border-left:3px solid var(--gold); background:#fff; }
+  .save-review-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .save-review-label { color:var(--ink); font-size:13px; }
+  .save-review-count { color:var(--rust); font-size:11px; letter-spacing:.08em; }
+  .save-review-detail { margin-top:5px; color:var(--sepia); font-size:11px; line-height:1.5; overflow-wrap:anywhere; }
 
   /* ── CARD ADMIN CONTROLS ── */
   .card-admin { display:none; padding:12px 16px 16px; border-top:1px solid rgba(139,111,71,.12); background:#fbf7f0; }
@@ -531,6 +537,24 @@
   </div>
 </div>
 
+<div class="author-dialog-backdrop" id="save-review-dialog" role="dialog" aria-modal="true" aria-labelledby="save-review-title">
+  <div class="author-dialog">
+    <div class="author-dialog-header">
+      <div>
+        <h2 class="author-dialog-title" id="save-review-title" data-i18n="review.title">Проверка изменений</h2>
+        <p class="author-dialog-description" data-i18n="review.description">Эти изменения будут опубликованы на сайте и добавлены в историю.</p>
+      </div>
+      <button class="author-dialog-close" id="save-review-close" type="button" aria-label="Закрыть" data-i18n-aria-label="common.close">×</button>
+    </div>
+    <div class="save-review-list" id="save-review-list"></div>
+    <div class="new-artwork-status" id="save-review-status" role="status" aria-live="polite"></div>
+    <div class="new-artwork-actions">
+      <button class="card-order-btn" id="save-review-cancel" type="button" data-i18n="common.cancel">Отмена</button>
+      <button class="card-order-btn btn-save-layout" id="save-review-confirm" type="button" data-i18n="review.publish">Опубликовать изменения</button>
+    </div>
+  </div>
+</div>
+
 <!-- CATALOG -->
 <section id="catalog">
   <div class="section-header">
@@ -715,6 +739,13 @@ const I18N = {
     'history.current': 'Текущая версия', 'history.restore': 'Восстановить',
     'history.confirmRestore': 'Восстановить выбранную версию? Текущие несохранённые изменения будут заменены.',
     'history.restored': 'Предыдущая версия подготовлена. Нажмите «Сохранить каталог», чтобы опубликовать её.',
+    'review.title': 'Проверка изменений', 'review.description': 'Эти изменения будут опубликованы на сайте и добавлены в историю.',
+    'review.publish': 'Опубликовать изменения', 'review.empty': 'Изменений для публикации нет.',
+    'review.failed': 'Не удалось опубликовать изменения. Проверьте сообщение в панели автора.',
+    'review.names': 'Названия', 'review.visibility': 'Видимость', 'review.commercial': 'Цена и наличие',
+    'review.details': 'Параметры работ', 'review.images': 'Изображения', 'review.sections': 'Разделы',
+    'review.order': 'Порядок разделов', 'review.featured': 'Работы на главной',
+    'review.drafts': 'Черновики', 'review.catalog': 'Состав каталога', 'review.more': 'и ещё {count}',
     'admin.visibilityChanged': 'Видимость изменена. Нажмите «Сохранить каталог».',
     'admin.imageRequiredToPublish': 'Добавьте изображение перед публикацией работы.',
     'admin.dragChanged': 'Порядок изменён перетаскиванием. Нажмите «Сохранить каталог».',
@@ -819,6 +850,13 @@ const I18N = {
     'history.current': 'Current version', 'history.restore': 'Restore',
     'history.confirmRestore': 'Restore the selected version? Current unsaved changes will be replaced.',
     'history.restored': 'The previous version is ready. Click “Save catalogue” to publish it.',
+    'review.title': 'Review changes', 'review.description': 'These changes will be published on the site and added to history.',
+    'review.publish': 'Publish changes', 'review.empty': 'There are no changes to publish.',
+    'review.failed': 'The changes could not be published. Check the artist panel message.',
+    'review.names': 'Titles', 'review.visibility': 'Visibility', 'review.commercial': 'Price and availability',
+    'review.details': 'Artwork details', 'review.images': 'Images', 'review.sections': 'Sections',
+    'review.order': 'Section order', 'review.featured': 'Featured artworks',
+    'review.drafts': 'Drafts', 'review.catalog': 'Catalogue contents', 'review.more': 'and {count} more',
     'admin.visibilityChanged': 'Visibility changed. Click “Save catalogue”.',
     'admin.imageRequiredToPublish': 'Add an image before publishing the artwork.',
     'admin.dragChanged': 'Order changed by dragging. Click “Save catalogue”.',
@@ -912,6 +950,7 @@ let newArtworkPreviewSignature = null;
 let newArtworkPreviewObjectUrl = null;
 let catalogHistoryEntries = [];
 let catalogHistoryReturnFocus = null;
+let saveReviewReturnFocus = null;
 const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 // ─── TECHNIQUE GROUPS (display order) ───────────────────────────
@@ -2000,6 +2039,114 @@ function restoreCatalogHistoryEntry(id) {
   closeCatalogHistoryDialog();
 }
 
+function changedMapIds(before, after, keys) {
+  const ids = new Set();
+  keys.forEach(key => {
+    const beforeMap = before[key] || {};
+    const afterMap = after[key] || {};
+    new Set([...Object.keys(beforeMap), ...Object.keys(afterMap)]).forEach(id => {
+      if (JSON.stringify(beforeMap[id]) !== JSON.stringify(afterMap[id])) ids.add(Number(id));
+    });
+  });
+  return [...ids].filter(Number.isFinite);
+}
+
+function changedArrayIds(before, after, key) {
+  const beforeItems = Array.isArray(before[key]) ? before[key] : [];
+  const afterItems = Array.isArray(after[key]) ? after[key] : [];
+  if (JSON.stringify(beforeItems) === JSON.stringify(afterItems)) return [];
+  return [...new Set([...beforeItems, ...afterItems].map(Number).filter(Number.isFinite))];
+}
+
+function buildCatalogChangeSummary() {
+  const before = normalizeCatalogConfig(publishedCatalogConfig);
+  const after = normalizeCatalogConfig(catalogConfig);
+  const items = [];
+  const addIds = (labelKey, ids) => {
+    if (ids.length) items.push({ labelKey, count: ids.length, ids });
+  };
+
+  addIds('review.names', changedMapIds(before, after, ['titleById']));
+  addIds('review.visibility', changedMapIds(before, after, ['hiddenById']));
+  addIds('review.commercial', changedMapIds(before, after, ['priceById', 'stockById']));
+  addIds('review.details', changedMapIds(before, after, ['yearById', 'widthById', 'heightById', 'materialById']));
+  addIds('review.images', changedMapIds(before, after, ['imageById']));
+  addIds('review.sections', changedMapIds(before, after, ['sectionById']));
+  addIds('review.featured', changedArrayIds(before, after, 'featuredPaintingIds'));
+  addIds('review.drafts', changedArrayIds(before, after, 'draftPaintingIds'));
+  addIds('review.catalog', changedArrayIds(before, after, 'excludedPaintingIds'));
+
+  const changedSections = TECH_GROUPS.filter(group =>
+    JSON.stringify(before.orderBySection[group.key] || []) !== JSON.stringify(after.orderBySection[group.key] || [])
+  );
+  if (changedSections.length) {
+    items.push({
+      labelKey: 'review.order',
+      count: changedSections.length,
+      detail: changedSections.map(group => techLabel(group.key)).join(', ')
+    });
+  }
+  return items;
+}
+
+function formatReviewArtworkNames(ids) {
+  const names = ids.slice(0, 8).map(id => {
+    const painting = allPaintings.find(item => item.id === id);
+    return painting ? `${painting.title} (ID ${id})` : `ID ${id}`;
+  });
+  if (ids.length > 8) names.push(t('review.more', { count: ids.length - 8 }));
+  return names.join(', ');
+}
+
+function closeSaveReviewDialog() {
+  if (savingCatalogConfig) return;
+  const dialog = document.getElementById('save-review-dialog');
+  if (!dialog?.classList.contains('show')) return;
+  dialog.classList.remove('show');
+  document.body.style.overflow = '';
+  saveReviewReturnFocus?.focus?.();
+  saveReviewReturnFocus = null;
+}
+
+function openSaveReviewDialog() {
+  if (!adminMode || !catalogConfigDirty || savingCatalogConfig) return;
+  const dialog = document.getElementById('save-review-dialog');
+  const list = document.getElementById('save-review-list');
+  const status = document.getElementById('save-review-status');
+  const summary = buildCatalogChangeSummary();
+  saveReviewReturnFocus = document.activeElement;
+  status.textContent = '';
+  list.innerHTML = summary.length ? summary.map(item => {
+    const detail = item.detail || formatReviewArtworkNames(item.ids || []);
+    return `<div class="save-review-item">
+      <div class="save-review-heading">
+        <span class="save-review-label">${t(item.labelKey)}</span>
+        <span class="save-review-count">${item.count}</span>
+      </div>
+      ${detail ? `<div class="save-review-detail">${escapeHTML(detail)}</div>` : ''}
+    </div>`;
+  }).join('') : `<div class="catalog-history-empty">${t('review.empty')}</div>`;
+  document.getElementById('save-review-confirm').disabled = !summary.length;
+  dialog.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+async function publishReviewedChanges() {
+  if (savingCatalogConfig) return;
+  const button = document.getElementById('save-review-confirm');
+  const status = document.getElementById('save-review-status');
+  const initialText = button.textContent;
+  button.disabled = true;
+  button.textContent = t('admin.saving');
+  const saved = await saveCatalogConfig();
+  button.textContent = initialText || t('review.publish');
+  if (saved) closeSaveReviewDialog();
+  else {
+    button.disabled = false;
+    status.textContent = t('review.failed');
+  }
+}
+
 function toggleFeaturedPainting(id) {
   const painting = allPaintings.find(item => item.id === id);
   if (!painting) return;
@@ -2744,6 +2891,12 @@ document.getElementById('catalog-history-close').addEventListener('click', close
 document.getElementById('catalog-history-dialog').addEventListener('click', event => {
   if (event.target === event.currentTarget) closeCatalogHistoryDialog();
 });
+document.getElementById('save-review-close').addEventListener('click', closeSaveReviewDialog);
+document.getElementById('save-review-cancel').addEventListener('click', closeSaveReviewDialog);
+document.getElementById('save-review-confirm').addEventListener('click', publishReviewedChanges);
+document.getElementById('save-review-dialog').addEventListener('click', event => {
+  if (event.target === event.currentTarget) closeSaveReviewDialog();
+});
 document.getElementById('new-artwork-close').addEventListener('click', () => closeNewArtworkDialog());
 document.getElementById('new-artwork-cancel').addEventListener('click', () => closeNewArtworkDialog());
 document.getElementById('new-artwork-preview-button').addEventListener('click', renderNewArtworkPreview);
@@ -2761,6 +2914,7 @@ document.getElementById('modal').addEventListener('click', event => {
 });
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape') {
+    closeSaveReviewDialog();
     closeCatalogHistoryDialog();
     closeNewArtworkDialog();
     closeModal();
@@ -2874,7 +3028,7 @@ function initScrollSpy() {
 document.querySelectorAll('.language-btn').forEach(button => {
   button.addEventListener('click', () => applyLanguage(button.dataset.language));
 });
-document.getElementById('btn-save-layout').addEventListener('click', saveCatalogConfig);
+document.getElementById('btn-save-layout').addEventListener('click', openSaveReviewDialog);
 document.getElementById('btn-undo-layout').addEventListener('click', undoCatalogChange);
 document.getElementById('btn-reset-layout').addEventListener('click', resetCatalogChanges);
 document.getElementById('btn-exit-admin').addEventListener('click', async () => {
