@@ -26,6 +26,11 @@ const checks = [
     expected: [200]
   },
   {
+    name: 'anonymous catalogue history read blocked',
+    request: () => fetch(`${url}/rest/v1/catalog_config_history?select=id&limit=1`, { headers }),
+    expected: [401, 403, 404]
+  },
+  {
     name: 'anonymous orders read blocked',
     request: () => fetch(`${url}/rest/v1/orders?select=id&limit=1`, { headers }),
     expected: [401, 403]

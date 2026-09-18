@@ -236,6 +236,13 @@
   .new-artwork-status { min-height:20px; margin-top:14px; color:var(--rust); font-size:12px; }
   .new-artwork-actions { display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap; margin-top:18px; }
   .new-artwork-actions button { flex:0 0 auto; }
+  .catalog-history-list { display:flex; flex-direction:column; gap:10px; }
+  .catalog-history-entry { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:13px 14px; border:1px solid rgba(139,111,71,.25); background:#fff; }
+  .catalog-history-copy { min-width:0; }
+  .catalog-history-date { color:var(--ink); font-size:13px; }
+  .catalog-history-author { margin-top:3px; color:var(--sepia); font-size:11px; overflow-wrap:anywhere; }
+  .catalog-history-current { color:#4f6b43; font-size:10px; letter-spacing:.1em; text-transform:uppercase; }
+  .catalog-history-empty { padding:20px 0; color:var(--sepia); font-size:13px; }
 
   /* ── CARD ADMIN CONTROLS ── */
   .card-admin { display:none; padding:12px 16px 16px; border-top:1px solid rgba(139,111,71,.12); background:#fbf7f0; }
@@ -359,6 +366,7 @@
     .new-artwork-field.is-wide{grid-column:auto;}
     .new-artwork-preview{grid-template-columns:1fr;}
     .new-artwork-preview-image{max-height:420px;}
+    .catalog-history-entry{align-items:flex-start;flex-direction:column;}
   }
   @media(max-width:600px){
     .hero-art{width:min(100%,380px);}
@@ -437,6 +445,7 @@
   </div>
   <div class="admin-banner-actions">
     <button class="btn-exit-admin" id="btn-new-artwork" type="button" data-i18n="admin.addArtwork">+ Добавить работу</button>
+    <button class="btn-exit-admin" id="btn-catalog-history" type="button" data-i18n="admin.history">История</button>
     <button class="btn-exit-admin" id="btn-undo-layout" type="button" data-i18n="admin.undo" disabled>Отменить</button>
     <button class="btn-exit-admin" id="btn-reset-layout" type="button" data-i18n="admin.reset" disabled>Сбросить</button>
     <button class="btn-exit-admin btn-save-layout" id="btn-save-layout" type="button" data-i18n="admin.save" disabled>Сохранить каталог</button>
@@ -505,6 +514,20 @@
         <button class="card-order-btn btn-save-layout" id="new-artwork-publish" type="submit" data-create-mode="publish" data-i18n="newArtwork.publish" disabled>Опубликовать</button>
       </div>
     </form>
+  </div>
+</div>
+
+<div class="author-dialog-backdrop" id="catalog-history-dialog" role="dialog" aria-modal="true" aria-labelledby="catalog-history-title">
+  <div class="author-dialog">
+    <div class="author-dialog-header">
+      <div>
+        <h2 class="author-dialog-title" id="catalog-history-title" data-i18n="history.title">История каталога</h2>
+        <p class="author-dialog-description" data-i18n="history.description">Каждое сохранение создаёт неизменяемую версию каталога.</p>
+      </div>
+      <button class="author-dialog-close" id="catalog-history-close" type="button" aria-label="Закрыть" data-i18n-aria-label="common.close">×</button>
+    </div>
+    <div class="catalog-history-list" id="catalog-history-list"></div>
+    <div class="new-artwork-status" id="catalog-history-status" role="status" aria-live="polite"></div>
   </div>
 </div>
 
@@ -644,7 +667,7 @@ const I18N = {
     'hero.galleryName': 'Галерея Святослава Ушакова', 'hero.works': 'работ', 'hero.sections': '9 разделов',
     'hero.openFeatured': 'Открыть избранную работу', 'hero.region': 'Избранные работы',
     'hero.controls': 'Выбор избранной работы', 'hero.slide': 'Показать работу {position}: {title}',
-    'admin.mode': 'Режим автора', 'admin.save': 'Сохранить каталог', 'admin.undo': 'Отменить', 'admin.reset': 'Сбросить', 'admin.exit': 'Выйти', 'admin.addArtwork': '+ Добавить работу',
+    'admin.mode': 'Режим автора', 'admin.save': 'Сохранить каталог', 'admin.undo': 'Отменить', 'admin.reset': 'Сбросить', 'admin.exit': 'Выйти', 'admin.addArtwork': '+ Добавить работу', 'admin.history': 'История',
     'admin.help': 'Перетаскивайте карточки мышью или используйте кнопки.',
     'admin.unsaved': 'Есть несохранённые изменения.', 'admin.saving': 'Сохраняем…',
     'admin.remoteSaved': 'Каталог сохранён и опубликован.',
@@ -686,6 +709,12 @@ const I18N = {
     'newArtwork.published': 'Работа создана и опубликована.',
     'newArtwork.uploadFailed': 'Черновик создан, но изображение не загрузилось. Его можно добавить из карточки работы.',
     'newArtwork.createFailed': 'Не удалось создать работу. Проверьте поля и повторите попытку.',
+    'history.title': 'История каталога', 'history.description': 'Каждое сохранение создаёт неизменяемую версию каталога.',
+    'history.loading': 'Загружаем историю…', 'history.empty': 'Сохранённых версий пока нет.',
+    'history.loadFailed': 'Не удалось загрузить историю.', 'history.system': 'Системная версия',
+    'history.current': 'Текущая версия', 'history.restore': 'Восстановить',
+    'history.confirmRestore': 'Восстановить выбранную версию? Текущие несохранённые изменения будут заменены.',
+    'history.restored': 'Предыдущая версия подготовлена. Нажмите «Сохранить каталог», чтобы опубликовать её.',
     'admin.visibilityChanged': 'Видимость изменена. Нажмите «Сохранить каталог».',
     'admin.imageRequiredToPublish': 'Добавьте изображение перед публикацией работы.',
     'admin.dragChanged': 'Порядок изменён перетаскиванием. Нажмите «Сохранить каталог».',
@@ -742,7 +771,7 @@ const I18N = {
     'hero.galleryName': 'Slava Ushakov Gallery', 'hero.works': 'works', 'hero.sections': '9 sections',
     'hero.openFeatured': 'Open featured artwork', 'hero.region': 'Featured artworks',
     'hero.controls': 'Choose a featured artwork', 'hero.slide': 'Show artwork {position}: {title}',
-    'admin.mode': 'Artist mode', 'admin.save': 'Save catalogue', 'admin.undo': 'Undo', 'admin.reset': 'Reset', 'admin.exit': 'Sign out', 'admin.addArtwork': '+ Add artwork',
+    'admin.mode': 'Artist mode', 'admin.save': 'Save catalogue', 'admin.undo': 'Undo', 'admin.reset': 'Reset', 'admin.exit': 'Sign out', 'admin.addArtwork': '+ Add artwork', 'admin.history': 'History',
     'admin.help': 'Drag cards with the mouse or use the buttons.',
     'admin.unsaved': 'There are unsaved changes.', 'admin.saving': 'Saving…',
     'admin.remoteSaved': 'Catalogue saved and published.',
@@ -784,6 +813,12 @@ const I18N = {
     'newArtwork.published': 'The artwork was created and published.',
     'newArtwork.uploadFailed': 'The draft was created, but the image upload failed. You can add it from the artwork card.',
     'newArtwork.createFailed': 'The artwork could not be created. Check the fields and try again.',
+    'history.title': 'Catalogue history', 'history.description': 'Every save creates an immutable catalogue version.',
+    'history.loading': 'Loading history…', 'history.empty': 'There are no saved versions yet.',
+    'history.loadFailed': 'The history could not be loaded.', 'history.system': 'System version',
+    'history.current': 'Current version', 'history.restore': 'Restore',
+    'history.confirmRestore': 'Restore the selected version? Current unsaved changes will be replaced.',
+    'history.restored': 'The previous version is ready. Click “Save catalogue” to publish it.',
     'admin.visibilityChanged': 'Visibility changed. Click “Save catalogue”.',
     'admin.imageRequiredToPublish': 'Add an image before publishing the artwork.',
     'admin.dragChanged': 'Order changed by dragging. Click “Save catalogue”.',
@@ -875,6 +910,8 @@ let newArtworkBusy = false;
 let newArtworkReturnFocus = null;
 let newArtworkPreviewSignature = null;
 let newArtworkPreviewObjectUrl = null;
+let catalogHistoryEntries = [];
+let catalogHistoryReturnFocus = null;
 const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 // ─── TECHNIQUE GROUPS (display order) ───────────────────────────
@@ -1881,6 +1918,88 @@ async function createNewArtwork(event) {
   }
 }
 
+function closeCatalogHistoryDialog() {
+  const dialog = document.getElementById('catalog-history-dialog');
+  if (!dialog?.classList.contains('show')) return;
+  dialog.classList.remove('show');
+  document.body.style.overflow = '';
+  catalogHistoryReturnFocus?.focus?.();
+  catalogHistoryReturnFocus = null;
+}
+
+function renderCatalogHistory() {
+  const list = document.getElementById('catalog-history-list');
+  if (!catalogHistoryEntries.length) {
+    list.innerHTML = `<div class="catalog-history-empty">${t('history.empty')}</div>`;
+    return;
+  }
+  list.innerHTML = catalogHistoryEntries.map(entry => {
+    const date = new Date(entry.saved_at);
+    const formattedDate = Number.isNaN(date.getTime()) ? '—' : date.toLocaleString(currentLanguage === 'en' ? 'en-GB' : 'ru-RU');
+    const current = catalogConfigFingerprint(entry.config) === catalogConfigFingerprint(publishedCatalogConfig);
+    return `<div class="catalog-history-entry">
+      <div class="catalog-history-copy">
+        <div class="catalog-history-date">${escapeHTML(formattedDate)}</div>
+        <div class="catalog-history-author">${escapeHTML(entry.saved_by_email || t('history.system'))}</div>
+      </div>
+      ${current
+        ? `<span class="catalog-history-current">${t('history.current')}</span>`
+        : `<button class="card-order-btn" type="button" data-history-id="${entry.id}">${t('history.restore')}</button>`}
+    </div>`;
+  }).join('');
+
+  list.querySelectorAll('[data-history-id]').forEach(button => {
+    button.addEventListener('click', () => restoreCatalogHistoryEntry(Number(button.dataset.historyId)));
+  });
+}
+
+async function openCatalogHistoryDialog() {
+  if (!adminMode) return;
+  const dialog = document.getElementById('catalog-history-dialog');
+  const list = document.getElementById('catalog-history-list');
+  const status = document.getElementById('catalog-history-status');
+  catalogHistoryReturnFocus = document.activeElement;
+  catalogHistoryEntries = [];
+  list.innerHTML = '';
+  status.textContent = t('history.loading');
+  dialog.classList.add('show');
+  document.body.style.overflow = 'hidden';
+
+  try {
+    const { data: userData, error: userError } = await supabaseClient.auth.getUser();
+    const user = userData?.user;
+    if (userError || !user || user.app_metadata?.role !== 'author') throw new Error(t('admin.authRequired'));
+    const { data, error } = await supabaseClient
+      .from('catalog_config_history')
+      .select('id,config,saved_at,saved_by_email')
+      .order('saved_at', { ascending: false })
+      .limit(30);
+    if (error) throw error;
+    catalogHistoryEntries = Array.isArray(data) ? data : [];
+    status.textContent = '';
+    renderCatalogHistory();
+  } catch (error) {
+    list.innerHTML = '';
+    status.textContent = error?.message === t('admin.authRequired') ? error.message : t('history.loadFailed');
+  }
+}
+
+function restoreCatalogHistoryEntry(id) {
+  const entry = catalogHistoryEntries.find(item => Number(item.id) === id);
+  if (!entry || !window.confirm(t('history.confirmRestore'))) return;
+
+  pushCatalogUndoState();
+  catalogConfig = normalizeCatalogConfig(entry.config);
+  applyCatalogConfigToPaintings();
+  sanitizeFeaturedPaintingIds();
+  TECH_GROUPS.forEach(group => syncSectionOrder(group.key));
+  populateSelect();
+  refreshHeroRotation();
+  setCurrentSort('default');
+  setConfigDirty(t('history.restored'));
+  closeCatalogHistoryDialog();
+}
+
 function toggleFeaturedPainting(id) {
   const painting = allPaintings.find(item => item.id === id);
   if (!painting) return;
@@ -2620,6 +2739,11 @@ function buyPainting(id) {
 
 // ─── MODAL EVENTS ───────────────────────────────────────────────
 document.getElementById('btn-new-artwork').addEventListener('click', openNewArtworkDialog);
+document.getElementById('btn-catalog-history').addEventListener('click', openCatalogHistoryDialog);
+document.getElementById('catalog-history-close').addEventListener('click', closeCatalogHistoryDialog);
+document.getElementById('catalog-history-dialog').addEventListener('click', event => {
+  if (event.target === event.currentTarget) closeCatalogHistoryDialog();
+});
 document.getElementById('new-artwork-close').addEventListener('click', () => closeNewArtworkDialog());
 document.getElementById('new-artwork-cancel').addEventListener('click', () => closeNewArtworkDialog());
 document.getElementById('new-artwork-preview-button').addEventListener('click', renderNewArtworkPreview);
@@ -2637,6 +2761,7 @@ document.getElementById('modal').addEventListener('click', event => {
 });
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape') {
+    closeCatalogHistoryDialog();
     closeNewArtworkDialog();
     closeModal();
   }
