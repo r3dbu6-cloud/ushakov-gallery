@@ -534,6 +534,8 @@
         <button class="filter-btn active" type="button" data-admin-filter="all" data-i18n="admin.filterAll" aria-pressed="true">Все</button>
         <button class="filter-btn" type="button" data-admin-filter="visible" data-i18n="admin.filterVisible" aria-pressed="false">На сайте</button>
         <button class="filter-btn" type="button" data-admin-filter="hidden" data-i18n="admin.filterHidden" aria-pressed="false">Скрытые</button>
+        <button class="filter-btn" type="button" data-admin-filter="drafts" data-i18n="admin.filterDrafts" aria-pressed="false">Черновики</button>
+        <button class="filter-btn" type="button" data-admin-filter="archive" data-i18n="admin.filterArchive" aria-pressed="false">Архив</button>
         <button class="filter-btn" type="button" data-admin-filter="available" data-i18n="admin.filterAvailable" aria-pressed="false">В наличии</button>
         <button class="filter-btn" type="button" data-admin-filter="sold" data-i18n="admin.filterSold" aria-pressed="false">Проданные</button>
         <button class="filter-btn" type="button" data-admin-filter="featured" data-i18n="admin.filterFeatured" aria-pressed="false">На главной</button>
@@ -625,7 +627,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, 
     detectSessionInUrl: false
   }
 });
-const DEFAULT_CATALOG_CONFIG = {"catalogSchemaVersion":2,"sectionById":{"4":"мифология","29":"анимация","74":"анимация","83":"мифология","84":"мифология","91":"мифология","93":"графика","639":"авиация","641":"анимация","656":"мифология","657":"авиация","658":"мифология","669":"авиация","671":"мифология","675":"мифология","677":"анимация","678":"анимация","679":"анимация","680":"анимация","681":"анимация","683":"анимация","684":"анимация","685":"анимация","686":"анимация","687":"авиация","688":"авиация","697":"авиация","705":"мифология","710":"мифология","726":"авиация","728":"мифология","730":"авиация","845":"мифология","848":"мифология","899":"мифология","905":"мифология","908":"мифология","939":"мифология","970":"мифология","971":"мифология","974":"мифология","1025":"авиация","1031":"мифология","1032":"авиация","1049":"авиация","1076":"анимация","1081":"мифология"},"orderBySection":{"живопись":[91,92,630,631,632,647,90,634,629,633,635,636,637,638,640,665,642,643,644,645,650,646,648,649,653,651,654,656,664,659,662,668,655,652,666,657,663,658,667,661,670,671,672,673,674,682,675,676,639,669,687,688,706,689,690,692,691,693,694,696,697,700,698,699,701,702,703,704,705,707,708,709,710,711,712,715,716,718,719,720,721,723,724,725,726,727,728,729,730,731,732,733,734,735,737,999,1025,1026,1027,1028,1029,1030,1031,1032,1033,1045,1048,1067,1077],"графика":[1,2,3,4,5,7,8,10,11,12,13,14,15,16,17,18,19,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,66,69,70,71,72,73,74,75,76,77,78,79,80,82,83,84,85,86,87,88,89,747,750,759,762,763,764,765,766,768,769,770,771,772,773,774,775,776,777,803,804,805,806,807,808,809,810,811,812,813,814,815,816,817,818,819,820,821,822,823,824,825,826,827,828,829,830,831,832,833,834,835,836,837,838,839,840,841,842,843,844,845,846,847,848,849,850,851,852,872,853,854,855,856,857,858,859,864,882,885,886,887,888,889,890,891,892,893,894,895,896,898,899,900,901,902,903,904,905,907,908,909,910,911,912,913,914,915,916,917,918,919,920,921,922,923,924,925,926,927,928,929,930,931,932,933,934,935,936,937,938,939,940,941,942,943,944,945,946,947,948,949,950,951,952,953,954,955,956,957,958,959,960,961,962,1092,1093,1094,1096,1097,1098,1095,93],"коллаж":[963,964,965,966,967,968,969,970,971,972,973,974,975,976,977,978,979,980,981,982,983,984,985,986,987,988,989,990,991,992,993,994,995,996,997,998,1074,1075,1076,1078,1079,1080,1081,1082,1083,1084,1085,1086,1087,1088,1089,1091,1090],"акварель":[6,9,20,21,64,65,67,68,81,1000,1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1011,1012,1013,1014,1015,1016,1017,1018,1019,1020,1021,1022,1023,1024,1034,1035,1036,1037,1038,1039,1040,1041,1042,1043,1044,1046,1047,1049,1050,1051,1052,1053,1054,1055,1056,1057,1058,1059,1060,1061,1062,1063,1064,1065,1066,1068,1069,1070,1071,1072,1073,1099,1100,1101,1102,1103,1104,1105,1106,1107,1108,1109,1110,1111,1112,1113,1114,1115,1116,1117,1118,1119,1120,1121,1122,1123,1124,1125,1126,1127,1128,1129,1130,1131,1132,1133,1134,1135,1136,1137,1138,1139,1140,1141,1142,1143,1144,1145,1146,1147,1148,1149,1150,1151,1152],"карикатура":[],"анимация":[641,677,678,679,680,681,683,684,685,686],"принт":[]},"titleById":{"37":"Рассыпались апельсины","38":"Кормление чайки","40":"Объятия","41":"Всадник","44":"Назаренко","60":"Красная Шапочка","63":"Писатель"},"hiddenById":{"735":false},"priceById":{},"stockById":{},"yearById":{},"widthById":{},"heightById":{},"materialById":{},"imageById":{},"excludedPaintingIds":[11,14,24,39,42,45,46,47,48,49,50,51,52,53,54,55,58,61,62,64,65,66,68,69,76,89,1147,636],"featuredPaintingIds":[629,639,649,657,700,1032],"appliedMigrations":[],"updatedAt":"2026-09-16T22:07:46.134Z"};
+const DEFAULT_CATALOG_CONFIG = {"catalogSchemaVersion":2,"sectionById":{"4":"мифология","29":"анимация","74":"анимация","83":"мифология","84":"мифология","91":"мифология","93":"графика","639":"авиация","641":"анимация","656":"мифология","657":"авиация","658":"мифология","669":"авиация","671":"мифология","675":"мифология","677":"анимация","678":"анимация","679":"анимация","680":"анимация","681":"анимация","683":"анимация","684":"анимация","685":"анимация","686":"анимация","687":"авиация","688":"авиация","697":"авиация","705":"мифология","710":"мифология","726":"авиация","728":"мифология","730":"авиация","845":"мифология","848":"мифология","899":"мифология","905":"мифология","908":"мифология","939":"мифология","970":"мифология","971":"мифология","974":"мифология","1025":"авиация","1031":"мифология","1032":"авиация","1049":"авиация","1076":"анимация","1081":"мифология"},"orderBySection":{"живопись":[91,92,630,631,632,647,90,634,629,633,635,636,637,638,640,665,642,643,644,645,650,646,648,649,653,651,654,656,664,659,662,668,655,652,666,657,663,658,667,661,670,671,672,673,674,682,675,676,639,669,687,688,706,689,690,692,691,693,694,696,697,700,698,699,701,702,703,704,705,707,708,709,710,711,712,715,716,718,719,720,721,723,724,725,726,727,728,729,730,731,732,733,734,735,737,999,1025,1026,1027,1028,1029,1030,1031,1032,1033,1045,1048,1067,1077],"графика":[1,2,3,4,5,7,8,10,11,12,13,14,15,16,17,18,19,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,66,69,70,71,72,73,74,75,76,77,78,79,80,82,83,84,85,86,87,88,89,747,750,759,762,763,764,765,766,768,769,770,771,772,773,774,775,776,777,803,804,805,806,807,808,809,810,811,812,813,814,815,816,817,818,819,820,821,822,823,824,825,826,827,828,829,830,831,832,833,834,835,836,837,838,839,840,841,842,843,844,845,846,847,848,849,850,851,852,872,853,854,855,856,857,858,859,864,882,885,886,887,888,889,890,891,892,893,894,895,896,898,899,900,901,902,903,904,905,907,908,909,910,911,912,913,914,915,916,917,918,919,920,921,922,923,924,925,926,927,928,929,930,931,932,933,934,935,936,937,938,939,940,941,942,943,944,945,946,947,948,949,950,951,952,953,954,955,956,957,958,959,960,961,962,1092,1093,1094,1096,1097,1098,1095,93],"коллаж":[963,964,965,966,967,968,969,970,971,972,973,974,975,976,977,978,979,980,981,982,983,984,985,986,987,988,989,990,991,992,993,994,995,996,997,998,1074,1075,1076,1078,1079,1080,1081,1082,1083,1084,1085,1086,1087,1088,1089,1091,1090],"акварель":[6,9,20,21,64,65,67,68,81,1000,1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1011,1012,1013,1014,1015,1016,1017,1018,1019,1020,1021,1022,1023,1024,1034,1035,1036,1037,1038,1039,1040,1041,1042,1043,1044,1046,1047,1049,1050,1051,1052,1053,1054,1055,1056,1057,1058,1059,1060,1061,1062,1063,1064,1065,1066,1068,1069,1070,1071,1072,1073,1099,1100,1101,1102,1103,1104,1105,1106,1107,1108,1109,1110,1111,1112,1113,1114,1115,1116,1117,1118,1119,1120,1121,1122,1123,1124,1125,1126,1127,1128,1129,1130,1131,1132,1133,1134,1135,1136,1137,1138,1139,1140,1141,1142,1143,1144,1145,1146,1147,1148,1149,1150,1151,1152],"карикатура":[],"анимация":[641,677,678,679,680,681,683,684,685,686],"принт":[]},"titleById":{"37":"Рассыпались апельсины","38":"Кормление чайки","40":"Объятия","41":"Всадник","44":"Назаренко","60":"Красная Шапочка","63":"Писатель"},"hiddenById":{"735":false},"priceById":{},"stockById":{},"yearById":{},"widthById":{},"heightById":{},"materialById":{},"imageById":{},"draftPaintingIds":[],"excludedPaintingIds":[11,14,24,39,42,45,46,47,48,49,50,51,52,53,54,55,58,61,62,64,65,66,68,69,76,89,1147,636],"featuredPaintingIds":[629,639,649,657,700,1032],"appliedMigrations":[],"updatedAt":"2026-09-16T22:07:46.134Z"};
 
 const I18N = {
   ru: {
@@ -670,6 +672,7 @@ const I18N = {
     'admin.imageUploadFailed': 'Не удалось загрузить изображение. Повторите попытку.',
     'admin.filters': 'Показать:', 'admin.filtersLabel': 'Фильтры режима автора',
     'admin.filterAll': 'Все', 'admin.filterVisible': 'На сайте', 'admin.filterHidden': 'Скрытые',
+    'admin.filterDrafts': 'Черновики', 'admin.filterArchive': 'Архив',
     'admin.filterAvailable': 'В наличии', 'admin.filterSold': 'Проданные', 'admin.filterFeatured': 'На главной',
     'newArtwork.title': 'Новая работа', 'newArtwork.description': 'Черновик останется скрытым, пока вы не опубликуете работу.',
     'newArtwork.imageHelp': 'Для публикации изображение обязательно. Черновик можно сохранить без изображения.',
@@ -684,6 +687,7 @@ const I18N = {
     'newArtwork.uploadFailed': 'Черновик создан, но изображение не загрузилось. Его можно добавить из карточки работы.',
     'newArtwork.createFailed': 'Не удалось создать работу. Проверьте поля и повторите попытку.',
     'admin.visibilityChanged': 'Видимость изменена. Нажмите «Сохранить каталог».',
+    'admin.imageRequiredToPublish': 'Добавьте изображение перед публикацией работы.',
     'admin.dragChanged': 'Порядок изменён перетаскиванием. Нажмите «Сохранить каталог».',
     'admin.undoDone': 'Последнее изменение отменено.', 'admin.resetDone': 'Восстановлена опубликованная версия.',
     'admin.draftRestored': 'Восстановлен локальный черновик. Проверьте и сохраните его.',
@@ -717,7 +721,8 @@ const I18N = {
     'card.edit': 'Редактировать', 'card.closeEditor': 'Свернуть',
     'card.previous': 'Раньше', 'card.next': 'Позже', 'card.drag': 'Перетащить работу',
     'card.visibleOnSite': 'Показывается на сайте', 'card.hiddenFromSite': 'Скрыта с сайта',
-    'card.showOnSite': 'Показать на сайте', 'card.hideFromSite': 'Скрыть с сайта',
+    'card.draft': 'Черновик', 'card.archived': 'В архиве',
+    'card.showOnSite': 'Восстановить на сайте', 'card.publishDraft': 'Опубликовать', 'card.hideFromSite': 'Переместить в архив',
     'card.dropBefore': 'Перед этой работой', 'card.dropAfter': 'После этой работы',
     'details.year': 'Год', 'details.material': 'Материал', 'details.size': 'Размер',
     'details.technique': 'Техника', 'details.availability': 'Наличие',
@@ -765,6 +770,7 @@ const I18N = {
     'admin.imageUploadFailed': 'The image could not be uploaded. Try again.',
     'admin.filters': 'Show:', 'admin.filtersLabel': 'Artist mode filters',
     'admin.filterAll': 'All', 'admin.filterVisible': 'On site', 'admin.filterHidden': 'Hidden',
+    'admin.filterDrafts': 'Drafts', 'admin.filterArchive': 'Archive',
     'admin.filterAvailable': 'Available', 'admin.filterSold': 'Sold', 'admin.filterFeatured': 'Featured',
     'newArtwork.title': 'New artwork', 'newArtwork.description': 'The draft stays hidden until you publish it.',
     'newArtwork.imageHelp': 'An image is required to publish. A draft can be saved without one.',
@@ -779,6 +785,7 @@ const I18N = {
     'newArtwork.uploadFailed': 'The draft was created, but the image upload failed. You can add it from the artwork card.',
     'newArtwork.createFailed': 'The artwork could not be created. Check the fields and try again.',
     'admin.visibilityChanged': 'Visibility changed. Click “Save catalogue”.',
+    'admin.imageRequiredToPublish': 'Add an image before publishing the artwork.',
     'admin.dragChanged': 'Order changed by dragging. Click “Save catalogue”.',
     'admin.undoDone': 'The last change was undone.', 'admin.resetDone': 'The published version was restored.',
     'admin.draftRestored': 'A local draft was restored. Review and save it.',
@@ -812,7 +819,8 @@ const I18N = {
     'card.edit': 'Edit', 'card.closeEditor': 'Collapse',
     'card.previous': 'Earlier', 'card.next': 'Later', 'card.drag': 'Drag artwork',
     'card.visibleOnSite': 'Visible on the site', 'card.hiddenFromSite': 'Hidden from the site',
-    'card.showOnSite': 'Show on the site', 'card.hideFromSite': 'Hide from the site',
+    'card.draft': 'Draft', 'card.archived': 'Archived',
+    'card.showOnSite': 'Restore on site', 'card.publishDraft': 'Publish', 'card.hideFromSite': 'Move to archive',
     'card.dropBefore': 'Before this artwork', 'card.dropAfter': 'After this artwork',
     'details.year': 'Year', 'details.material': 'Material', 'details.size': 'Size',
     'details.technique': 'Technique', 'details.availability': 'Availability',
@@ -971,6 +979,7 @@ function createEmptyCatalogConfig() {
     heightById: {},
     materialById: {},
     imageById: {},
+    draftPaintingIds: [],
     excludedPaintingIds: [],
     featuredPaintingIds: [],
     appliedMigrations: [],
@@ -1056,6 +1065,8 @@ function normalizeCatalogConfig(raw = {}) {
     heightById: normalizeDimensionMap(raw.heightById),
     materialById,
     imageById,
+    draftPaintingIds: [...new Set((Array.isArray(raw.draftPaintingIds) ? raw.draftPaintingIds : [])
+      .map(Number).filter(id => Number.isSafeInteger(id) && id > 0))],
     excludedPaintingIds: [...new Set((Array.isArray(raw.excludedPaintingIds) ? raw.excludedPaintingIds : [])
       .map(Number).filter(Number.isFinite))],
     featuredPaintingIds: [...new Set((Array.isArray(raw.featuredPaintingIds) ? raw.featuredPaintingIds : [])
@@ -1127,6 +1138,7 @@ function catalogConfigFingerprint(config) {
     heightById: normalized.heightById,
     materialById: normalized.materialById,
     imageById: normalized.imageById,
+    draftPaintingIds: normalized.draftPaintingIds,
     excludedPaintingIds: normalized.excludedPaintingIds,
     featuredPaintingIds: normalized.featuredPaintingIds,
     appliedMigrations: normalized.appliedMigrations
@@ -1828,33 +1840,35 @@ async function createNewArtwork(event) {
     createdPainting = normalizePaintingRecord(data);
     allPaintings.push(createdPainting);
     let imagePath = null;
+    let imageUploadFailed = false;
     if (imageFile) {
       try {
         imagePath = await uploadArtworkImageFile(createdPainting.id, imageFile);
       } catch {
-        showNewArtworkInCatalog(createdPainting.id);
-        closeNewArtworkDialog(true);
-        setAdminStatus(t('newArtwork.uploadFailed'));
-        return;
+        imageUploadFailed = true;
       }
     }
 
-    if (imagePath || mode === 'publish') {
-      pushCatalogUndoState();
-      syncSectionOrder(values.technique);
-      if (imagePath) catalogConfig.imageById[String(createdPainting.id)] = imagePath;
-      if (mode === 'publish') catalogConfig.hiddenById[String(createdPainting.id)] = false;
-      applyCatalogConfigToPaintings();
-      refreshHeroRotation();
-      populateSelect();
-      setConfigDirty(mode === 'publish' ? t('newArtwork.published') : t('newArtwork.createdDraft'));
-      const saved = await saveCatalogConfig();
-      if (!saved) throw new Error(t('catalog.connectionError'));
+    const effectiveMode = imageUploadFailed ? 'draft' : mode;
+    pushCatalogUndoState();
+    syncSectionOrder(values.technique);
+    if (imagePath) catalogConfig.imageById[String(createdPainting.id)] = imagePath;
+    if (effectiveMode === 'publish') {
+      catalogConfig.hiddenById[String(createdPainting.id)] = false;
+      catalogConfig.draftPaintingIds = catalogConfig.draftPaintingIds.filter(id => id !== createdPainting.id);
+    } else if (!catalogConfig.draftPaintingIds.includes(createdPainting.id)) {
+      catalogConfig.draftPaintingIds.push(createdPainting.id);
     }
+    applyCatalogConfigToPaintings();
+    refreshHeroRotation();
+    populateSelect();
+    setConfigDirty(effectiveMode === 'publish' ? t('newArtwork.published') : t('newArtwork.createdDraft'));
+    const saved = await saveCatalogConfig();
+    if (!saved) throw new Error(t('catalog.connectionError'));
 
     showNewArtworkInCatalog(createdPainting.id);
     closeNewArtworkDialog(true);
-    setAdminStatus(t(mode === 'publish' ? 'newArtwork.published' : 'newArtwork.createdDraft'));
+    setAdminStatus(t(imageUploadFailed ? 'newArtwork.uploadFailed' : effectiveMode === 'publish' ? 'newArtwork.published' : 'newArtwork.createdDraft'));
   } catch (error) {
     status.textContent = error?.message || t('newArtwork.createFailed');
     if (createdPainting) {
@@ -1912,11 +1926,17 @@ function togglePaintingVisibility(id) {
   const painting = allPaintings.find(item => item.id === id);
   if (!painting) return;
 
-  pushCatalogUndoState();
   const hidden = !painting.flag_hidden;
+  if (!hidden && !painting.image_url) {
+    setAdminStatus(t('admin.imageRequiredToPublish'));
+    return;
+  }
+
+  pushCatalogUndoState();
   const key = String(id);
   if (hidden === painting.source_flag_hidden) delete catalogConfig.hiddenById[key];
   else catalogConfig.hiddenById[key] = hidden;
+  if (!hidden) catalogConfig.draftPaintingIds = catalogConfig.draftPaintingIds.filter(itemId => itemId !== id);
 
   if (hidden && catalogConfig.featuredPaintingIds.includes(id)) {
     catalogConfig.featuredPaintingIds = catalogConfig.featuredPaintingIds.filter(itemId => itemId !== id);
@@ -2120,6 +2140,8 @@ function getVisible() {
     items = items.filter(painting => {
       if (currentAdminFilter === 'visible') return !painting.flag_hidden;
       if (currentAdminFilter === 'hidden') return Boolean(painting.flag_hidden);
+      if (currentAdminFilter === 'drafts') return catalogConfig.draftPaintingIds.includes(painting.id);
+      if (currentAdminFilter === 'archive') return painting.flag_hidden && !catalogConfig.draftPaintingIds.includes(painting.id);
       if (currentAdminFilter === 'available') return Boolean(painting.in_stock);
       if (currentAdminFilter === 'sold') return !painting.in_stock;
       if (currentAdminFilter === 'featured') return catalogConfig.featuredPaintingIds.includes(painting.id);
@@ -2134,13 +2156,14 @@ function cardAdminHTML(painting, sectionKey, index, total) {
   const hidden = Boolean(painting.flag_hidden);
   const featuredIndex = catalogConfig.featuredPaintingIds.indexOf(painting.id);
   const featured = featuredIndex >= 0;
+  const draft = catalogConfig.draftPaintingIds.includes(painting.id);
   const editorExpanded = expandedAdminCards.has(painting.id);
   return `<div class="card-admin">
     <div class="card-admin-top">
       <div class="card-admin-heading">
         <button class="card-drag-handle" type="button" draggable="true" data-role="drag-handle" data-id="${painting.id}" aria-label="${t('card.drag')}" title="${t('card.drag')}">⠿</button>
         <span class="card-admin-label">${t('card.management')}</span>
-        <span class="card-admin-visibility ${hidden ? 'is-hidden' : ''}">${t(hidden ? 'card.hiddenFromSite' : 'card.visibleOnSite')}</span>
+        <span class="card-admin-visibility ${hidden ? 'is-hidden' : ''}">${t(draft ? 'card.draft' : hidden ? 'card.archived' : 'card.visibleOnSite')}</span>
         ${featured ? `<span class="card-admin-featured">${t('card.featuredPosition', { position: featuredIndex + 1, total: catalogConfig.featuredPaintingIds.length })}</span>` : ''}
       </div>
       <div class="card-admin-tools">
@@ -2200,7 +2223,7 @@ function cardAdminHTML(painting, sectionKey, index, total) {
     <div class="card-admin-actions">
       <button class="card-order-btn" type="button" data-role="move-previous" data-id="${painting.id}" ${index === 0 ? 'disabled' : ''}>← ${t('card.previous')}</button>
       <button class="card-order-btn" type="button" data-role="move-next" data-id="${painting.id}" ${index === total - 1 ? 'disabled' : ''}>${t('card.next')} →</button>
-      <button class="card-order-btn card-visibility-btn" type="button" data-role="toggle-visibility" data-id="${painting.id}">${t(hidden ? 'card.showOnSite' : 'card.hideFromSite')}</button>
+      <button class="card-order-btn card-visibility-btn" type="button" data-role="toggle-visibility" data-id="${painting.id}">${t(draft ? 'card.publishDraft' : hidden ? 'card.showOnSite' : 'card.hideFromSite')}</button>
     </div>
     </div>
   </div>`;
@@ -2215,9 +2238,10 @@ function cardHTML(painting, index, sectionKey, total) {
     : `<div class="card-placeholder">${imagePlaceholderHTML(t('common.imageUnavailable'))}</div>`;
 
   const purchasable = painting.in_stock && !painting.flag_hidden;
+  const hiddenStatusKey = catalogConfig.draftPaintingIds.includes(painting.id) ? 'card.draft' : 'card.archived';
   const purchaseAction = purchasable
     ? `<button class="card-buy-btn" type="button" data-action="buy" data-id="${painting.id}">${t('card.buy')}</button>`
-    : `<span class="card-sold-status">${t(painting.flag_hidden ? 'card.hiddenFromSite' : 'card.sold')}</span>`;
+    : `<span class="card-sold-status">${t(painting.flag_hidden ? hiddenStatusKey : 'card.sold')}</span>`;
   const priceRow = `<div class="card-price-row"><div class="card-price">${fmt(painting.price)}<span class="currency">₽</span></div>${purchaseAction}</div>`;
   const overlayPurchaseAction = purchasable
     ? `<button class="overlay-btn primary" type="button" data-action="buy" data-id="${painting.id}">${t('card.buy')}</button>`
@@ -2530,6 +2554,7 @@ function openModal(id) {
   if (!painting) return;
 
   const sectionKey = getPaintingSection(painting);
+  const hiddenStatusKey = catalogConfig.draftPaintingIds.includes(painting.id) ? 'card.draft' : 'card.archived';
   currentModalPainting = painting;
   document.getElementById('modal-technique').textContent = techLabel(sectionKey);
   document.getElementById('modal-title').textContent = painting.title;
@@ -2540,12 +2565,12 @@ function openModal(id) {
     <div class="modal-detail"><span class="modal-detail-label">${t('details.material')}</span><span>${escapeHTML(translateMaterial(painting.material) || '—')}</span></div>
     <div class="modal-detail"><span class="modal-detail-label">${t('details.size')}</span><span>${painting.width_cm}×${painting.height_cm} ${t('details.cm')}</span></div>
     <div class="modal-detail"><span class="modal-detail-label">${t('details.technique')}</span><span>${techLabel(sectionKey)}</span></div>
-    <div class="modal-detail"><span class="modal-detail-label">${t('details.availability')}</span><span>${painting.flag_hidden ? t('card.hiddenFromSite') : painting.in_stock ? t('details.inStock') : t('details.sold')}</span></div>
+    <div class="modal-detail"><span class="modal-detail-label">${t('details.availability')}</span><span>${painting.flag_hidden ? t(hiddenStatusKey) : painting.in_stock ? t('details.inStock') : t('details.sold')}</span></div>
   `;
 
   const buyButton = document.getElementById('modal-buy');
   buyButton.disabled = !purchasable;
-  buyButton.textContent = purchasable ? t('modal.buy') : painting.flag_hidden ? t('card.hiddenFromSite') : t('modal.sold');
+  buyButton.textContent = purchasable ? t('modal.buy') : painting.flag_hidden ? t(hiddenStatusKey) : t('modal.sold');
 
   const wrap = document.getElementById('modal-img-wrap');
   const url = painting.image_url ? imgUrl(painting.image_url) : null;

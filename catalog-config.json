@@ -621,6 +621,7 @@
   "heightById": {},
   "materialById": {},
   "imageById": {},
+  "draftPaintingIds": [],
   "excludedPaintingIds": [
     11,
     14,
