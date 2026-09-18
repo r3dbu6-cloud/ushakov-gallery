@@ -221,6 +221,18 @@
   .new-artwork-field input,.new-artwork-field select { width:100%; min-width:0; padding:11px 12px; border:1px solid rgba(139,111,71,.35); background:#fff; color:var(--ink); font:13px 'Jost',sans-serif; outline:none; }
   .new-artwork-field input:focus,.new-artwork-field select:focus { border-color:var(--sepia); }
   .new-artwork-help { color:var(--sepia); font-size:11px; line-height:1.5; }
+  .new-artwork-preview { display:grid; grid-template-columns:minmax(180px,260px) 1fr; gap:20px; margin-top:20px; padding:16px; border:1px solid rgba(139,111,71,.28); background:#fff; }
+  .new-artwork-preview[hidden] { display:none; }
+  .new-artwork-preview-image { aspect-ratio:4/5; overflow:hidden; display:flex; align-items:center; justify-content:center; background:#e8e0d2; }
+  .new-artwork-preview-image img { width:100%; height:100%; object-fit:cover; }
+  .new-artwork-preview-image .card-placeholder { height:100%; }
+  .new-artwork-preview-copy { display:flex; flex-direction:column; min-width:0; }
+  .new-artwork-preview-label { margin-bottom:9px; color:var(--rust); font-size:10px; letter-spacing:.14em; text-transform:uppercase; }
+  .new-artwork-preview-title { font-family:'Cormorant Garamond',serif; font-size:29px; line-height:1.05; overflow-wrap:anywhere; }
+  .new-artwork-preview-meta { margin-top:8px; color:var(--sepia); font-size:12px; line-height:1.6; }
+  .new-artwork-preview-price { margin-top:auto; padding-top:18px; font-family:'Cormorant Garamond',serif; font-size:28px; }
+  .new-artwork-preview-stock { margin-top:5px; color:#4f6b43; font-size:11px; letter-spacing:.08em; text-transform:uppercase; }
+  .new-artwork-preview-stock.is-sold { color:var(--rust); }
   .new-artwork-status { min-height:20px; margin-top:14px; color:var(--rust); font-size:12px; }
   .new-artwork-actions { display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap; margin-top:18px; }
   .new-artwork-actions button { flex:0 0 auto; }
@@ -345,6 +357,8 @@
     .card-admin-tools{width:100%;justify-content:space-between;}
     .new-artwork-grid{grid-template-columns:1fr;}
     .new-artwork-field.is-wide{grid-column:auto;}
+    .new-artwork-preview{grid-template-columns:1fr;}
+    .new-artwork-preview-image{max-height:420px;}
   }
   @media(max-width:600px){
     .hero-art{width:min(100%,380px);}
@@ -482,11 +496,13 @@
         </div>
         <p class="new-artwork-help is-wide" data-i18n="newArtwork.imageHelp">Для публикации изображение обязательно. Черновик можно сохранить без изображения.</p>
       </div>
+      <div class="new-artwork-preview" id="new-artwork-preview" aria-live="polite" hidden></div>
       <div class="new-artwork-status" id="new-artwork-status" role="status" aria-live="polite"></div>
       <div class="new-artwork-actions">
         <button class="card-order-btn" id="new-artwork-cancel" type="button" data-i18n="common.cancel">Отмена</button>
+        <button class="card-order-btn" id="new-artwork-preview-button" type="button" data-i18n="newArtwork.preview">Предпросмотр</button>
         <button class="card-order-btn" type="submit" data-create-mode="draft" data-i18n="newArtwork.saveDraft">Сохранить черновик</button>
-        <button class="card-order-btn btn-save-layout" type="submit" data-create-mode="publish" data-i18n="newArtwork.publish">Опубликовать</button>
+        <button class="card-order-btn btn-save-layout" id="new-artwork-publish" type="submit" data-create-mode="publish" data-i18n="newArtwork.publish" disabled>Опубликовать</button>
       </div>
     </form>
   </div>
@@ -657,6 +673,10 @@ const I18N = {
     'admin.filterAvailable': 'В наличии', 'admin.filterSold': 'Проданные', 'admin.filterFeatured': 'На главной',
     'newArtwork.title': 'Новая работа', 'newArtwork.description': 'Черновик останется скрытым, пока вы не опубликуете работу.',
     'newArtwork.imageHelp': 'Для публикации изображение обязательно. Черновик можно сохранить без изображения.',
+    'newArtwork.preview': 'Предпросмотр', 'newArtwork.previewLabel': 'Предпросмотр перед публикацией',
+    'newArtwork.previewReady': 'Предпросмотр готов. Проверьте карточку и нажмите «Опубликовать».',
+    'newArtwork.previewDraft': 'Предпросмотр готов. Для публикации добавьте изображение.',
+    'newArtwork.previewRequired': 'После изменений откройте предпросмотр ещё раз.',
     'newArtwork.saveDraft': 'Сохранить черновик', 'newArtwork.publish': 'Опубликовать',
     'newArtwork.creating': 'Создаём работу…', 'newArtwork.imageRequired': 'Добавьте изображение перед публикацией.',
     'newArtwork.createdDraft': 'Черновик создан и доступен среди скрытых работ.',
@@ -748,6 +768,10 @@ const I18N = {
     'admin.filterAvailable': 'Available', 'admin.filterSold': 'Sold', 'admin.filterFeatured': 'Featured',
     'newArtwork.title': 'New artwork', 'newArtwork.description': 'The draft stays hidden until you publish it.',
     'newArtwork.imageHelp': 'An image is required to publish. A draft can be saved without one.',
+    'newArtwork.preview': 'Preview', 'newArtwork.previewLabel': 'Preview before publishing',
+    'newArtwork.previewReady': 'Preview ready. Check the card and click “Publish”.',
+    'newArtwork.previewDraft': 'Preview ready. Add an image before publishing.',
+    'newArtwork.previewRequired': 'Open the preview again after making changes.',
     'newArtwork.saveDraft': 'Save draft', 'newArtwork.publish': 'Publish',
     'newArtwork.creating': 'Creating artwork…', 'newArtwork.imageRequired': 'Add an image before publishing.',
     'newArtwork.createdDraft': 'The draft was created and is available among hidden artworks.',
@@ -841,6 +865,8 @@ let currentAuthor = null;
 let allowAdminNavigation = false;
 let newArtworkBusy = false;
 let newArtworkReturnFocus = null;
+let newArtworkPreviewSignature = null;
+let newArtworkPreviewObjectUrl = null;
 const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 // ─── TECHNIQUE GROUPS (display order) ───────────────────────────
@@ -1612,11 +1638,106 @@ async function uploadPaintingImage(id, file, button) {
   }
 }
 
+function getNewArtworkFormValues() {
+  const imageFile = document.getElementById('new-artwork-image').files?.[0] || null;
+  return {
+    title: document.getElementById('new-artwork-name').value.trim(),
+    technique: document.getElementById('new-artwork-section').value,
+    material: document.getElementById('new-artwork-material').value.trim(),
+    year: Number(document.getElementById('new-artwork-year').value),
+    price: Number(document.getElementById('new-artwork-price').value),
+    width: Number(String(document.getElementById('new-artwork-width').value).replace(',', '.')),
+    height: Number(String(document.getElementById('new-artwork-height').value).replace(',', '.')),
+    inStock: document.getElementById('new-artwork-stock').value === 'available',
+    imageFile
+  };
+}
+
+function getNewArtworkFormSignature() {
+  const values = getNewArtworkFormValues();
+  return JSON.stringify({
+    title: values.title,
+    technique: values.technique,
+    material: values.material,
+    year: values.year,
+    price: values.price,
+    width: values.width,
+    height: values.height,
+    inStock: values.inStock,
+    image: values.imageFile ? {
+      name: values.imageFile.name,
+      size: values.imageFile.size,
+      type: values.imageFile.type,
+      lastModified: values.imageFile.lastModified
+    } : null
+  });
+}
+
+function revokeNewArtworkPreviewImage() {
+  if (!newArtworkPreviewObjectUrl) return;
+  URL.revokeObjectURL(newArtworkPreviewObjectUrl);
+  newArtworkPreviewObjectUrl = null;
+}
+
+function updateNewArtworkPublishState() {
+  const publishButton = document.getElementById('new-artwork-publish');
+  const imageFile = document.getElementById('new-artwork-image').files?.[0] || null;
+  const previewCurrent = newArtworkPreviewSignature && newArtworkPreviewSignature === getNewArtworkFormSignature();
+  if (publishButton) publishButton.disabled = newArtworkBusy || !imageFile || !previewCurrent;
+}
+
+function invalidateNewArtworkPreview(announce = false) {
+  const hadPreview = Boolean(newArtworkPreviewSignature);
+  newArtworkPreviewSignature = null;
+  revokeNewArtworkPreviewImage();
+  const preview = document.getElementById('new-artwork-preview');
+  if (preview) {
+    preview.hidden = true;
+    preview.innerHTML = '';
+  }
+  updateNewArtworkPublishState();
+  if (announce && hadPreview) document.getElementById('new-artwork-status').textContent = t('newArtwork.previewRequired');
+}
+
+async function renderNewArtworkPreview() {
+  const form = document.getElementById('new-artwork-form');
+  const status = document.getElementById('new-artwork-status');
+  if (!form.reportValidity()) return;
+  const values = getNewArtworkFormValues();
+
+  try {
+    if (values.imageFile) await validateArtworkImage(values.imageFile);
+    revokeNewArtworkPreviewImage();
+    newArtworkPreviewObjectUrl = values.imageFile ? URL.createObjectURL(values.imageFile) : null;
+    const imageHTML = newArtworkPreviewObjectUrl
+      ? `<img src="${escapeHTML(newArtworkPreviewObjectUrl)}" alt="${escapeHTML(values.title)}">`
+      : `<div class="card-placeholder">${imagePlaceholderHTML(t('common.imageUnavailable'))}</div>`;
+    const preview = document.getElementById('new-artwork-preview');
+    preview.innerHTML = `<div class="new-artwork-preview-image">${imageHTML}</div>
+      <div class="new-artwork-preview-copy">
+        <span class="new-artwork-preview-label">${t('newArtwork.previewLabel')}</span>
+        <h3 class="new-artwork-preview-title">${escapeHTML(values.title)}</h3>
+        <div class="new-artwork-preview-meta">${escapeHTML(String(values.year))} · ${escapeHTML(techLabel(values.technique))}<br>${escapeHTML(values.material)}<br>${escapeHTML(String(values.width))}×${escapeHTML(String(values.height))} ${t('details.cm')}</div>
+        <div class="new-artwork-preview-price">${fmt(values.price)}<span class="currency"> ₽</span></div>
+        <div class="new-artwork-preview-stock ${values.inStock ? '' : 'is-sold'}">${t(values.inStock ? 'details.inStock' : 'details.sold')}</div>
+      </div>`;
+    preview.hidden = false;
+    newArtworkPreviewSignature = getNewArtworkFormSignature();
+    updateNewArtworkPublishState();
+    status.textContent = t(values.imageFile ? 'newArtwork.previewReady' : 'newArtwork.previewDraft');
+    preview.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } catch (error) {
+    invalidateNewArtworkPreview();
+    status.textContent = error?.message || t('admin.imageUnreadable');
+  }
+}
+
 function setNewArtworkBusy(busy) {
   newArtworkBusy = busy;
   document.querySelectorAll('#new-artwork-form input,#new-artwork-form select,#new-artwork-form button').forEach(control => {
     control.disabled = busy;
   });
+  updateNewArtworkPublishState();
 }
 
 function openNewArtworkDialog() {
@@ -1631,6 +1752,7 @@ function openNewArtworkDialog() {
   const yearInput = document.getElementById('new-artwork-year');
   yearInput.max = String(maxYear);
   yearInput.value = String(new Date().getFullYear());
+  invalidateNewArtworkPreview();
   document.getElementById('new-artwork-status').textContent = '';
   dialog.classList.add('show');
   document.body.style.overflow = 'hidden';
@@ -1642,6 +1764,7 @@ function closeNewArtworkDialog(force = false) {
   const dialog = document.getElementById('new-artwork-dialog');
   if (!dialog?.classList.contains('show')) return;
   dialog.classList.remove('show');
+  invalidateNewArtworkPreview();
   document.body.style.overflow = '';
   newArtworkReturnFocus?.focus?.();
   newArtworkReturnFocus = null;
@@ -1667,24 +1790,19 @@ async function createNewArtwork(event) {
   const form = event.currentTarget;
   const mode = event.submitter?.dataset.createMode === 'publish' ? 'publish' : 'draft';
   const status = document.getElementById('new-artwork-status');
-  const imageFile = document.getElementById('new-artwork-image').files?.[0] || null;
+  if (!form.reportValidity()) return;
+  const values = getNewArtworkFormValues();
+  const imageFile = values.imageFile;
   if (mode === 'publish' && !imageFile) {
     status.textContent = t('newArtwork.imageRequired');
     document.getElementById('new-artwork-image').focus();
     return;
   }
-  if (!form.reportValidity()) return;
-
-  const values = {
-    title: document.getElementById('new-artwork-name').value.trim(),
-    technique: document.getElementById('new-artwork-section').value,
-    material: document.getElementById('new-artwork-material').value.trim(),
-    year: Number(document.getElementById('new-artwork-year').value),
-    price: Number(document.getElementById('new-artwork-price').value),
-    width: Number(String(document.getElementById('new-artwork-width').value).replace(',', '.')),
-    height: Number(String(document.getElementById('new-artwork-height').value).replace(',', '.')),
-    inStock: document.getElementById('new-artwork-stock').value === 'available'
-  };
+  if (mode === 'publish' && newArtworkPreviewSignature !== getNewArtworkFormSignature()) {
+    status.textContent = t('newArtwork.previewRequired');
+    document.getElementById('new-artwork-preview-button').focus();
+    return;
+  }
 
   setNewArtworkBusy(true);
   status.textContent = t('newArtwork.creating');
@@ -2479,7 +2597,10 @@ function buyPainting(id) {
 document.getElementById('btn-new-artwork').addEventListener('click', openNewArtworkDialog);
 document.getElementById('new-artwork-close').addEventListener('click', () => closeNewArtworkDialog());
 document.getElementById('new-artwork-cancel').addEventListener('click', () => closeNewArtworkDialog());
+document.getElementById('new-artwork-preview-button').addEventListener('click', renderNewArtworkPreview);
 document.getElementById('new-artwork-form').addEventListener('submit', createNewArtwork);
+document.getElementById('new-artwork-form').addEventListener('input', () => invalidateNewArtworkPreview(true));
+document.getElementById('new-artwork-form').addEventListener('change', () => invalidateNewArtworkPreview(true));
 document.getElementById('new-artwork-dialog').addEventListener('click', event => {
   if (event.target === event.currentTarget) closeNewArtworkDialog();
 });
