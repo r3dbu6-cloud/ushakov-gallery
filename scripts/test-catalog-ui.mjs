@@ -16,6 +16,7 @@ const context = {
   TECH_GROUPS: [{ key: 'живопись' }, { key: 'графика' }],
   MAX_FEATURED_PAINTINGS: 6,
   allPaintings: [],
+  sourcePaintings: [],
   currentSort: 'default',
   techLabel: key => key,
   catalogConfigFingerprint: config => JSON.stringify(config),
@@ -23,13 +24,27 @@ const context = {
 };
 runInNewContext([
   between('function createEmptyCatalogConfig()', 'function cloneCatalogConfig('),
+  between('function applyCatalogConfigToPaintings()', 'function sanitizeFeaturedPaintingIds('),
   between('function sortSectionItems(', 'function setAdminStatus('),
   between('function changedMapIds(', 'function formatReviewArtworkNames('),
-  'globalThis.testFunctions = { createEmptyCatalogConfig, normalizeCatalogConfig, sortSectionItems, buildCatalogChangeSummary };'
+  'globalThis.testFunctions = { createEmptyCatalogConfig, normalizeCatalogConfig, applyCatalogConfigToPaintings, sortSectionItems, buildCatalogChangeSummary };'
 ].join('\n'), context);
 
-const { createEmptyCatalogConfig, normalizeCatalogConfig, sortSectionItems, buildCatalogChangeSummary } = context.testFunctions;
+const { createEmptyCatalogConfig, normalizeCatalogConfig, applyCatalogConfigToPaintings, sortSectionItems, buildCatalogChangeSummary } = context.testFunctions;
 context.catalogConfig = normalizeCatalogConfig(createEmptyCatalogConfig());
+const sourcePainting = id => ({
+  id, source_title: `Artwork ${id}`, source_flag_hidden: false, source_price: 100,
+  source_in_stock: true, source_year: 2026, source_width_cm: 20, source_height_cm: 30,
+  source_material: 'Canvas', source_image_url: `public/${id}.jpg`
+});
+context.sourcePaintings = [sourcePainting(1), sourcePainting(2)];
+context.catalogConfig.excludedPaintingIds = [2];
+applyCatalogConfigToPaintings();
+assert.deepEqual(Array.from(context.allPaintings, item => item.id), [1]);
+context.catalogConfig.excludedPaintingIds = [];
+applyCatalogConfigToPaintings();
+assert.deepEqual(Array.from(context.allPaintings, item => item.id), [1, 2]);
+
 context.catalogConfig.orderBySection['живопись'] = [1, 2, 3];
 const paintings = [
   { id: 1, created_at: '2020-01-01T00:00:00Z', source_flag_hidden: false, source_in_stock: true },
@@ -61,11 +76,13 @@ assert.deepEqual(idsFor('review.markedSold'), [3]);
 
 const backupContext = { crypto: webcrypto, TextEncoder };
 runInNewContext([
-  between('async function buildCatalogBackup(', 'function closeCatalogHistoryDialog('),
-  'globalThis.buildCatalogBackupForTest = buildCatalogBackup;'
+  between('async function catalogSnapshotChecksum(', 'function closeCatalogHistoryDialog('),
+  'globalThis.backupFunctions = { buildCatalogBackup, verifyCatalogBackup };'
 ].join('\n'), backupContext);
-const backup = await backupContext.buildCatalogBackupForTest(
-  { config: { hiddenById: { 2: true } }, updated_at: '2026-09-19T10:00:00Z' },
+const backupConfig = normalizeCatalogConfig(createEmptyCatalogConfig());
+backupConfig.hiddenById['2'] = true;
+const backup = await backupContext.backupFunctions.buildCatalogBackup(
+  { config: backupConfig, updated_at: '2026-09-19T10:00:00Z' },
   [{ id: 1, image_url: 'public/1.jpg' }, { id: 2, flag_hidden: true }],
   '2026-09-19T10:01:00Z'
 );
@@ -75,6 +92,26 @@ assert.equal(backup.snapshot.paintings[1].id, 2);
 assert.equal(
   backup.checksum.value,
   createHash('sha256').update(JSON.stringify(backup.snapshot)).digest('hex')
+);
+assert.equal(
+  await backupContext.backupFunctions.verifyCatalogBackup(backup, backup.snapshot.paintings),
+  backup.snapshot.catalogConfig
+);
+await assert.rejects(
+  backupContext.backupFunctions.verifyCatalogBackup(
+    { ...backup, checksum: { ...backup.checksum, value: '0'.repeat(64) } },
+    backup.snapshot.paintings
+  ), /checksum/
+);
+await assert.rejects(
+  backupContext.backupFunctions.verifyCatalogBackup(backup, [
+    backup.snapshot.paintings[0], { ...backup.snapshot.paintings[1], flag_hidden: false }
+  ]), /paintings-changed/
+);
+await assert.rejects(
+  backupContext.backupFunctions.verifyCatalogBackup(backup, [
+    { ...backup.snapshot.paintings[0], new_database_field: 'changed' }, backup.snapshot.paintings[1]
+  ]), /paintings-changed/
 );
 
 console.log('Catalogue UI behavior tests passed.');
