@@ -479,6 +479,7 @@
   <div class="admin-banner-actions">
     <button class="btn-exit-admin" id="btn-new-artwork" type="button" data-i18n="admin.addArtwork">+ Добавить работу</button>
     <button class="btn-exit-admin" id="btn-catalog-history" type="button" data-i18n="admin.history">История</button>
+    <button class="btn-exit-admin" id="btn-export-catalog" type="button" data-i18n="admin.export">Скачать JSON</button>
     <button class="btn-exit-admin" id="btn-undo-layout" type="button" data-i18n="admin.undo" disabled>Отменить</button>
     <button class="btn-exit-admin" id="btn-reset-layout" type="button" data-i18n="admin.reset" disabled>Сбросить</button>
     <button class="btn-exit-admin btn-save-layout" id="btn-save-layout" type="button" data-i18n="admin.save" disabled>Сохранить каталог</button>
@@ -771,7 +772,11 @@ const I18N = {
     'hero.galleryName': 'Галерея Святослава Ушакова', 'hero.works': 'работ', 'hero.sections': '9 разделов',
     'hero.openFeatured': 'Открыть избранную работу', 'hero.region': 'Избранные работы',
     'hero.controls': 'Выбор избранной работы', 'hero.slide': 'Показать работу {position}: {title}',
-    'admin.mode': 'Режим автора', 'admin.save': 'Сохранить каталог', 'admin.undo': 'Отменить', 'admin.reset': 'Сбросить', 'admin.exit': 'Выйти', 'admin.addArtwork': '+ Добавить работу', 'admin.history': 'История',
+    'admin.mode': 'Режим автора', 'admin.save': 'Сохранить каталог', 'admin.undo': 'Отменить', 'admin.reset': 'Сбросить', 'admin.exit': 'Выйти', 'admin.addArtwork': '+ Добавить работу', 'admin.history': 'История', 'admin.export': 'Скачать JSON',
+    'backup.exporting': 'Готовим резервную копию опубликованного каталога…',
+    'backup.downloaded': 'Скачивание JSON начато. Изображения не включены: сохранены только пути к ним. Несохранённые правки не вошли в файл.',
+    'backup.failed': 'Не удалось скачать каталог. Попробуйте ещё раз.',
+    'backup.changed': 'Каталог изменился во время экспорта. Повторите скачивание.',
     'admin.help': 'Перетаскивайте карточки мышью или используйте кнопки.',
     'admin.unsaved': 'Есть несохранённые изменения.', 'admin.saving': 'Сохраняем…',
     'admin.remoteSaved': 'Каталог сохранён и опубликован.',
@@ -914,7 +919,11 @@ const I18N = {
     'hero.galleryName': 'Slava Ushakov Gallery', 'hero.works': 'works', 'hero.sections': '9 sections',
     'hero.openFeatured': 'Open featured artwork', 'hero.region': 'Featured artworks',
     'hero.controls': 'Choose a featured artwork', 'hero.slide': 'Show artwork {position}: {title}',
-    'admin.mode': 'Artist mode', 'admin.save': 'Save catalogue', 'admin.undo': 'Undo', 'admin.reset': 'Reset', 'admin.exit': 'Sign out', 'admin.addArtwork': '+ Add artwork', 'admin.history': 'History',
+    'admin.mode': 'Artist mode', 'admin.save': 'Save catalogue', 'admin.undo': 'Undo', 'admin.reset': 'Reset', 'admin.exit': 'Sign out', 'admin.addArtwork': '+ Add artwork', 'admin.history': 'History', 'admin.export': 'Download JSON',
+    'backup.exporting': 'Preparing a backup of the published catalogue…',
+    'backup.downloaded': 'JSON download started. Images are not included; only their paths are saved. Unsaved edits are not included.',
+    'backup.failed': 'Could not download the catalogue. Please try again.',
+    'backup.changed': 'The catalogue changed during export. Please download it again.',
     'admin.help': 'Drag cards with the mouse or use the buttons.',
     'admin.unsaved': 'There are unsaved changes.', 'admin.saving': 'Saving…',
     'admin.remoteSaved': 'Catalogue saved and published.',
@@ -2254,6 +2263,24 @@ async function createNewArtwork(event) {
   }
 }
 
+async function buildCatalogBackup(configRow, paintings, exportedAt) {
+  const snapshot = { catalogConfig: configRow.config, paintings };
+  const bytes = new TextEncoder().encode(JSON.stringify(snapshot));
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  const checksum = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
+  return {
+    format: 'ushakov-gallery-catalog-backup',
+    version: 1,
+    exportedAt,
+    catalogUpdatedAt: configRow.updated_at,
+    artworkCount: paintings.length,
+    imagesIncluded: false,
+    imageNote: 'Artwork image paths are included in catalogue data, but image files are not included.',
+    checksum: { algorithm: 'SHA-256', value: checksum, scope: 'JSON.stringify(snapshot)' },
+    snapshot
+  };
+}
+
 function closeCatalogHistoryDialog() {
   const dialog = document.getElementById('catalog-history-dialog');
   if (!dialog?.classList.contains('show')) return;
@@ -2261,6 +2288,71 @@ function closeCatalogHistoryDialog() {
   document.body.style.overflow = '';
   catalogHistoryReturnFocus?.focus?.();
   catalogHistoryReturnFocus = null;
+}
+
+async function exportCatalogBackup() {
+  const button = document.getElementById('btn-export-catalog');
+  if (!adminMode || button.disabled) return;
+  button.disabled = true;
+  setAdminStatus(t('backup.exporting'));
+
+  try {
+    const { data: userData, error: userError } = await supabaseClient.auth.getUser();
+    const user = userData?.user;
+    if (userError || !user || user.app_metadata?.role !== 'author') throw new Error('auth-required');
+
+    const { data: configRow, error: configError } = await supabaseClient
+      .from('catalog_config')
+      .select('config,updated_at')
+      .eq('id', 'main')
+      .single();
+    if (configError || !configRow?.config) throw new Error('export-failed');
+
+    const paintings = [];
+    const pageSize = 1000;
+    let totalCount = null;
+    for (let offset = 0; ; offset = paintings.length) {
+      const { data, count, error } = await supabaseClient
+        .from('paintings')
+        .select('*', { count: 'exact' })
+        .order('id', { ascending: true })
+        .range(offset, offset + pageSize - 1);
+      if (error || !Array.isArray(data) || !Number.isSafeInteger(count)) throw new Error('export-failed');
+      if (totalCount !== null && count !== totalCount) throw new Error('catalog-changed');
+      totalCount = count;
+      if (!data.length && paintings.length < totalCount) throw new Error('export-failed');
+      paintings.push(...data);
+      if (paintings.length >= totalCount) break;
+    }
+
+    const { data: latestConfig, error: latestError } = await supabaseClient
+      .from('catalog_config')
+      .select('updated_at')
+      .eq('id', 'main')
+      .single();
+    if (latestError || !latestConfig) throw new Error('export-failed');
+    if (latestConfig.updated_at !== configRow.updated_at) throw new Error('catalog-changed');
+
+    const exportedAt = new Date().toISOString();
+    const backup = await buildCatalogBackup(configRow, paintings, exportedAt);
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `ushakov-gallery-catalog-${exportedAt.slice(0, 19).replace(/[:T]/g, '-')}.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+    setAdminStatus(t('backup.downloaded'));
+  } catch (error) {
+    const messageKey = error?.message === 'auth-required' ? 'admin.authRequired'
+      : error?.message === 'catalog-changed' ? 'backup.changed' : 'backup.failed';
+    setAdminStatus(t(messageKey));
+    console.error('Catalog backup export error:', error);
+  } finally {
+    button.disabled = false;
+  }
 }
 
 function renderCatalogHistory() {
@@ -3337,6 +3429,7 @@ function buyPainting(id) {
 // ─── MODAL EVENTS ───────────────────────────────────────────────
 document.getElementById('btn-new-artwork').addEventListener('click', openNewArtworkDialog);
 document.getElementById('btn-catalog-history').addEventListener('click', openCatalogHistoryDialog);
+document.getElementById('btn-export-catalog').addEventListener('click', exportCatalogBackup);
 document.getElementById('catalog-history-close').addEventListener('click', closeCatalogHistoryDialog);
 document.getElementById('catalog-history-dialog').addEventListener('click', event => {
   if (event.target === event.currentTarget) closeCatalogHistoryDialog();

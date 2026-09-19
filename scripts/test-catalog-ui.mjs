@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash, webcrypto } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { runInNewContext } from 'node:vm';
@@ -57,5 +58,23 @@ const idsFor = key => Array.from(summary.find(item => item.labelKey === key)?.id
 assert.deepEqual(idsFor('review.archived'), [1]);
 assert.deepEqual(idsFor('review.publishedDraft'), [2]);
 assert.deepEqual(idsFor('review.markedSold'), [3]);
+
+const backupContext = { crypto: webcrypto, TextEncoder };
+runInNewContext([
+  between('async function buildCatalogBackup(', 'function closeCatalogHistoryDialog('),
+  'globalThis.buildCatalogBackupForTest = buildCatalogBackup;'
+].join('\n'), backupContext);
+const backup = await backupContext.buildCatalogBackupForTest(
+  { config: { hiddenById: { 2: true } }, updated_at: '2026-09-19T10:00:00Z' },
+  [{ id: 1, image_url: 'public/1.jpg' }, { id: 2, flag_hidden: true }],
+  '2026-09-19T10:01:00Z'
+);
+assert.equal(backup.artworkCount, 2);
+assert.equal(backup.imagesIncluded, false);
+assert.equal(backup.snapshot.paintings[1].id, 2);
+assert.equal(
+  backup.checksum.value,
+  createHash('sha256').update(JSON.stringify(backup.snapshot)).digest('hex')
+);
 
 console.log('Catalogue UI behavior tests passed.');
