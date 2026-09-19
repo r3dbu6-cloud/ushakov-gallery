@@ -546,6 +546,7 @@
         <button class="card-order-btn" type="submit" data-create-mode="draft" data-i18n="newArtwork.saveDraft">Сохранить черновик</button>
         <button class="card-order-btn btn-save-layout" id="new-artwork-publish" type="submit" data-create-mode="publish" data-i18n="newArtwork.publish" disabled>Опубликовать</button>
       </div>
+      <p class="new-artwork-help" id="new-artwork-publish-hint" role="status" aria-live="polite">Для публикации добавьте изображение и нажмите «Предпросмотр».</p>
     </form>
   </div>
 </div>
@@ -594,6 +595,7 @@
     <div class="sort-row">
       <span class="sort-label" data-i18n="catalog.sort">Сортировка:</span>
       <button class="sort-btn active" data-sort="default" data-i18n="catalog.default">По умолчанию</button>
+      <button class="sort-btn" data-sort="manual" data-i18n="catalog.manual">Авторский порядок</button>
       <button class="sort-btn" data-sort="price-asc" data-i18n="catalog.priceAsc">Цена ↑</button>
       <button class="sort-btn" data-sort="price-desc" data-i18n="catalog.priceDesc">Цена ↓</button>
       <button class="sort-btn" data-sort="year-desc" data-i18n="catalog.newer">Новее</button>
@@ -817,6 +819,8 @@ const I18N = {
     'newArtwork.previewReady': 'Предпросмотр готов. Проверьте карточку и нажмите «Опубликовать».',
     'newArtwork.previewDraft': 'Предпросмотр готов. Для публикации добавьте изображение.',
     'newArtwork.previewRequired': 'После изменений откройте предпросмотр ещё раз.',
+    'newArtwork.publishHintImage': 'Чтобы опубликовать работу, добавьте изображение и нажмите «Предпросмотр».',
+    'newArtwork.publishHintPreview': 'Чтобы стала доступна кнопка «Опубликовать», нажмите «Предпросмотр» и проверьте карточку.',
     'newArtwork.saveDraft': 'Сохранить черновик', 'newArtwork.publish': 'Опубликовать',
     'newArtwork.creating': 'Создаём работу…', 'newArtwork.imageRequired': 'Добавьте изображение перед публикацией.',
     'newArtwork.createdDraft': 'Черновик создан и доступен среди скрытых работ.',
@@ -832,10 +836,19 @@ const I18N = {
     'review.title': 'Проверка изменений', 'review.description': 'Эти изменения будут опубликованы на сайте и добавлены в историю.',
     'review.publish': 'Опубликовать изменения', 'review.empty': 'Изменений для публикации нет.',
     'review.failed': 'Не удалось опубликовать изменения. Проверьте сообщение в панели автора.',
-    'review.names': 'Названия', 'review.visibility': 'Видимость', 'review.commercial': 'Цена и наличие',
-    'review.details': 'Параметры работ', 'review.images': 'Изображения', 'review.sections': 'Разделы',
-    'review.order': 'Порядок разделов', 'review.featured': 'Работы на главной',
-    'review.drafts': 'Черновики', 'review.catalog': 'Состав каталога', 'review.more': 'и ещё {count}',
+    'review.names': 'Изменены названия', 'review.archived': 'Перемещены в архив', 'review.archivedOne': 'Перемещена в архив',
+    'review.publishedDraft': 'Опубликованы из черновиков', 'review.restored': 'Возвращены на сайт из архива',
+    'review.prices': 'Изменены цены', 'review.markedAvailable': 'Отмечены как «В наличии»',
+    'review.markedSold': 'Отмечены как «Продано»',
+    'review.details': 'Изменены год, размеры или материал', 'review.images': 'Заменены изображения',
+    'review.sections': 'Перемещены в другие разделы', 'review.order': 'Изменён порядок работ в разделах',
+    'review.featuredAdded': 'Добавлены на главную', 'review.featuredRemoved': 'Убраны с главной',
+    'review.featuredOrder': 'Изменён порядок работ на главной',
+    'review.draftAdded': 'Добавлены в черновики', 'review.draftArchived': 'Черновики перемещены в архив',
+    'review.excluded': 'Исключены из каталога', 'review.included': 'Возвращены в каталог',
+    'review.publicationDates': 'Изменены даты публикации',
+    'review.settings': 'Обновлены настройки каталога',
+    'review.more': 'и ещё {count}',
     'validation.errorsTitle': 'Нужно исправить перед публикацией',
     'validation.warningsTitle': 'Стоит проверить',
     'validation.blocked': 'Публикация заблокирована: исправьте ошибки в видимых работах.',
@@ -854,7 +867,7 @@ const I18N = {
     'admin.confirmExit': 'Есть несохранённые изменения. Выйти и оставить черновик на этом устройстве?',
     'admin.saved': 'Сохранено {date}',
     'catalog.title': 'Каталог работ', 'catalog.loading': 'Загрузка…', 'catalog.sort': 'Сортировка:',
-    'catalog.default': 'По умолчанию', 'catalog.priceAsc': 'Цена ↑', 'catalog.priceDesc': 'Цена ↓',
+    'catalog.default': 'Новые сначала', 'catalog.manual': 'Авторский порядок', 'catalog.priceAsc': 'Цена ↑', 'catalog.priceDesc': 'Цена ↓',
     'catalog.newer': 'Новее', 'catalog.older': 'Старее', 'catalog.search': 'Поиск по названию или ID…',
     'catalog.noResults': 'Нет работ по запросу', 'catalog.empty': 'Раздел скоро пополнится',
     'catalog.networkError': 'Ошибка сети', 'catalog.connectionError': 'Ошибка подключения',
@@ -949,6 +962,8 @@ const I18N = {
     'newArtwork.previewReady': 'Preview ready. Check the card and click “Publish”.',
     'newArtwork.previewDraft': 'Preview ready. Add an image before publishing.',
     'newArtwork.previewRequired': 'Open the preview again after making changes.',
+    'newArtwork.publishHintImage': 'To publish, add an image and click “Preview”.',
+    'newArtwork.publishHintPreview': 'To enable “Publish”, click “Preview” and check the artwork card.',
     'newArtwork.saveDraft': 'Save draft', 'newArtwork.publish': 'Publish',
     'newArtwork.creating': 'Creating artwork…', 'newArtwork.imageRequired': 'Add an image before publishing.',
     'newArtwork.createdDraft': 'The draft was created and is available among hidden artworks.',
@@ -964,10 +979,19 @@ const I18N = {
     'review.title': 'Review changes', 'review.description': 'These changes will be published on the site and added to history.',
     'review.publish': 'Publish changes', 'review.empty': 'There are no changes to publish.',
     'review.failed': 'The changes could not be published. Check the artist panel message.',
-    'review.names': 'Titles', 'review.visibility': 'Visibility', 'review.commercial': 'Price and availability',
-    'review.details': 'Artwork details', 'review.images': 'Images', 'review.sections': 'Sections',
-    'review.order': 'Section order', 'review.featured': 'Featured artworks',
-    'review.drafts': 'Drafts', 'review.catalog': 'Catalogue contents', 'review.more': 'and {count} more',
+    'review.names': 'Titles changed', 'review.archived': 'Moved to archive', 'review.archivedOne': 'Moved to archive',
+    'review.publishedDraft': 'Published from drafts', 'review.restored': 'Restored to the site from archive',
+    'review.prices': 'Prices changed', 'review.markedAvailable': 'Marked as available',
+    'review.markedSold': 'Marked as sold',
+    'review.details': 'Year, dimensions or material changed', 'review.images': 'Images replaced',
+    'review.sections': 'Moved to other sections', 'review.order': 'Artwork order changed in sections',
+    'review.featuredAdded': 'Added to home page', 'review.featuredRemoved': 'Removed from home page',
+    'review.featuredOrder': 'Home page artwork order changed',
+    'review.draftAdded': 'Added to drafts', 'review.draftArchived': 'Drafts moved to archive',
+    'review.excluded': 'Excluded from catalogue', 'review.included': 'Returned to catalogue',
+    'review.publicationDates': 'Publication dates changed',
+    'review.settings': 'Catalogue settings updated',
+    'review.more': 'and {count} more',
     'validation.errorsTitle': 'Fix before publishing',
     'validation.warningsTitle': 'Worth checking',
     'validation.blocked': 'Publishing is blocked: fix the errors in visible artworks.',
@@ -986,7 +1010,7 @@ const I18N = {
     'admin.confirmExit': 'There are unsaved changes. Sign out and keep the draft on this device?',
     'admin.saved': 'Saved {date}',
     'catalog.title': 'Art catalogue', 'catalog.loading': 'Loading…', 'catalog.sort': 'Sort:',
-    'catalog.default': 'Default', 'catalog.priceAsc': 'Price ↑', 'catalog.priceDesc': 'Price ↓',
+    'catalog.default': 'Newest first', 'catalog.manual': 'Artist order', 'catalog.priceAsc': 'Price ↑', 'catalog.priceDesc': 'Price ↓',
     'catalog.newer': 'Newest', 'catalog.older': 'Oldest', 'catalog.search': 'Search by title or ID…',
     'catalog.noResults': 'No artworks found', 'catalog.empty': 'More works coming soon',
     'catalog.networkError': 'Network error', 'catalog.connectionError': 'Connection error',
@@ -1144,6 +1168,7 @@ function applyLanguage(language = currentLanguage) {
     button.setAttribute('aria-pressed', String(active));
   });
   populateNewArtworkSectionSelect();
+  updateNewArtworkPublishState();
 
   document.getElementById('hero-art')?.setAttribute('aria-label', t('hero.region'));
   document.getElementById('hero-art-dots')?.setAttribute('aria-label', t('hero.controls'));
@@ -1177,6 +1202,7 @@ function createEmptyCatalogConfig() {
     heightById: {},
     materialById: {},
     imageById: {},
+    publishedAtById: {},
     draftPaintingIds: [],
     excludedPaintingIds: [],
     featuredPaintingIds: [],
@@ -1196,6 +1222,7 @@ function normalizeCatalogConfig(raw = {}) {
   const yearById = {};
   const materialById = {};
   const imageById = {};
+  const publishedAtById = {};
 
   Object.entries(raw.sectionById || {}).forEach(([id, section]) => {
     if (validSections.has(section)) sectionById[String(Number(id))] = section;
@@ -1244,6 +1271,13 @@ function normalizeCatalogConfig(raw = {}) {
       imageById[String(numericId)] = path;
     }
   });
+  Object.entries(raw.publishedAtById || {}).forEach(([id, value]) => {
+    const numericId = Number(id);
+    const timestamp = typeof value === 'string' ? Date.parse(value) : NaN;
+    if (Number.isSafeInteger(numericId) && numericId > 0 && Number.isFinite(timestamp)) {
+      publishedAtById[String(numericId)] = new Date(timestamp).toISOString();
+    }
+  });
 
   TECH_GROUPS.forEach(group => {
     const ids = Array.isArray(raw.orderBySection?.[group.key]) ? raw.orderBySection[group.key] : [];
@@ -1263,6 +1297,7 @@ function normalizeCatalogConfig(raw = {}) {
     heightById: normalizeDimensionMap(raw.heightById),
     materialById,
     imageById,
+    publishedAtById,
     draftPaintingIds: [...new Set((Array.isArray(raw.draftPaintingIds) ? raw.draftPaintingIds : [])
       .map(Number).filter(id => Number.isSafeInteger(id) && id > 0))],
     excludedPaintingIds: [...new Set((Array.isArray(raw.excludedPaintingIds) ? raw.excludedPaintingIds : [])
@@ -1336,6 +1371,7 @@ function catalogConfigFingerprint(config) {
     heightById: normalized.heightById,
     materialById: normalized.materialById,
     imageById: normalized.imageById,
+    publishedAtById: normalized.publishedAtById,
     draftPaintingIds: normalized.draftPaintingIds,
     excludedPaintingIds: normalized.excludedPaintingIds,
     featuredPaintingIds: normalized.featuredPaintingIds,
@@ -1409,6 +1445,12 @@ function sortSectionItems(items, sectionKey) {
   if (currentSort === 'price-desc') return [...items].sort((a, b) => b.price - a.price);
   if (currentSort === 'year-desc') return [...items].sort((a, b) => b.year - a.year);
   if (currentSort === 'year-asc') return [...items].sort((a, b) => a.year - b.year);
+
+  if (currentSort === 'default') return [...items].sort((a, b) => {
+    const addedA = Date.parse(catalogConfig.publishedAtById[String(a.id)] || a.created_at || '') || 0;
+    const addedB = Date.parse(catalogConfig.publishedAtById[String(b.id)] || b.created_at || '') || 0;
+    return addedB - addedA || b.id - a.id;
+  });
 
   const order = syncSectionOrder(sectionKey);
   const rank = new Map(order.map((id, index) => [id, index]));
@@ -1706,7 +1748,10 @@ function applyBulkAction() {
       const key = String(painting.id);
       if (hidden === painting.source_flag_hidden) delete catalogConfig.hiddenById[key];
       else catalogConfig.hiddenById[key] = hidden;
-      if (!hidden) catalogConfig.draftPaintingIds = catalogConfig.draftPaintingIds.filter(id => id !== painting.id);
+      if (!hidden) {
+        catalogConfig.draftPaintingIds = catalogConfig.draftPaintingIds.filter(id => id !== painting.id);
+        catalogConfig.publishedAtById[key] = new Date().toISOString();
+      }
     });
     if (hidden) catalogConfig.featuredPaintingIds = catalogConfig.featuredPaintingIds.filter(id => !changedIds.has(id));
   } else {
@@ -1770,7 +1815,7 @@ function movePaintingWithinSection(id, delta) {
   if (!painting) return;
 
   const sectionKey = getPaintingSection(painting);
-  const order = syncSectionOrder(sectionKey);
+  const order = sortSectionItems(getPaintingsInSection(sectionKey), sectionKey).map(item => item.id);
   const index = order.indexOf(id);
   const nextIndex = index + delta;
   if (index < 0 || nextIndex < 0 || nextIndex >= order.length) return;
@@ -1778,7 +1823,7 @@ function movePaintingWithinSection(id, delta) {
   pushCatalogUndoState();
   [order[index], order[nextIndex]] = [order[nextIndex], order[index]];
   catalogConfig.orderBySection[sectionKey] = order;
-  setCurrentSort('default');
+  setCurrentSort('manual');
   setConfigDirty(t('admin.orderChanged'));
 }
 
@@ -2012,9 +2057,14 @@ function revokeNewArtworkPreviewImage() {
 
 function updateNewArtworkPublishState() {
   const publishButton = document.getElementById('new-artwork-publish');
+  const hint = document.getElementById('new-artwork-publish-hint');
   const imageFile = document.getElementById('new-artwork-image').files?.[0] || null;
   const previewCurrent = newArtworkPreviewSignature && newArtworkPreviewSignature === getNewArtworkFormSignature();
   if (publishButton) publishButton.disabled = newArtworkBusy || !imageFile || !previewCurrent;
+  if (hint) {
+    hint.hidden = Boolean(newArtworkBusy || (imageFile && previewCurrent));
+    hint.textContent = !imageFile ? t('newArtwork.publishHintImage') : t('newArtwork.publishHintPreview');
+  }
 }
 
 function invalidateNewArtworkPreview(announce = false) {
@@ -2170,10 +2220,14 @@ async function createNewArtwork(event) {
 
     const effectiveMode = imageUploadFailed ? 'draft' : mode;
     pushCatalogUndoState();
-    syncSectionOrder(values.technique);
+    catalogConfig.orderBySection[values.technique] = [
+      createdPainting.id,
+      ...syncSectionOrder(values.technique).filter(id => id !== createdPainting.id)
+    ];
     if (imagePath) catalogConfig.imageById[String(createdPainting.id)] = imagePath;
     if (effectiveMode === 'publish') {
       catalogConfig.hiddenById[String(createdPainting.id)] = false;
+      catalogConfig.publishedAtById[String(createdPainting.id)] = new Date().toISOString();
       catalogConfig.draftPaintingIds = catalogConfig.draftPaintingIds.filter(id => id !== createdPainting.id);
     } else if (!catalogConfig.draftPaintingIds.includes(createdPainting.id)) {
       catalogConfig.draftPaintingIds.push(createdPainting.id);
@@ -2294,13 +2348,6 @@ function changedMapIds(before, after, keys) {
   return [...ids].filter(Number.isFinite);
 }
 
-function changedArrayIds(before, after, key) {
-  const beforeItems = Array.isArray(before[key]) ? before[key] : [];
-  const afterItems = Array.isArray(after[key]) ? after[key] : [];
-  if (JSON.stringify(beforeItems) === JSON.stringify(afterItems)) return [];
-  return [...new Set([...beforeItems, ...afterItems].map(Number).filter(Number.isFinite))];
-}
-
 function buildCatalogChangeSummary() {
   const before = normalizeCatalogConfig(publishedCatalogConfig);
   const after = normalizeCatalogConfig(catalogConfig);
@@ -2308,16 +2355,55 @@ function buildCatalogChangeSummary() {
   const addIds = (labelKey, ids) => {
     if (ids.length) items.push({ labelKey, count: ids.length, ids });
   };
+  const paintingById = new Map(allPaintings.map(painting => [painting.id, painting]));
+  const effectiveBoolean = (config, mapKey, id, sourceKey) => {
+    const value = config[mapKey][String(id)];
+    return typeof value === 'boolean' ? value : Boolean(paintingById.get(id)?.[sourceKey]);
+  };
 
   addIds('review.names', changedMapIds(before, after, ['titleById']));
-  addIds('review.visibility', changedMapIds(before, after, ['hiddenById']));
-  addIds('review.commercial', changedMapIds(before, after, ['priceById', 'stockById']));
+  const visibilityIds = changedMapIds(before, after, ['hiddenById']);
+  addIds('review.archived', visibilityIds.filter(id =>
+    !effectiveBoolean(before, 'hiddenById', id, 'source_flag_hidden') &&
+    effectiveBoolean(after, 'hiddenById', id, 'source_flag_hidden')
+  ));
+  addIds('review.publishedDraft', visibilityIds.filter(id =>
+    effectiveBoolean(before, 'hiddenById', id, 'source_flag_hidden') &&
+    !effectiveBoolean(after, 'hiddenById', id, 'source_flag_hidden') && before.draftPaintingIds.includes(id)
+  ));
+  addIds('review.restored', visibilityIds.filter(id =>
+    effectiveBoolean(before, 'hiddenById', id, 'source_flag_hidden') &&
+    !effectiveBoolean(after, 'hiddenById', id, 'source_flag_hidden') && !before.draftPaintingIds.includes(id)
+  ));
+  addIds('review.publicationDates', changedMapIds(before, after, ['publishedAtById'])
+    .filter(id => !visibilityIds.includes(id)));
+  addIds('review.prices', changedMapIds(before, after, ['priceById']));
+  const stockIds = changedMapIds(before, after, ['stockById']);
+  addIds('review.markedAvailable', stockIds.filter(id =>
+    !effectiveBoolean(before, 'stockById', id, 'source_in_stock') &&
+    effectiveBoolean(after, 'stockById', id, 'source_in_stock')
+  ));
+  addIds('review.markedSold', stockIds.filter(id =>
+    effectiveBoolean(before, 'stockById', id, 'source_in_stock') &&
+    !effectiveBoolean(after, 'stockById', id, 'source_in_stock')
+  ));
   addIds('review.details', changedMapIds(before, after, ['yearById', 'widthById', 'heightById', 'materialById']));
   addIds('review.images', changedMapIds(before, after, ['imageById']));
   addIds('review.sections', changedMapIds(before, after, ['sectionById']));
-  addIds('review.featured', changedArrayIds(before, after, 'featuredPaintingIds'));
-  addIds('review.drafts', changedArrayIds(before, after, 'draftPaintingIds'));
-  addIds('review.catalog', changedArrayIds(before, after, 'excludedPaintingIds'));
+  addIds('review.featuredAdded', after.featuredPaintingIds.filter(id => !before.featuredPaintingIds.includes(id)));
+  addIds('review.featuredRemoved', before.featuredPaintingIds.filter(id => !after.featuredPaintingIds.includes(id)));
+  if (JSON.stringify(before.featuredPaintingIds) !== JSON.stringify(after.featuredPaintingIds) &&
+    before.featuredPaintingIds.length === after.featuredPaintingIds.length &&
+    before.featuredPaintingIds.every(id => after.featuredPaintingIds.includes(id))) {
+    addIds('review.featuredOrder', after.featuredPaintingIds);
+  }
+  addIds('review.draftAdded', after.draftPaintingIds.filter(id => !before.draftPaintingIds.includes(id)));
+  addIds('review.draftArchived', before.draftPaintingIds.filter(id =>
+    !after.draftPaintingIds.includes(id) &&
+    effectiveBoolean(after, 'hiddenById', id, 'source_flag_hidden')
+  ));
+  addIds('review.excluded', after.excludedPaintingIds.filter(id => !before.excludedPaintingIds.includes(id)));
+  addIds('review.included', before.excludedPaintingIds.filter(id => !after.excludedPaintingIds.includes(id)));
 
   const changedSections = TECH_GROUPS.filter(group =>
     JSON.stringify(before.orderBySection[group.key] || []) !== JSON.stringify(after.orderBySection[group.key] || [])
@@ -2328,6 +2414,9 @@ function buildCatalogChangeSummary() {
       count: changedSections.length,
       detail: changedSections.map(group => techLabel(group.key)).join(', ')
     });
+  }
+  if (!items.length && catalogConfigFingerprint(before) !== catalogConfigFingerprint(after)) {
+    items.push({ labelKey: 'review.settings', count: 1, detail: '' });
   }
   return items;
 }
@@ -2415,7 +2504,7 @@ function openSaveReviewDialog() {
     const detail = item.detail || formatReviewArtworkNames(item.ids || []);
     return `<div class="save-review-item">
       <div class="save-review-heading">
-        <span class="save-review-label">${t(item.labelKey)}</span>
+        <span class="save-review-label">${t(item.labelKey === 'review.archived' && item.count === 1 ? 'review.archivedOne' : item.labelKey)}</span>
         <span class="save-review-count">${item.count}</span>
       </div>
       ${detail ? `<div class="save-review-detail">${escapeHTML(detail)}</div>` : ''}
@@ -2505,7 +2594,10 @@ function togglePaintingVisibility(id) {
   const key = String(id);
   if (hidden === painting.source_flag_hidden) delete catalogConfig.hiddenById[key];
   else catalogConfig.hiddenById[key] = hidden;
-  if (!hidden) catalogConfig.draftPaintingIds = catalogConfig.draftPaintingIds.filter(itemId => itemId !== id);
+  if (!hidden) {
+    catalogConfig.draftPaintingIds = catalogConfig.draftPaintingIds.filter(itemId => itemId !== id);
+    catalogConfig.publishedAtById[key] = new Date().toISOString();
+  }
 
   if (hidden && catalogConfig.featuredPaintingIds.includes(id)) {
     catalogConfig.featuredPaintingIds = catalogConfig.featuredPaintingIds.filter(itemId => itemId !== id);
@@ -2526,10 +2618,14 @@ function movePaintingByDrag(id, sectionKey, targetId = null, placeAfter = false)
   const painting = allPaintings.find(item => item.id === id);
   if (!painting || !TECH_LABEL_MAP[sectionKey] || id === targetId) return;
 
+  const sourceSectionKey = getPaintingSection(painting);
+  const displayedOrder = new Map([...new Set([sourceSectionKey, sectionKey])].map(key => [
+    key,
+    sortSectionItems(getPaintingsInSection(key), key).map(item => item.id)
+  ]));
   pushCatalogUndoState();
-  TECH_GROUPS.forEach(group => {
-    const list = Array.isArray(catalogConfig.orderBySection[group.key]) ? catalogConfig.orderBySection[group.key] : [];
-    catalogConfig.orderBySection[group.key] = list.filter(itemId => itemId !== id);
+  displayedOrder.forEach((order, key) => {
+    catalogConfig.orderBySection[key] = order.filter(itemId => itemId !== id);
   });
 
   if (sectionKey === getDefaultPaintingSection(painting)) delete catalogConfig.sectionById[String(id)];
@@ -2546,7 +2642,7 @@ function movePaintingByDrag(id, sectionKey, targetId = null, placeAfter = false)
     catalogUndoStack.pop();
   }
 
-  setCurrentSort('default');
+  setCurrentSort('manual');
   setConfigDirty(t('admin.dragChanged'));
 }
 

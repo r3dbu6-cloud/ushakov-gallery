@@ -6,6 +6,7 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "check": "node scripts/check.mjs",
+    "test:catalog-ui": "node scripts/test-catalog-ui.mjs",
     "verify:rls": "node scripts/verify-rls.mjs"
   }
 }
